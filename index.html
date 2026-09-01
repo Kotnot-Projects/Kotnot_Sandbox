@@ -3,2180 +3,1404 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kotnot_Sandbox</title>
+    <title>Kotnot_Sandbox v0.2</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            overflow: hidden;
-            background: #0a0a1a;
-            font-family: 'Segoe UI', sans-serif;
-            touch-action: none;
-            user-select: none;
-            position: fixed;
-            width: 100%;
-            height: 100%;
-        }
-        canvas {
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-
-        /* ГЛАВНОЕ МЕНЮ */
-        #mainMenu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 15, 30, 0.92);
-            backdrop-filter: blur(30px);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            transition: opacity 0.5s ease;
-        }
-        #mainMenu.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #menuContent {
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            padding: 20px;
-        }
-
-        #menuContent h1 {
-            font-size: 48px;
-            color: #88ccff;
-            margin-bottom: 4px;
-            text-shadow: 0 0 40px rgba(100, 200, 255, 0.2);
-        }
-        #menuContent .sub {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 14px;
-            letter-spacing: 4px;
-            margin-bottom: 30px;
-        }
-        #menuContent .version {
-            color: rgba(200, 220, 255, 0.15);
-            font-size: 12px;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .menu-btn {
-            display: block;
-            width: 100%;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            border: none;
-            border-radius: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .menu-btn:active {
-            transform: scale(0.96);
-        }
-
-        .btn-play {
-            background: linear-gradient(135deg, #4a8aff, #2a5a9a);
-            color: white;
-            box-shadow: 0 0 40px rgba(70, 150, 255, 0.2);
-        }
-        .btn-editor {
-            background: linear-gradient(135deg, #ff6b4a, #cc3a2a);
-            color: white;
-            box-shadow: 0 0 40px rgba(255, 100, 50, 0.2);
-        }
-        .btn-skin {
-            background: linear-gradient(135deg, #aa66ff, #7a3acc);
-            color: white;
-            box-shadow: 0 0 40px rgba(170, 100, 255, 0.2);
-        }
-        .btn-settings {
-            background: rgba(60, 80, 120, 0.2);
-            color: #aac0dd;
-            border: 1px solid rgba(100, 180, 255, 0.15);
-        }
-        .btn-icon {
-            margin-right: 12px;
-            font-size: 20px;
-        }
-
-        /* ВЫБОР РЕЖИМА */
-        #modeSelect {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(20px);
-            z-index: 250;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        #modeSelect.active {
-            display: flex;
-        }
-
-        #modeContent {
-            background: rgba(20, 30, 50, 0.95);
-            border: 2px solid rgba(100, 200, 255, 0.2);
-            border-radius: 30px;
-            padding: 40px 35px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-        }
-        #modeContent h2 {
-            color: #88ccff;
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-        #modeContent .sub {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .mode-btn {
-            display: block;
-            width: 100%;
-            padding: 16px 20px;
-            margin-bottom: 12px;
-            border: 2px solid rgba(100, 180, 255, 0.15);
-            border-radius: 16px;
-            background: rgba(60, 80, 120, 0.15);
-            color: #c0d8ff;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        .mode-btn:active {
-            transform: scale(0.96);
-            background: rgba(60, 80, 120, 0.3);
-        }
-        .mode-btn .mode-icon {
-            font-size: 28px;
-        }
-        .mode-btn .mode-desc {
-            font-size: 12px;
-            color: rgba(200, 220, 255, 0.4);
-            margin-top: 2px;
-        }
-        .mode-back {
-            margin-top: 16px;
-            background: rgba(255, 70, 70, 0.1);
-            border: 1px solid rgba(255, 70, 70, 0.15);
-            border-radius: 14px;
-            padding: 14px;
-            color: #ff8888;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .mode-back:active {
-            transform: scale(0.96);
-        }
-
-        /* РЕДАКТОР КАРТ */
-        #editorPanel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(20px);
-            z-index: 300;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #editorPanel.active {
-            display: flex;
-        }
-
-        #editorContent {
-            background: rgba(20, 30, 50, 0.95);
-            border: 2px solid rgba(100, 200, 255, 0.15);
-            border-radius: 30px;
-            padding: 25px 30px;
-            max-width: 700px;
-            width: 95%;
-            max-height: 90vh;
-            overflow-y: auto;
-            text-align: center;
-        }
-        #editorContent h2 {
-            color: #88ccff;
-            font-size: 24px;
-            margin-bottom: 6px;
-        }
-        #editorContent .sub {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 12px;
-            margin-bottom: 15px;
-        }
-
-        .editor-tools {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-        .editor-tool {
-            padding: 8px 16px;
-            border-radius: 12px;
-            border: 2px solid rgba(100, 180, 255, 0.15);
-            background: rgba(60, 80, 120, 0.15);
-            color: #c0d8ff;
-            cursor: pointer;
-            font-size: 13px;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .editor-tool:active {
-            transform: scale(0.95);
-        }
-        .editor-tool.active {
-            border-color: rgba(100, 200, 255, 0.5);
-            background: rgba(60, 80, 120, 0.3);
-        }
-        .editor-tool .preview {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border-radius: 4px;
-            vertical-align: middle;
-            margin-right: 6px;
-        }
-
-        .editor-grid-container {
-            position: relative;
-            margin: 10px auto;
-            max-width: 100%;
-            overflow: auto;
-            touch-action: auto;
-        }
-        #editorCanvas {
-            display: block;
-            margin: 0 auto;
-            border: 2px solid rgba(100, 180, 255, 0.2);
-            border-radius: 12px;
-            background: #1a2a3a;
-            cursor: crosshair;
-            touch-action: auto;
-            width: 100%;
-            height: auto;
-            image-rendering: pixelated;
-        }
-
-        .editor-actions {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 10px;
-        }
-        .editor-btn {
-            padding: 8px 18px;
-            border-radius: 12px;
-            border: none;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .editor-btn:active {
-            transform: scale(0.95);
-        }
-        .btn-save {
-            background: linear-gradient(135deg, #4a8aff, #2a5a9a);
-            color: white;
-        }
-        .btn-load {
-            background: linear-gradient(135deg, #66ffaa, #3acc7a);
-            color: #0a1a0a;
-        }
-        .btn-clear {
-            background: rgba(255, 70, 70, 0.2);
-            color: #ff8888;
-            border: 1px solid rgba(255, 70, 70, 0.15);
-        }
-        .btn-close-editor {
-            background: rgba(255, 70, 70, 0.1);
-            color: #ff8888;
-            border: 1px solid rgba(255, 70, 70, 0.15);
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        /* МАГАЗИН СКИНОВ */
-        #skinShop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(20px);
-            z-index: 350;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        #skinShop.active {
-            display: flex;
-        }
-
-        #skinContent {
-            background: rgba(20, 30, 50, 0.95);
-            border: 2px solid rgba(100, 200, 255, 0.15);
-            border-radius: 30px;
-            padding: 30px 35px;
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        #skinContent h2 {
-            color: #88ccff;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-        #skinContent .sub {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-
-        .skin-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .skin-item {
-            background: rgba(60, 80, 120, 0.15);
-            border: 2px solid rgba(100, 180, 255, 0.1);
-            border-radius: 16px;
-            padding: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-            position: relative;
-        }
-        .skin-item:active {
-            transform: scale(0.95);
-        }
-        .skin-item.active {
-            border-color: rgba(100, 200, 255, 0.5);
-            background: rgba(60, 80, 120, 0.3);
-            box-shadow: 0 0 20px rgba(100, 200, 255, 0.1);
-        }
-        .skin-item .preview {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 6px;
-            background: rgba(0,0,0,0.3);
-            overflow: hidden;
-            font-size: 48px;
-        }
-        .skin-item .name {
-            color: #c0d8ff;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        .skin-item .price {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 10px;
-        }
-        .skin-item .owned {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(68, 255, 136, 0.2);
-            color: #44ff88;
-            font-size: 9px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid rgba(68, 255, 136, 0.2);
-        }
-        .skin-item .skin-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            background: rgba(255, 215, 0, 0.2);
-            color: #ffd700;
-            font-size: 9px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .skin-close {
-            margin-top: 12px;
-            background: rgba(255, 70, 70, 0.1);
-            border: 1px solid rgba(255, 70, 70, 0.15);
-            border-radius: 14px;
-            padding: 14px;
-            color: #ff8888;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-        .skin-close:active {
-            transform: scale(0.96);
-        }
-
-        /* НАСТРОЙКИ */
-        #settingsPanel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(20px);
-            z-index: 400;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-        #settingsPanel.active {
-            display: flex;
-        }
-
-        #settingsContent {
-            background: rgba(20, 30, 50, 0.95);
-            border: 2px solid rgba(100, 200, 255, 0.15);
-            border-radius: 30px;
-            padding: 40px 35px;
-            max-width: 380px;
-            width: 90%;
-            text-align: center;
-        }
-        #settingsContent h2 {
-            color: #88ccff;
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-        #settingsContent .sub {
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 13px;
-            margin-bottom: 30px;
-        }
-
-        .setting-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            color: #c0d8ff;
-            font-size: 15px;
-        }
-        .setting-item:last-child {
-            border-bottom: none;
-        }
-
-        .setting-toggle {
-            width: 50px;
-            height: 28px;
-            border-radius: 14px;
-            background: rgba(60, 80, 120, 0.3);
-            border: 1px solid rgba(100, 180, 255, 0.15);
-            cursor: pointer;
-            position: relative;
-            transition: 0.3s;
-            flex-shrink: 0;
-            touch-action: manipulation;
-        }
-        .setting-toggle.active {
-            background: rgba(70, 150, 255, 0.4);
-            border-color: rgba(100, 200, 255, 0.4);
-        }
-        .setting-toggle .dot {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #6688aa;
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            transition: 0.3s;
-            pointer-events: none;
-        }
-        .setting-toggle.active .dot {
-            background: #88ccff;
-            left: 25px;
-            box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
-        }
-
-        .settings-close {
-            margin-top: 24px;
-            background: rgba(255, 70, 70, 0.1);
-            border: 1px solid rgba(255, 70, 70, 0.15);
-            border-radius: 14px;
-            padding: 14px;
-            color: #ff8888;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-
-        /* ИГРОВОЙ ИНТЕРФЕЙС */
-        #gameUI {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-        }
-        #gameUI.active {
-            display: block;
-        }
-
-        #chatContainer {
-            position: absolute;
-            bottom: 180px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 500px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 12;
-            pointer-events: none;
-            scrollbar-width: none;
-        }
-        #chatContainer::-webkit-scrollbar {
-            display: none;
-        }
-
-        .chat-message {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            padding: 6px 16px;
-            margin-bottom: 4px;
-            color: #c0d8ff;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: fadeInMsg 0.3s ease;
-            border: 1px solid rgba(100, 180, 255, 0.08);
-            pointer-events: none;
-        }
-        .chat-message .name {
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .chat-message .text {
-            word-break: break-word;
-        }
-
-        @keyframes fadeInMsg {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #chatInput {
-            position: absolute;
-            bottom: 140px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 500px;
-            z-index: 12;
-            display: none;
-            gap: 8px;
-            pointer-events: auto;
-        }
-        #chatInput.active {
-            display: flex;
-        }
-
-        #chatInput input {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 25px;
-            border: 2px solid rgba(100, 180, 255, 0.2);
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            color: #c0d8ff;
-            font-size: 14px;
-            outline: none;
-        }
-        #chatInput input:focus {
-            border-color: rgba(100, 180, 255, 0.5);
-        }
-        #chatInput button {
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: none;
-            background: linear-gradient(135deg, #4a8aff, #2a5a9a);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-        }
-
-        #chatToggle {
-            position: absolute;
-            bottom: 105px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 20px;
-            border-radius: 25px;
-            border: 1px solid rgba(100, 180, 255, 0.15);
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            color: rgba(200, 220, 255, 0.6);
-            font-size: 12px;
-            cursor: pointer;
-            z-index: 12;
-            pointer-events: auto;
-            touch-action: manipulation;
-        }
-
-        /* Инструменты песочницы */
-        #sandboxTools {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 15;
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: auto;
-        }
-        #sandboxTools.active {
-            display: flex;
-        }
-
-        .block-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: 0.2s;
-            touch-action: manipulation;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-        .block-btn:active {
-            transform: scale(0.9);
-        }
-        .block-btn.active {
-            border-color: rgba(100, 200, 255, 0.5);
-            box-shadow: 0 0 20px rgba(100, 200, 255, 0.2);
-        }
-
-        /* Джойстики */
-        #joysticksContainer {
-            position: absolute;
-            bottom: 40px;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 15;
-            pointer-events: none;
-        }
-        #joysticksContainer>* {
-            pointer-events: auto;
-        }
-
-        #joystickMove, #joystickRotate {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: none;
-            position: relative;
-            pointer-events: auto;
-        }
-        #joystickMove {
-            background: radial-gradient(circle, rgba(60, 80, 140, 0.3) 0%, rgba(10, 15, 30, 0.7) 100%);
-            border: 2px solid rgba(100, 180, 255, 0.25);
-        }
-        #joystickRotate {
-            background: radial-gradient(circle, rgba(140, 80, 60, 0.3) 0%, rgba(30, 15, 10, 0.7) 100%);
-            border: 2px solid rgba(255, 180, 100, 0.25);
-        }
-
-        .joystick-knob {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            touch-action: none;
-            will-change: transform;
-            cursor: grab;
-            pointer-events: none;
-        }
-        #knobMove {
-            background: radial-gradient(circle at 35% 35%, #8ab4ff, #2a5a9a);
-            box-shadow: 0 0 25px rgba(60, 150, 255, 0.4), inset 0 -4px 8px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255, 255, 255, 0.25);
-        }
-        #knobRotate {
-            background: radial-gradient(circle at 35% 35%, #ffaa66, #cc5533);
-            box-shadow: 0 0 25px rgba(255, 150, 60, 0.4), inset 0 -4px 8px rgba(0,0,0,0.5);
-            border: 2px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .joystick-label {
-            position: absolute;
-            bottom: -28px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(200, 220, 255, 0.4);
-            font-size: 10px;
-            letter-spacing: 1px;
-            white-space: nowrap;
-            font-weight: 300;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-            pointer-events: none;
-        }
-
-        #status {
-            position: absolute;
-            bottom: 400px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(200, 220, 255, 0.6);
-            font-size: 13px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px 20px;
-            border-radius: 30px;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            pointer-events: none;
-            z-index: 10;
-            font-family: monospace;
-        }
-
-        #menuToggle {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 10px 24px;
-            background: rgba(20, 30, 50, 0.7);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(100, 180, 255, 0.15);
-            border-radius: 30px;
-            color: #88ccff;
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 20;
-            transition: 0.2s;
-            display: none;
-            pointer-events: auto;
-            touch-action: manipulation;
-        }
-        #menuToggle:active {
-            transform: translateX(-50%) scale(0.95);
-        }
-
-        #modeIndicator {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(200, 220, 255, 0.3);
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4px 16px;
-            border-radius: 20px;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        #timeIndicator {
-            position: absolute;
-            top: 110px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(200, 220, 255, 0.2);
-            font-size: 11px;
-            pointer-events: none;
-            z-index: 10;
-            letter-spacing: 1px;
-        }
-
-        #healthBar {
-            position: absolute;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 12px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            overflow: hidden;
-            z-index: 10;
-            pointer-events: none;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: none;
-        }
-        #healthBar.active {
-            display: block;
-        }
-        #healthFill {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff4444, #44ff44);
-            transition: width 0.3s;
-            border-radius: 10px;
-        }
-
-        #scoreDisplay {
-            position: absolute;
-            top: 170px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(200, 220, 255, 0.3);
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 10;
-            display: none;
-        }
-        #scoreDisplay.active {
-            display: block;
-        }
-
-        @media (max-width: 600px) {
-            #joysticksContainer {
-                padding: 0 16px;
-                bottom: 25px;
-            }
-            #joystickMove, #joystickRotate {
-                width: 90px;
-                height: 90px;
-            }
-            .joystick-knob {
-                width: 38px;
-                height: 38px;
-            }
-            #status {
-                font-size: 11px;
-                bottom: 320px;
-                padding: 4px 14px;
-            }
-            #chatContainer {
-                bottom: 150px;
-                max-height: 150px;
-            }
-            #chatInput {
-                bottom: 120px;
-            }
-            #chatToggle {
-                bottom: 90px;
-            }
-            .chat-message {
-                font-size: 11px;
-                padding: 4px 12px;
-            }
-            .joystick-label {
-                font-size: 9px;
-                bottom: -22px;
-            }
-            #menuContent h1 {
-                font-size: 36px;
-            }
-            #editorContent {
-                padding: 15px;
-            }
-            .editor-tool {
-                font-size: 11px;
-                padding: 6px 12px;
-            }
-            #menuToggle {
-                font-size: 12px;
-                padding: 8px 16px;
-                top: 12px;
-            }
-            #sandboxTools {
-                right: 10px;
-                gap: 8px;
-            }
-            .block-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-            #healthBar {
-                width: 150px;
-                top: 140px;
-            }
-            .skin-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            #skinContent {
-                padding: 20px;
-            }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { overflow:hidden; background:#0a0a1a; font-family:'Segoe UI',sans-serif; touch-action:none; user-select:none; position:fixed; width:100%; height:100%; }
+        canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
+        
+        #mainMenu { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,15,30,0.92); backdrop-filter:blur(30px); z-index:200; display:flex; align-items:center; justify-content:center; flex-direction:column; transition:opacity 0.5s ease; }
+        #mainMenu.hidden { opacity:0; pointer-events:none; }
+        #menuContent { text-align:center; max-width:420px; width:90%; padding:20px; }
+        #menuContent h1 { font-size:48px; color:#88ccff; margin-bottom:4px; text-shadow:0 0 40px rgba(100,200,255,0.2); }
+        #menuContent .sub { color:rgba(200,220,255,0.4); font-size:14px; letter-spacing:4px; margin-bottom:30px; }
+        .menu-btn { display:block; width:100%; padding:16px 20px; margin-bottom:12px; border:none; border-radius:16px; font-size:18px; font-weight:600; cursor:pointer; transition:0.2s; touch-action:manipulation; }
+        .menu-btn:active { transform:scale(0.96); }
+        .btn-play { background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; box-shadow:0 0 40px rgba(70,150,255,0.2); }
+        .btn-editor { background:linear-gradient(135deg,#ff6b4a,#cc3a2a); color:white; box-shadow:0 0 40px rgba(255,100,50,0.2); }
+        .btn-skin { background:linear-gradient(135deg,#aa66ff,#7a3acc); color:white; box-shadow:0 0 40px rgba(170,100,255,0.2); }
+        .btn-settings { background:rgba(60,80,120,0.2); color:#aac0dd; border:1px solid rgba(100,180,255,0.15); }
+        .btn-icon { margin-right:12px; font-size:20px; }
+        
+        #modeSelect { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(20px); z-index:250; display:none; align-items:center; justify-content:center; flex-direction:column; }
+        #modeSelect.active { display:flex; }
+        #modeContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.2); border-radius:30px; padding:40px 35px; max-width:400px; width:90%; text-align:center; }
+        #modeContent h2 { color:#88ccff; font-size:32px; margin-bottom:8px; }
+        .mode-btn { display:block; width:100%; padding:16px 20px; margin-bottom:12px; border:2px solid rgba(100,180,255,0.15); border-radius:16px; background:rgba(60,80,120,0.15); color:#c0d8ff; font-size:18px; font-weight:500; cursor:pointer; transition:0.2s; touch-action:manipulation; text-align:left; display:flex; align-items:center; gap:14px; }
+        .mode-btn:active { transform:scale(0.96); }
+        .mode-btn .mode-icon { font-size:28px; }
+        .mode-btn .mode-desc { font-size:12px; color:rgba(200,220,255,0.4); }
+        .mode-back { margin-top:16px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:14px; color:#ff8888; font-size:16px; cursor:pointer; width:100%; transition:0.2s; }
+        .mode-back:active { transform:scale(0.96); }
+        
+        #editorPanel { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); backdrop-filter:blur(20px); z-index:300; display:none; flex-direction:column; align-items:center; justify-content:center; }
+        #editorPanel.active { display:flex; }
+        #editorContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.15); border-radius:30px; padding:25px 30px; max-width:700px; width:95%; max-height:90vh; overflow-y:auto; text-align:center; }
+        #editorContent h2 { color:#88ccff; font-size:24px; margin-bottom:6px; }
+        .editor-tools { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:12px; }
+        .editor-tool { padding:8px 16px; border-radius:12px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; cursor:pointer; font-size:13px; transition:0.2s; touch-action:manipulation; }
+        .editor-tool:active { transform:scale(0.95); }
+        .editor-tool.active { border-color:rgba(100,200,255,0.5); background:rgba(60,80,120,0.3); }
+        .editor-tool .preview { display:inline-block; width:16px; height:16px; border-radius:4px; vertical-align:middle; margin-right:6px; }
+        #editorCanvas { display:block; margin:0 auto; border:2px solid rgba(100,180,255,0.2); border-radius:12px; background:#1a2a3a; cursor:crosshair; touch-action:auto; width:100%; height:auto; image-rendering:pixelated; max-width:400px; }
+        .editor-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:10px; }
+        .editor-btn { padding:8px 18px; border-radius:12px; border:none; font-size:13px; font-weight:600; cursor:pointer; transition:0.2s; touch-action:manipulation; }
+        .editor-btn:active { transform:scale(0.95); }
+        .btn-save { background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; }
+        .btn-load { background:linear-gradient(135deg,#66ffaa,#3acc7a); color:#0a1a0a; }
+        .btn-clear { background:rgba(255,70,70,0.2); color:#ff8888; border:1px solid rgba(255,70,70,0.15); }
+        .btn-close-editor { background:rgba(255,70,70,0.1); color:#ff8888; border:1px solid rgba(255,70,70,0.15); }
+        #fileInput { display:none; }
+        
+        #skinShop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(20px); z-index:350; display:none; align-items:center; justify-content:center; }
+        #skinShop.active { display:flex; }
+        #skinContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.15); border-radius:30px; padding:30px 35px; max-width:450px; width:90%; text-align:center; max-height:90vh; overflow-y:auto; }
+        #skinContent h2 { color:#88ccff; font-size:28px; margin-bottom:8px; }
+        .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+        .skin-item { background:rgba(60,80,120,0.15); border:2px solid rgba(100,180,255,0.1); border-radius:16px; padding:12px; cursor:pointer; transition:0.2s; touch-action:manipulation; position:relative; }
+        .skin-item:active { transform:scale(0.95); }
+        .skin-item.active { border-color:rgba(100,200,255,0.5); background:rgba(60,80,120,0.3); box-shadow:0 0 20px rgba(100,200,255,0.1); }
+        .skin-item .preview { width:100%; aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; background:rgba(0,0,0,0.3); overflow:hidden; font-size:48px; }
+        .skin-item .preview img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+        .skin-item .name { color:#c0d8ff; font-size:12px; font-weight:500; }
+        .skin-item .price { color:rgba(200,220,255,0.4); font-size:10px; }
+        .skin-item .owned { position:absolute; top:8px; right:8px; background:rgba(68,255,136,0.2); color:#44ff88; font-size:9px; padding:2px 8px; border-radius:10px; border:1px solid rgba(68,255,136,0.2); }
+        .skin-close { margin-top:12px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:14px; color:#ff8888; font-size:16px; cursor:pointer; width:100%; transition:0.2s; }
+        .skin-close:active { transform:scale(0.96); }
+        
+        #settingsPanel { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(20px); z-index:400; display:none; align-items:center; justify-content:center; }
+        #settingsPanel.active { display:flex; }
+        #settingsContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.15); border-radius:30px; padding:40px 35px; max-width:380px; width:90%; text-align:center; }
+        #settingsContent h2 { color:#88ccff; font-size:28px; margin-bottom:8px; }
+        .setting-item { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:#c0d8ff; font-size:15px; }
+        .setting-toggle { width:50px; height:28px; border-radius:14px; background:rgba(60,80,120,0.3); border:1px solid rgba(100,180,255,0.15); cursor:pointer; position:relative; transition:0.3s; flex-shrink:0; touch-action:manipulation; }
+        .setting-toggle.active { background:rgba(70,150,255,0.4); border-color:rgba(100,200,255,0.4); }
+        .setting-toggle .dot { width:20px; height:20px; border-radius:50%; background:#6688aa; position:absolute; top:3px; left:3px; transition:0.3s; pointer-events:none; }
+        .setting-toggle.active .dot { background:#88ccff; left:25px; box-shadow:0 0 20px rgba(100,200,255,0.3); }
+        .settings-close { margin-top:24px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:14px; color:#ff8888; font-size:16px; cursor:pointer; width:100%; transition:0.2s; }
+        .settings-close:active { transform:scale(0.96); }
+        
+        #serverSelect { margin:16px 0; display:flex; gap:12px; justify-content:center; }
+        .server-btn { padding:10px 20px; border-radius:12px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; cursor:pointer; font-size:14px; transition:0.2s; touch-action:manipulation; }
+        .server-btn:active { transform:scale(0.95); }
+        .server-btn.active { border-color:rgba(100,200,255,0.5); background:rgba(60,80,120,0.3); }
+        
+        #gameUI { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:10; pointer-events:none; }
+        #gameUI.active { display:block; }
+        
+        #crosshair { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:15; pointer-events:none; }
+        #crosshair::before, #crosshair::after { content:''; position:absolute; background:rgba(255,255,255,0.7); }
+        #crosshair::before { width:20px; height:2px; top:50%; left:50%; transform:translate(-50%,-50%); }
+        #crosshair::after { width:2px; height:20px; top:50%; left:50%; transform:translate(-50%,-50%); }
+        #crosshair-dot { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:4px; height:4px; border-radius:50%; background:rgba(255,50,50,0.8); }
+        #crosshair-reload { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:40px; height:40px; border-radius:50%; border:2px solid rgba(255,255,255,0.15); pointer-events:none; }
+        
+        #chatContainer { position:absolute; bottom:180px; left:50%; transform:translateX(-50%); width:90%; max-width:500px; max-height:200px; overflow-y:auto; z-index:12; pointer-events:none; scrollbar-width:none; }
+        #chatContainer::-webkit-scrollbar { display:none; }
+        .chat-message { background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); border-radius:20px; padding:6px 16px; margin-bottom:4px; color:#c0d8ff; font-size:13px; display:flex; align-items:center; gap:8px; animation:fadeInMsg 0.3s ease; border:1px solid rgba(100,180,255,0.08); pointer-events:none; }
+        .chat-message .name { font-weight:600; white-space:nowrap; }
+        .chat-message .text { word-break:break-word; }
+        @keyframes fadeInMsg { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        
+        #chatInput { position:absolute; bottom:140px; left:50%; transform:translateX(-50%); width:90%; max-width:500px; z-index:12; display:none; gap:8px; pointer-events:auto; }
+        #chatInput.active { display:flex; }
+        #chatInput input { flex:1; padding:10px 16px; border-radius:25px; border:2px solid rgba(100,180,255,0.2); background:rgba(0,0,0,0.7); backdrop-filter:blur(8px); color:#c0d8ff; font-size:14px; outline:none; }
+        #chatInput input:focus { border-color:rgba(100,180,255,0.5); }
+        #chatInput button { padding:10px 20px; border-radius:25px; border:none; background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; font-weight:600; cursor:pointer; transition:0.2s; touch-action:manipulation; }
+        #chatToggle { position:absolute; bottom:105px; left:50%; transform:translateX(-50%); padding:8px 20px; border-radius:25px; border:1px solid rgba(100,180,255,0.15); background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); color:rgba(200,220,255,0.6); font-size:12px; cursor:pointer; z-index:12; pointer-events:auto; touch-action:manipulation; }
+        
+        #sandboxTools { position:absolute; right:20px; top:50%; transform:translateY(-50%); z-index:15; display:none; flex-direction:column; gap:8px; pointer-events:auto; }
+        #sandboxTools.active { display:flex; }
+        .block-btn { width:50px; height:50px; border-radius:12px; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:0.2s; touch-action:manipulation; display:flex; align-items:center; justify-content:center; font-size:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); }
+        .block-btn:active { transform:scale(0.9); }
+        .block-btn.active { border-color:rgba(100,200,255,0.5); box-shadow:0 0 20px rgba(100,200,255,0.2); }
+        .block-btn.delete-btn { background:rgba(255,50,50,0.3); border-color:rgba(255,50,50,0.3); }
+        .block-btn.delete-btn.active { border-color:#ff4444; box-shadow:0 0 20px rgba(255,68,68,0.3); }
+        #inventoryDisplay { position:absolute; left:20px; top:50%; transform:translateY(-50%); z-index:15; display:none; flex-direction:column; gap:6px; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); padding:12px; border-radius:12px; border:1px solid rgba(100,180,255,0.1); pointer-events:auto; }
+        #inventoryDisplay.active { display:flex; }
+        .inv-item { color:rgba(200,220,255,0.8); font-size:12px; display:flex; align-items:center; gap:8px; }
+        .inv-item .count { color:#88ccff; font-weight:bold; }
+        
+        #joysticksContainer { position:absolute; bottom:40px; left:0; right:0; display:flex; justify-content:space-between; padding:0 40px; z-index:15; pointer-events:none; }
+        #joysticksContainer>* { pointer-events:auto; }
+        #joystickMove, #joystickRotate { width:120px; height:120px; border-radius:50%; backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; touch-action:none; position:relative; pointer-events:auto; }
+        #joystickMove { background:radial-gradient(circle,rgba(60,80,140,0.3) 0%,rgba(10,15,30,0.7) 100%); border:2px solid rgba(100,180,255,0.25); }
+        #joystickRotate { background:radial-gradient(circle,rgba(140,80,60,0.3) 0%,rgba(30,15,10,0.7) 100%); border:2px solid rgba(255,180,100,0.25); }
+        .joystick-knob { width:50px; height:50px; border-radius:50%; touch-action:none; will-change:transform; cursor:grab; pointer-events:none; }
+        #knobMove { background:radial-gradient(circle at 35% 35%,#8ab4ff,#2a5a9a); box-shadow:0 0 25px rgba(60,150,255,0.4), inset 0 -4px 8px rgba(0,0,0,0.5); border:2px solid rgba(255,255,255,0.25); }
+        #knobRotate { background:radial-gradient(circle at 35% 35%,#ffaa66,#cc5533); box-shadow:0 0 25px rgba(255,150,60,0.4), inset 0 -4px 8px rgba(0,0,0,0.5); border:2px solid rgba(255,255,255,0.25); }
+        .joystick-label { position:absolute; bottom:-28px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.4); font-size:10px; letter-spacing:1px; white-space:nowrap; font-weight:300; text-shadow:0 0 10px rgba(0,0,0,0.8); pointer-events:none; }
+        
+        #status { position:absolute; bottom:400px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.6); font-size:13px; background:rgba(0,0,0,0.4); padding:6px 20px; border-radius:30px; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.05); pointer-events:none; z-index:10; font-family:monospace; }
+        #jumpBtn { position:absolute; bottom:180px; right:40px; width:60px; height:60px; border-radius:50%; background:rgba(60,180,255,0.3); border:2px solid rgba(100,200,255,0.4); color:#88ccff; font-size:24px; cursor:pointer; z-index:15; display:none; align-items:center; justify-content:center; pointer-events:auto; touch-action:manipulation; backdrop-filter:blur(4px); }
+        #jumpBtn:active { transform:scale(0.9); }
+        #jumpBtn.active { display:flex; }
+        
+        #menuToggle { position:absolute; top:20px; left:50%; transform:translateX(-50%); padding:10px 24px; background:rgba(20,30,50,0.7); backdrop-filter:blur(8px); border:1px solid rgba(100,180,255,0.15); border-radius:30px; color:#88ccff; font-size:14px; cursor:pointer; z-index:20; transition:0.2s; display:none; pointer-events:auto; touch-action:manipulation; }
+        #menuToggle:active { transform:translateX(-50%) scale(0.95); }
+        #modeIndicator { position:absolute; top:70px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.3); font-size:12px; background:rgba(0,0,0,0.3); padding:4px 16px; border-radius:20px; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,0.05); pointer-events:none; z-index:10; }
+        #timeIndicator { position:absolute; top:110px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.2); font-size:11px; pointer-events:none; z-index:10; letter-spacing:1px; }
+        #healthBar { position:absolute; top:150px; left:50%; transform:translateX(-50%); width:200px; height:12px; background:rgba(0,0,0,0.5); border-radius:10px; overflow:hidden; z-index:10; pointer-events:none; border:1px solid rgba(255,255,255,0.05); display:none; }
+        #healthBar.active { display:block; }
+        #healthFill { width:100%; height:100%; background:linear-gradient(90deg,#ff4444,#44ff44); transition:width 0.3s; border-radius:10px; }
+        #scoreDisplay { position:absolute; top:170px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.3); font-size:12px; pointer-events:none; z-index:10; display:none; }
+        #scoreDisplay.active { display:block; }
+        #nickDisplay { position:absolute; top:200px; left:50%; transform:translateX(-50%); color:#88ccff; font-size:14px; background:rgba(0,0,0,0.5); padding:4px 16px; border-radius:20px; border:1px solid rgba(100,180,255,0.15); pointer-events:none; z-index:10; display:none; }
+        #nickDisplay.active { display:block; }
+        #avatarPreview { width:32px; height:32px; border-radius:50%; display:inline-block; vertical-align:middle; margin-right:8px; background:#444; }
+        #nickInputModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:500; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+        #nickInputModal.hidden { display:none; }
+        #nickInputModal input { padding:16px 24px; border-radius:16px; border:2px solid rgba(100,180,255,0.3); background:rgba(20,30,50,0.8); color:#c0d8ff; font-size:20px; text-align:center; outline:none; width:80%; max-width:300px; }
+        #nickInputModal input:focus { border-color:rgba(100,200,255,0.6); }
+        #nickInputModal button { margin-top:16px; padding:12px 32px; border:none; border-radius:16px; background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; font-size:18px; font-weight:600; cursor:pointer; transition:0.2s; }
+        #nickInputModal button:active { transform:scale(0.95); }
+        #nickInputModal h2 { color:#88ccff; margin-bottom:16px; }
+        
+        @media (max-width:600px) {
+            #joysticksContainer { padding:0 16px; bottom:25px; }
+            #joystickMove, #joystickRotate { width:90px; height:90px; }
+            .joystick-knob { width:38px; height:38px; }
+            #status { font-size:11px; bottom:320px; padding:4px 14px; }
+            #chatContainer { bottom:150px; max-height:150px; }
+            #chatInput { bottom:120px; }
+            #chatToggle { bottom:90px; }
+            .skin-grid { grid-template-columns:repeat(2,1fr); }
+            #menuContent h1 { font-size:36px; }
+            #jumpBtn { bottom:150px; right:20px; width:50px; height:50px; font-size:20px; }
+            #inventoryDisplay { left:10px; padding:8px; }
+            #sandboxTools { right:10px; gap:6px; }
+            .block-btn { width:40px; height:40px; font-size:16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ГЛАВНОЕ МЕНЮ -->
-    <div id="mainMenu">
-        <div id="menuContent">
-            <h1>🐱 Kotnot_Sandbox</h1>
-            <div class="sub">ИССЛЕДУЙ · СТРОЙ · СРАЖАЙСЯ</div>
-            <div class="version">Версия 0.1</div>
+<div id="nickInputModal">
+    <h2>🐱 Введите никнейм</h2>
+    <input type="text" id="nickInput" placeholder="Ваш ник..." maxlength="20" value="Гость">
+    <button id="nickConfirm">Войти</button>
+</div>
 
-            <button class="menu-btn btn-play" id="btnPlay">
-                <span class="btn-icon">▶</span> ИГРАТЬ
-            </button>
-
-            <button class="menu-btn btn-editor" id="btnEditor">
-                <span class="btn-icon">✏️</span> РЕДАКТОР КАРТ
-            </button>
-
-            <button class="menu-btn btn-skin" id="btnSkin">
-                <span class="btn-icon">👤</span> МАГАЗИН СКИНОВ
-            </button>
-
-            <button class="menu-btn btn-settings" id="btnSettings">
-                <span class="btn-icon">⚙️</span> НАСТРОЙКИ
-            </button>
+<div id="mainMenu">
+    <div id="menuContent">
+        <h1>🐱 Kotnot_Sandbox</h1>
+        <div class="sub">ВЕРСИЯ 0.3 · ИССЛЕДУЙ · СТРОЙ · СРАЖАЙСЯ</div>
+        
+        <div id="serverSelect">
+            <button class="server-btn active" data-server="local">🏠 Локальный</button>
+            <button class="server-btn" data-server="public">🌍 Публичный</button>
         </div>
+        
+        <button class="menu-btn btn-play" id="btnPlay"><span class="btn-icon">▶</span> ИГРАТЬ</button>
+        <button class="menu-btn btn-editor" id="btnEditor"><span class="btn-icon">✏️</span> РЕДАКТОР КАРТ</button>
+        <button class="menu-btn btn-skin" id="btnSkin"><span class="btn-icon">👤</span> МАГАЗИН СКИНОВ</button>
+        <button class="menu-btn btn-settings" id="btnSettings"><span class="btn-icon">⚙️</span> НАСТРОЙКИ</button>
     </div>
+</div>
 
-    <!-- ВЫБОР РЕЖИМА -->
-    <div id="modeSelect">
-        <div id="modeContent">
-            <h2>🎮 ВЫБОР РЕЖИМА</h2>
-            <div class="sub">Выбери свой путь в Kotnot_Sandbox</div>
-
-            <button class="mode-btn" data-mode="pvp">
-                <span class="mode-icon">⚔️</span>
-                <div>
-                    <div>ПВП</div>
-                    <div class="mode-desc">Стреляй по ботам, набирай очки</div>
-                </div>
-            </button>
-
-            <button class="mode-btn" data-mode="sandbox">
-                <span class="mode-icon">🧱</span>
-                <div>
-                    <div>Песочница</div>
-                    <div class="mode-desc">Строй и создавай что хочешь</div>
-                </div>
-            </button>
-
-            <button class="mode-btn" data-mode="explore">
-                <span class="mode-icon">🚶</span>
-                <div>
-                    <div>Исследование</div>
-                    <div class="mode-desc">Свободное перемещение по карте</div>
-                </div>
-            </button>
-
-            <button class="mode-back" id="modeBack">✕ Назад</button>
-        </div>
+<div id="modeSelect">
+    <div id="modeContent">
+        <h2>🎮 ВЫБОР РЕЖИМА</h2>
+        <div class="sub">Выбери свой путь</div>
+        <button class="mode-btn" data-mode="pvp"><span class="mode-icon">⚔️</span><div><div>ПВП</div><div class="mode-desc">Стреляй по ботам, набирай очки</div></div></button>
+        <button class="mode-btn" data-mode="sandbox"><span class="mode-icon">🧱</span><div><div>Песочница</div><div class="mode-desc">Строй и создавай что хочешь</div></div></button>
+        <button class="mode-btn" data-mode="explore"><span class="mode-icon">🚶</span><div><div>Исследование</div><div class="mode-desc">Свободное перемещение по карте</div></div></button>
+        <button class="mode-back" id="modeBack">✕ Назад</button>
     </div>
+</div>
 
-    <!-- РЕДАКТОР КАРТ -->
-    <div id="editorPanel">
-        <div id="editorContent">
-            <h2>✏️ РЕДАКТОР КАРТ</h2>
-            <div class="sub">Создай свою карту в формате .kmap</div>
-
-            <div class="editor-tools">
-                <div class="editor-tool active" data-tool="grass">
-                    <span class="preview" style="background:#4CAF50;"></span> Трава
-                </div>
-                <div class="editor-tool" data-tool="stone">
-                    <span class="preview" style="background:#888;"></span> Камень
-                </div>
-                <div class="editor-tool" data-tool="wood">
-                    <span class="preview" style="background:#8B6A4A;"></span> Дерево
-                </div>
-                <div class="editor-tool" data-tool="diamond">
-                    <span class="preview" style="background:#4FC3F7;"></span> Алмаз
-                </div>
-                <div class="editor-tool" data-tool="gold">
-                    <span class="preview" style="background:#FFD700;"></span> Золото
-                </div>
-                <div class="editor-tool" data-tool="water">
-                    <span class="preview" style="background:#2196F3;"></span> Вода
-                </div>
-                <div class="editor-tool" data-tool="erase">
-                    <span class="preview" style="background:#ff4444;"></span> 🧹 Ластик
-                </div>
-            </div>
-
-            <div class="editor-grid-container">
-                <canvas id="editorCanvas" width="400" height="400"></canvas>
-            </div>
-
-            <div class="editor-actions">
-                <button class="editor-btn btn-save" id="saveMap">💾 Сохранить .kmap</button>
-                <button class="editor-btn btn-load" id="loadMap">📂 Загрузить .kmap</button>
-                <button class="editor-btn btn-clear" id="clearMap">🗑️ Очистить</button>
-                <button class="editor-btn btn-close-editor" id="closeEditor">✕ Закрыть</button>
-            </div>
-            <input type="file" id="fileInput" accept=".kmap">
+<div id="editorPanel">
+    <div id="editorContent">
+        <h2>✏️ РЕДАКТОР КАРТ</h2>
+        <div class="sub">Создай свою карту (20x20) в формате .kmap</div>
+        <div class="editor-tools">
+            <div class="editor-tool active" data-tool="grass"><span class="preview" style="background:#4CAF50;"></span> Трава</div>
+            <div class="editor-tool" data-tool="stone"><span class="preview" style="background:#888;"></span> Камень</div>
+            <div class="editor-tool" data-tool="wood"><span class="preview" style="background:#8B6A4A;"></span> Дерево</div>
+            <div class="editor-tool" data-tool="diamond"><span class="preview" style="background:#4FC3F7;"></span> Алмаз</div>
+            <div class="editor-tool" data-tool="gold"><span class="preview" style="background:#FFD700;"></span> Золото</div>
+            <div class="editor-tool" data-tool="water"><span class="preview" style="background:#2196F3;"></span> Вода</div>
+            <div class="editor-tool" data-tool="erase"><span class="preview" style="background:#ff4444;"></span> 🧹 Ластик</div>
         </div>
+        <div class="editor-grid-container"><canvas id="editorCanvas" width="400" height="400"></canvas></div>
+        <div class="editor-actions">
+            <button class="editor-btn btn-save" id="saveMap">💾 Сохранить .kmap</button>
+            <button class="editor-btn btn-load" id="loadMap">📂 Загрузить .kmap</button>
+            <button class="editor-btn btn-clear" id="clearMap">🗑️ Очистить</button>
+            <button class="editor-btn btn-close-editor" id="closeEditor">✕ Закрыть</button>
+        </div>
+        <input type="file" id="fileInput" accept=".kmap">
     </div>
+</div>
 
-    <!-- МАГАЗИН СКИНОВ -->
-    <div id="skinShop">
-        <div id="skinContent">
-            <h2>👤 МАГАЗИН СКИНОВ</h2>
-            <div class="sub">Выбери свой стиль</div>
-
-            <div class="skin-grid" id="skinGrid">
-                <!-- Скины будут добавлены через JS -->
-            </div>
-
-            <button class="skin-close" id="skinClose">✕ Закрыть магазин</button>
-        </div>
+<div id="skinShop">
+    <div id="skinContent">
+        <h2>👤 МАГАЗИН СКИНОВ</h2>
+        <div class="sub">Выбери свой стиль (1.png, 2.png, 3.png)</div>
+        <div class="skin-grid" id="skinGrid"></div>
+        <button class="skin-close" id="skinClose">✕ Закрыть магазин</button>
     </div>
+</div>
 
-    <!-- НАСТРОЙКИ -->
-    <div id="settingsPanel">
-        <div id="settingsContent">
-            <h2>⚙️ НАСТРОЙКИ</h2>
-            <div class="sub">Настройте игру</div>
-
-            <div class="setting-item">
-                <span>🎮 Инвертировать Y</span>
-                <div class="setting-toggle" id="invertY">
-                    <div class="dot"></div>
-                </div>
-            </div>
-
-            <div class="setting-item">
-                <span>🔊 Звук</span>
-                <div class="setting-toggle active" id="soundToggle">
-                    <div class="dot"></div>
-                </div>
-            </div>
-
-            <div class="setting-item">
-                <span>🤖 Боты в чате</span>
-                <div class="setting-toggle active" id="botToggle">
-                    <div class="dot"></div>
-                </div>
-            </div>
-
-            <div class="setting-item">
-                <span>⚡ Скорость движения</span>
-                <span style="color: #88ccff;" id="speedValue">100%</span>
-            </div>
-
-            <button class="settings-close" id="settingsClose">✕ Закрыть</button>
-        </div>
+<div id="settingsPanel">
+    <div id="settingsContent">
+        <h2>⚙️ НАСТРОЙКИ</h2>
+        <div class="sub">Настройте игру</div>
+        <div class="setting-item"><span>🎮 Инвертировать Y</span><div class="setting-toggle" id="invertY"><div class="dot"></div></div></div>
+        <div class="setting-item"><span>🔊 Звук</span><div class="setting-toggle active" id="soundToggle"><div class="dot"></div></div></div>
+        <div class="setting-item"><span>🤖 Боты в чате</span><div class="setting-toggle active" id="botToggle"><div class="dot"></div></div></div>
+        <div class="setting-item"><span>⚡ Скорость</span><span style="color:#88ccff;" id="speedValue">100%</span></div>
+        <button class="settings-close" id="settingsClose">✕ Закрыть</button>
     </div>
+</div>
 
-    <!-- ИГРОВОЙ ИНТЕРФЕЙС -->
-    <div id="gameUI">
-        <div id="menuToggle">☰ МЕНЮ</div>
-        <div id="modeIndicator">РЕЖИМ: ИССЛЕДОВАНИЕ</div>
-        <div id="timeIndicator">🌞 ДЕНЬ</div>
-        <div id="healthBar"><div id="healthFill"></div></div>
-        <div id="scoreDisplay">🎯 Очки: 0 | 🪙 500</div>
-        <div id="status">📍 Стоим</div>
-
-        <div id="chatContainer"></div>
-        <div id="chatInput">
-            <input type="text" id="chatInputField" placeholder="Введите сообщение..." maxlength="100">
-            <button id="chatSendBtn">➤</button>
-        </div>
-        <button id="chatToggle">💬 Чат</button>
-
-        <!-- Инструменты песочницы -->
-        <div id="sandboxTools">
-            <button class="block-btn active" data-block="stone" style="background: #888;">🪨</button>
-            <button class="block-btn" data-block="wood" style="background: #8B6A4A;">🪵</button>
-            <button class="block-btn" data-block="grass" style="background: #4CAF50;">🌿</button>
-            <button class="block-btn" data-block="diamond" style="background: #4FC3F7;">💎</button>
-            <button class="block-btn" data-block="gold" style="background: #FFD700;">✨</button>
-        </div>
-
-        <div id="joysticksContainer">
-            <div id="joystickMove">
-                <div id="knobMove" class="joystick-knob"></div>
-                <div class="joystick-label">ДВИЖЕНИЕ</div>
-            </div>
-            <div id="joystickRotate">
-                <div id="knobRotate" class="joystick-knob"></div>
-                <div class="joystick-label">ПОВОРОТ</div>
-            </div>
-        </div>
+<div id="gameUI">
+    <div id="menuToggle">☰ МЕНЮ</div>
+    <div id="crosshair"><div id="crosshair-dot"></div><div id="crosshair-reload"></div></div>
+    <div id="modeIndicator">РЕЖИМ: ИССЛЕДОВАНИЕ</div>
+    <div id="timeIndicator">🌞 ДЕНЬ</div>
+    <div id="healthBar"><div id="healthFill"></div></div>
+    <div id="scoreDisplay">🎯 Очки: 0 | 🪙 500</div>
+    <div id="nickDisplay"><span id="avatarPreview"></span><span id="nickNameText"></span></div>
+    <div id="status">📍 Стоим</div>
+    <div id="inventoryDisplay">
+        <div class="inv-item">🪨 <span class="count" id="invStone">0</span></div>
+        <div class="inv-item">🪵 <span class="count" id="invWood">0</span></div>
+        <div class="inv-item">🌿 <span class="count" id="invGrass">0</span></div>
+        <div class="inv-item">💎 <span class="count" id="invDiamond">0</span></div>
+        <div class="inv-item">✨ <span class="count" id="invGold">0</span></div>
     </div>
+    <div id="chatContainer"></div>
+    <div id="chatInput"><input type="text" id="chatInputField" placeholder="Введите сообщение..." maxlength="100"><button id="chatSendBtn">➤</button></div>
+    <button id="chatToggle">💬 Чат</button>
+    <button id="jumpBtn">⬆</button>
+    <div id="sandboxTools">
+        <button class="block-btn active" data-block="stone" style="background:#888;">🪨</button>
+        <button class="block-btn" data-block="wood" style="background:#8B6A4A;">🪵</button>
+        <button class="block-btn" data-block="grass" style="background:#4CAF50;">🌿</button>
+        <button class="block-btn" data-block="diamond" style="background:#4FC3F7;">💎</button>
+        <button class="block-btn" data-block="gold" style="background:#FFD700;">✨</button>
+        <button class="block-btn delete-btn" id="deleteBlockBtn" style="background:rgba(255,50,50,0.3);">🗑️</button>
+    </div>
+    <div id="joysticksContainer">
+        <div id="joystickMove"><div id="knobMove" class="joystick-knob"></div><div class="joystick-label">ДВИЖЕНИЕ</div></div>
+        <div id="joystickRotate"><div id="knobRotate" class="joystick-knob"></div><div class="joystick-label">ПОВОРОТ</div></div>
+    </div>
+</div>
 
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
-            }
-        }
-    </script>
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js"
+    }
+}
+</script>
 
-    <script type="module">
-        import * as THREE from 'three';
+<script type="module">
+import * as THREE from 'three';
 
-        // --- ВЕРСИЯ И НАЗВАНИЕ ---
-        console.log('🐱 Kotnot_Sandbox v0.1');
+// ========== ХРАНИЛИЩЕ ==========
+const Storage = {
+    get(key, def) { 
+        try { 
+            const d = localStorage.getItem('kotnot_'+key); 
+            return d ? JSON.parse(d) : def; 
+        } catch(e) { 
+            return def; 
+        } 
+    },
+    set(key, val) { 
+        try {
+            localStorage.setItem('kotnot_'+key, JSON.stringify(val)); 
+        } catch(e) {}
+    }
+};
 
-        // --- СКИНЫ (3 штуки) ---
-        const skins = [
-            {
-                id: 1,
-                name: '1 скин',
-                icon: '🦸',
-                emoji: '🦸',
-                price: 0,
-                owned: true,
-                color: 0x4a8aff,
-                bg: 'linear-gradient(135deg, #4a8aff, #2a5a9a)'
-            },
-            {
-                id: 2,
-                name: '2 скин',
-                icon: '🔥',
-                emoji: '🔥',
-                price: 100,
-                owned: false,
-                color: 0xff6b4a,
-                bg: 'linear-gradient(135deg, #ff6b4a, #cc3a2a)'
-            },
-            {
-                id: 3,
-                name: '3 скин',
-                icon: '🌙',
-                emoji: '🌙',
-                price: 150,
-                owned: false,
-                color: 0xaa66ff,
-                bg: 'linear-gradient(135deg, #aa66ff, #7a3acc)'
-            }
-        ];
+// ========== НИКНЕЙМ ==========
+let myNick = Storage.get('nick', '');
+const nickModal = document.getElementById('nickInputModal');
+const nickInput = document.getElementById('nickInput');
+const nickConfirm = document.getElementById('nickConfirm');
 
-        let currentSkin = 0;
-        let coins = 500;
+if (myNick && myNick.length > 0) {
+    nickModal.classList.add('hidden');
+    document.getElementById('nickNameText').textContent = myNick;
+} else {
+    nickModal.classList.remove('hidden');
+    nickInput.focus();
+}
 
-        // --- СЦЕНА ---
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x1a2b4a);
-        scene.fog = new THREE.Fog(0x1a2b4a, 30, 70);
+nickConfirm.addEventListener('click', () => {
+    const val = nickInput.value.trim();
+    if (val.length > 0) {
+        myNick = val;
+        Storage.set('nick', myNick);
+        nickModal.classList.add('hidden');
+        document.getElementById('nickNameText').textContent = myNick;
+        addChatMessage('👤 Система', `Добро пожаловать, ${myNick}!`, 0x88ccff);
+        updatePlayerAvatar();
+    }
+});
+nickInput.addEventListener('keydown', e => { if(e.key === 'Enter') nickConfirm.click(); });
 
-        // --- КАМЕРА ---
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 200);
-        camera.position.set(0, 1.8, 10);
-        camera.lookAt(0, 1.8, 0);
+// ========== СКИНЫ ==========
+const SKIN_URLS = ['1.png', '2.png', '3.png'];
+const SKIN_NAMES = ['Классический', 'Огненный', 'Лунный'];
+let skinImages = [];
+let skinLoaded = [false, false, false];
+let currentSkinIndex = Storage.get('currentSkin', 0);
+let coins = Storage.get('coins', 500);
 
-        // --- РЕНДЕРЕР ---
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-        document.body.prepend(renderer.domElement);
-
-        // --- ОСВЕЩЕНИЕ ---
-        const ambient = new THREE.AmbientLight(0x335577, 0.6);
-        scene.add(ambient);
-
-        const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
-        sun.position.set(20, 30, 10);
-        sun.castShadow = true;
-        sun.shadow.mapSize.width = 1024;
-        sun.shadow.mapSize.height = 1024;
-        sun.shadow.camera.near = 0.1;
-        sun.shadow.camera.far = 60;
-        sun.shadow.camera.left = -30;
-        sun.shadow.camera.right = 30;
-        sun.shadow.camera.top = 30;
-        sun.shadow.camera.bottom = -30;
-        scene.add(sun);
-
-        const fill = new THREE.DirectionalLight(0x4488cc, 0.5);
-        fill.position.set(-15, 10, -20);
-        scene.add(fill);
-
-        const back = new THREE.DirectionalLight(0x6699dd, 0.3);
-        back.position.set(0, 5, -25);
-        scene.add(back);
-
-        // --- ПОЛ ---
-        const groundSize = 50;
-        const groundGeo = new THREE.PlaneGeometry(groundSize, groundSize);
-        const groundMat = new THREE.MeshStandardMaterial({
-            color: 0x3a6a4a,
-            roughness: 0.8,
-            metalness: 0.1,
-        });
-        const ground = new THREE.Mesh(groundGeo, groundMat);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -0.01;
-        ground.receiveShadow = true;
-        scene.add(ground);
-
-        // --- СЕТКА ---
-        const gridHelper = new THREE.GridHelper(groundSize, 20, 0x88ddff, 0x446688);
-        gridHelper.position.y = 0;
-        scene.add(gridHelper);
-
-        // --- РАЗМЕТКА ---
-        function createTextCube(color, x, z) {
-            const size = 0.8;
-            const cubeMat = new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0.2, emissive: color, emissiveIntensity: 0.1 });
-            const cube = new THREE.Mesh(new THREE.BoxGeometry(size, size, size), cubeMat);
-            cube.position.set(x, size / 2, z);
-            cube.castShadow = true;
-            cube.receiveShadow = true;
-            scene.add(cube);
-        }
-
-        const letters = [
-            { color: 0xff5555, x: -6, z: -3 },
-            { color: 0xffaa44, x: -4, z: -3 },
-            { color: 0x44ff88, x: -2, z: -3 },
-            { color: 0x44aaff, x: 0, z: -3 },
-            { color: 0xaa66ff, x: 2, z: -3 },
-            { color: 0xff66aa, x: 4, z: -3 },
-            { color: 0x66ffcc, x: 6, z: -3 },
-            { color: 0xffaa66, x: 8, z: -3 },
-        ];
-        letters.forEach(l => createTextCube(l.color, l.x, l.z));
-
-        // Ориентиры
-        const colors = [0xff3333, 0x33ff33, 0x33aaff, 0xffdd33, 0xaa66ff];
-        const positions = [
-            [-8, -8], [8, -8], [8, 8], [-8, 8], [0, 0]
-        ];
-        positions.forEach((pos, i) => {
-            const pillarMat = new THREE.MeshStandardMaterial({ color: 0x888899, roughness: 0.7 });
-            const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 1.5), pillarMat);
-            pillar.position.set(pos[0], 0.75, pos[1]);
-            pillar.castShadow = true;
-            pillar.receiveShadow = true;
-            scene.add(pillar);
-
-            const topMat = new THREE.MeshStandardMaterial({ color: colors[i % colors.length], emissive: colors[i % colors.length], emissiveIntensity: 0.2 });
-            const top = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8), topMat);
-            top.position.set(pos[0], 1.7, pos[1]);
-            top.castShadow = true;
-            top.receiveShadow = true;
-            scene.add(top);
-        });
-
-        // Деревья
-        function addTree(x, z) {
-            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x8b6a4a, roughness: 0.9 });
-            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 1.0), trunkMat);
-            trunk.position.set(x, 0.5, z);
-            trunk.castShadow = true;
-            trunk.receiveShadow = true;
-            scene.add(trunk);
-
-            const leafMat = new THREE.MeshStandardMaterial({ color: 0x3a9a3a, roughness: 0.8 });
-            const leaves = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.2, 6), leafMat);
-            leaves.position.set(x, 1.4, z);
-            leaves.castShadow = true;
-            leaves.receiveShadow = true;
-            scene.add(leaves);
-        }
-        for (let i = 0; i < 20; i++) {
-            const angle = Math.random() * Math.PI * 2;
-            const dist = 5 + Math.random() * 18;
-            const x = Math.cos(angle) * dist;
-            const z = Math.sin(angle) * dist;
-            if (Math.abs(x) < 10 && Math.abs(z) < 10) continue;
-            addTree(x, z);
-        }
-
-        // --- ВРЕМЯ СУТОК ---
-        let timeOfDay = 0;
-        let daySpeed = 0.005;
-        const timeIndicator = document.getElementById('timeIndicator');
-
-        function updateTimeOfDay() {
-            timeOfDay += daySpeed;
-            if (timeOfDay > 24) timeOfDay = 0;
-            let skyColor, lightIntensity;
-            if (timeOfDay < 6 || timeOfDay > 20) {
-                skyColor = new THREE.Color(0x0a0a1a);
-                lightIntensity = 0.1;
-                timeIndicator.textContent = '🌙 НОЧЬ';
-            } else if (timeOfDay < 8 || timeOfDay > 18) {
-                skyColor = new THREE.Color(0x1a2b4a);
-                lightIntensity = 0.4;
-                timeIndicator.textContent = '🌅 РАССВЕТ/ЗАКАТ';
-            } else {
-                skyColor = new THREE.Color(0x4a8aff);
-                lightIntensity = 1.0;
-                timeIndicator.textContent = '☀️ ДЕНЬ';
-            }
-            scene.background = skyColor;
-            scene.fog.color = skyColor;
-            sun.intensity = lightIntensity;
-        }
-
-        // --- БОТЫ ---
-        const botNames = ['🧙 Маг', '⚔️ Воин', '🏹 Лучник', '🛡️ Защитник', '💀 Некромант', '🔥 Пиромант'];
-        const botColors = [0xff5555, 0x55ff55, 0x5555ff, 0xffaa55, 0xff55ff, 0x55ffff];
-        const bots = [];
-        let botHealth = [];
-        const chatContainer = document.getElementById('chatContainer');
-        let botChatEnabled = true;
-        let score = 0;
-
-        function createBots() {
-            bots.forEach(b => { scene.remove(b.body); scene.remove(b.hat); scene.remove(b.sprite); });
-            bots.length = 0;
-            botHealth = [];
-            
-            const count = currentMode === 'pvp' ? 6 : 4;
-            for (let i = 0; i < count; i++) {
-                const name = botNames[i % botNames.length];
-                const color = botColors[i % botColors.length];
-                const angle = (i / count) * Math.PI * 2;
-                const dist = 5 + Math.random() * 8;
-                const x = Math.cos(angle) * dist;
-                const z = Math.sin(angle) * dist;
-                
-                const bodyMat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.1, roughness: 0.3 });
-                const body = new THREE.Mesh(new THREE.SphereGeometry(0.4, 8, 8), bodyMat);
-                body.position.set(x, 0.5, z);
-                body.castShadow = true;
-                scene.add(body);
-
-                const hatMat = new THREE.MeshStandardMaterial({ color: 0xccaa88, roughness: 0.7 });
-                const hat = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.5, 6), hatMat);
-                hat.position.set(x, 0.9, z);
-                hat.castShadow = true;
-                scene.add(hat);
-
+function loadSkins() {
+    return new Promise((resolve) => {
+        let loaded = 0;
+        SKIN_URLS.forEach((url, index) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                skinImages[index] = img;
+                skinLoaded[index] = true;
+                loaded++;
+                if (loaded === SKIN_URLS.length) resolve();
+            };
+            img.onerror = function() {
                 const canvas = document.createElement('canvas');
-                canvas.width = 256;
-                canvas.height = 64;
+                canvas.width = 64; canvas.height = 64;
                 const ctx = canvas.getContext('2d');
-                ctx.fillStyle = 'rgba(0,0,0,0.5)';
-                ctx.fillRect(10, 10, 236, 44);
-                ctx.font = 'bold 28px Segoe UI, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(name, 128, 38);
+                const colors = ['#4a8aff', '#ff6b4a', '#aa66ff'];
+                ctx.fillStyle = colors[index];
+                ctx.beginPath(); ctx.arc(32,32,28,0,Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 32px sans-serif';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText((index+1).toString(), 32, 34);
+                const img2 = new Image();
+                img2.src = canvas.toDataURL('image/png');
+                img2.onload = function() {
+                    skinImages[index] = img2;
+                    skinLoaded[index] = true;
+                    loaded++;
+                    if (loaded === SKIN_URLS.length) resolve();
+                };
+            };
+            img.src = url;
+        });
+    });
+}
 
-                const texture = new THREE.CanvasTexture(canvas);
-                const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false });
-                const sprite = new THREE.Sprite(spriteMat);
-                sprite.position.set(x, 1.4, z);
-                sprite.scale.set(2, 0.5, 1);
-                scene.add(sprite);
+function getSkinDataURL(index) {
+    if (skinLoaded[index] && skinImages[index]) {
+        return skinImages[index].src;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = 64; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const colors = ['#4a8aff', '#ff6b4a', '#aa66ff'];
+    ctx.fillStyle = colors[index];
+    ctx.beginPath(); ctx.arc(32,32,28,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 32px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText((index+1).toString(), 32, 34);
+    return canvas.toDataURL('image/png');
+}
 
-                bots.push({
-                    name, color, body, hat, sprite,
-                    x, z, targetX: x, targetZ: z,
-                    speed: 0.02 + Math.random() * 0.03,
-                    messageTimer: 0,
-                    messageInterval: 200 + Math.random() * 300,
-                    lastMessage: '',
-                    alive: true
-                });
-                botHealth.push(100);
+// ========== ВЫБОР СЕРВЕРА ==========
+let currentServer = Storage.get('server', 'local');
+document.querySelectorAll('.server-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.server === currentServer);
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.server-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentServer = btn.dataset.server;
+        Storage.set('server', currentServer);
+        addChatMessage('🌐 Система', `Сервер: ${currentServer === 'local' ? 'Локальный' : 'Публичный'}`, 0x88ccff);
+    });
+});
+
+// ========== THREE.JS СЦЕНА ==========
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a2b4a);
+scene.fog = new THREE.Fog(0x1a2b4a, 30, 70);
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.1, 200);
+camera.position.set(0,1.8,10);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+document.body.prepend(renderer.domElement);
+
+// ========== ОСВЕЩЕНИЕ ==========
+const ambient = new THREE.AmbientLight(0x335577, 0.6); scene.add(ambient);
+const sun = new THREE.DirectionalLight(0xffeedd, 1.2);
+sun.position.set(20,30,10); sun.castShadow = true;
+sun.shadow.mapSize.width = 1024; sun.shadow.mapSize.height = 1024;
+sun.shadow.camera.near = 0.1; sun.shadow.camera.far = 60;
+sun.shadow.camera.left = -30; sun.shadow.camera.right = 30;
+sun.shadow.camera.top = 30; sun.shadow.camera.bottom = -30;
+scene.add(sun);
+const fill = new THREE.DirectionalLight(0x4488cc, 0.5); fill.position.set(-15,10,-20); scene.add(fill);
+const back = new THREE.DirectionalLight(0x6699dd, 0.3); back.position.set(0,5,-25); scene.add(back);
+
+// ========== ПОЛ ==========
+const groundSize = 50;
+const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(groundSize, groundSize),
+    new THREE.MeshStandardMaterial({ color:0x3a6a4a, roughness:0.8, metalness:0.1 })
+);
+ground.rotation.x = -Math.PI/2; ground.position.y = -0.01; ground.receiveShadow = true;
+scene.add(ground);
+const gridHelper = new THREE.GridHelper(groundSize, 20, 0x88ddff, 0x446688);
+gridHelper.position.y = 0; scene.add(gridHelper);
+
+// ========== ИГРОВЫЕ ПЕРЕМЕННЫЕ ==========
+let currentMode = 'explore';
+let health = 100;
+let score = 0;
+let bullets = [];
+let placedBlocks = [];
+let selectedBlock = 'stone';
+let shootCooldown = 0;
+let botChatEnabled = true;
+let invertY = false;
+let speedMultiplier = 1.0;
+let moveX = 0, moveZ = 0, rotateX = 0;
+let timeOfDay = 0;
+const daySpeed = 0.005;
+let isDeleteMode = false;
+let loadedMapData = null;
+let isJumping = false;
+let jumpVelocity = 0;
+const GRAVITY = 0.015;
+const JUMP_FORCE = 0.25;
+
+// Инвентарь
+let inventory = {
+    stone: 100,
+    wood: 100,
+    grass: 50,
+    diamond: 20,
+    gold: 10
+};
+
+const chatContainer = document.getElementById('chatContainer');
+const healthFill = document.getElementById('healthFill');
+const healthBar = document.getElementById('healthBar');
+const scoreDisplay = document.getElementById('scoreDisplay');
+const nickDisplay = document.getElementById('nickDisplay');
+const nickNameText = document.getElementById('nickNameText');
+const avatarPreview = document.getElementById('avatarPreview');
+const statusDiv = document.getElementById('status');
+const modeIndicator = document.getElementById('modeIndicator');
+const sandboxTools = document.getElementById('sandboxTools');
+const menuToggle = document.getElementById('menuToggle');
+const gameUI = document.getElementById('gameUI');
+const mainMenu = document.getElementById('mainMenu');
+const modeSelect = document.getElementById('modeSelect');
+const timeIndicator = document.getElementById('timeIndicator');
+const jumpBtn = document.getElementById('jumpBtn');
+
+// ========== АВАТАРКА ИГРОКА ==========
+function updatePlayerAvatar() {
+    const url = getSkinDataURL(currentSkinIndex);
+    avatarPreview.innerHTML = `<img src="${url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">`;
+    nickNameText.textContent = myNick;
+}
+
+// ========== СОЗДАНИЕ ТЕКСТУРЫ ДЛЯ БОТА ==========
+function createBotSprite(name, skinIndex) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256; canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.onload = function() {
+        ctx.drawImage(img, 8, 4, 56, 56);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 20px sans-serif';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+        ctx.fillText(name, 72, 56);
+    };
+    img.src = getSkinDataURL(skinIndex % SKIN_URLS.length);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath();
+    ctx.roundRect(10,10,236,44,10);
+    ctx.fill();
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(name, 128, 38);
+    const texture = new THREE.CanvasTexture(canvas);
+    const spriteMat = new THREE.SpriteMaterial({ map:texture, transparent:true, depthTest:false });
+    return new THREE.Sprite(spriteMat);
+}
+
+// ========== БОТЫ ==========
+const botNames = ['🧙 Маг','⚔️ Воин','🏹 Лучник','🛡️ Защитник','💀 Некромант','🔥 Пиромант'];
+const botColors = [0xff5555,0x55ff55,0x5555ff,0xffaa55,0xff55ff,0x55ffff];
+let bots = [];
+
+function createBots() {
+    bots.forEach(b => { 
+        if(b.body) scene.remove(b.body); 
+        if(b.hat) scene.remove(b.hat); 
+        if(b.sprite) scene.remove(b.sprite); 
+    });
+    bots = []; 
+    const count = currentMode === 'pvp' ? 6 : 4;
+    for (let i = 0; i < count; i++) {
+        const name = botNames[i % botNames.length];
+        const color = botColors[i % botColors.length];
+        const skinIdx = i % SKIN_URLS.length;
+        const angle = (i/count)*Math.PI*2;
+        const dist = 5 + Math.random() * 8;
+        const x = Math.cos(angle)*dist, z = Math.sin(angle)*dist;
+        const body = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4,8,8), 
+            new THREE.MeshStandardMaterial({ color, emissive:color, emissiveIntensity:0.1, roughness:0.3 })
+        );
+        body.position.set(x,0.5,z); body.castShadow = true; scene.add(body);
+        const hat = new THREE.Mesh(
+            new THREE.ConeGeometry(0.3,0.5,6), 
+            new THREE.MeshStandardMaterial({ color:0xccaa88, roughness:0.7 })
+        );
+        hat.position.set(x,0.9,z); hat.castShadow = true; scene.add(hat);
+        const sprite = createBotSprite(name, skinIdx);
+        sprite.position.set(x,1.4,z); sprite.scale.set(2,0.5,1);
+        scene.add(sprite);
+        bots.push({
+            name, color, body, hat, sprite,
+            x, z, targetX: x, targetZ: z,
+            speed: 0.02 + Math.random() * 0.03,
+            messageTimer: 0,
+            messageInterval: 200 + Math.random() * 300,
+            alive: true,
+            health: 100,
+            fleeTimer: 0,
+            jumpTimer: Math.random() * 100,
+            isJumping: false,
+            jumpVelocity: 0,
+            skinIndex: skinIdx
+        });
+    }
+}
+
+function addChatMessage(name, text, color) {
+    const msg = document.createElement('div');
+    msg.className = 'chat-message';
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'name';
+    nameSpan.style.color = `#${color.toString(16).padStart(6,'0')}`;
+    nameSpan.textContent = name + ':';
+    const textSpan = document.createElement('span');
+    textSpan.className = 'text';
+    textSpan.textContent = text;
+    msg.appendChild(nameSpan); msg.appendChild(textSpan);
+    chatContainer.appendChild(msg);
+    while(chatContainer.children.length > 20) chatContainer.removeChild(chatContainer.firstChild);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function updateBots() {
+    const limit = 22;
+    bots.forEach((bot) => {
+        if (!bot.alive) return;
+        if (bot.jumpTimer > 80 + Math.random() * 120 && !bot.isJumping) {
+            bot.isJumping = true;
+            bot.jumpVelocity = 0.2;
+            bot.jumpTimer = 0;
+        }
+        bot.jumpTimer++;
+        if (bot.isJumping) {
+            bot.body.position.y += bot.jumpVelocity;
+            bot.hat.position.y += bot.jumpVelocity;
+            bot.jumpVelocity -= 0.01;
+            if (bot.body.position.y <= 0.5) {
+                bot.body.position.y = 0.5;
+                bot.hat.position.y = 0.9;
+                bot.isJumping = false;
+                bot.jumpVelocity = 0;
             }
         }
-
-        function addChatMessage(name, text, color) {
-            const msg = document.createElement('div');
-            msg.className = 'chat-message';
-            const nameSpan = document.createElement('span');
-            nameSpan.className = 'name';
-            nameSpan.style.color = `#${color.toString(16).padStart(6, '0')}`;
-            nameSpan.textContent = name + ':';
-            const textSpan = document.createElement('span');
-            textSpan.className = 'text';
-            textSpan.textContent = text;
-            msg.appendChild(nameSpan);
-            msg.appendChild(textSpan);
-            chatContainer.appendChild(msg);
-            while (chatContainer.children.length > 20) chatContainer.removeChild(chatContainer.firstChild);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+        if (bot.health < 30 && bot.fleeTimer <= 0) {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 5 + Math.random() * 10;
+            bot.targetX = bot.x + Math.cos(angle) * dist;
+            bot.targetZ = bot.z + Math.sin(angle) * dist;
+            bot.fleeTimer = 100;
         }
-
-        function updateBots() {
-            const limit = 22;
-            bots.forEach((bot, index) => {
-                if (!bot.alive) return;
-                const dx = bot.targetX - bot.x;
-                const dz = bot.targetZ - bot.z;
-                const dist = Math.sqrt(dx*dx + dz*dz);
-                if (dist > 0.1) {
-                    bot.x += (dx / dist) * bot.speed;
-                    bot.z += (dz / dist) * bot.speed;
-                } else {
-                    const angle = Math.random() * Math.PI * 2;
-                    const dist2 = 3 + Math.random() * 15;
-                    let newX = Math.cos(angle) * dist2;
-                    let newZ = Math.sin(angle) * dist2;
-                    if (Math.abs(newX) > limit) newX = (newX > 0 ? 1 : -1) * limit * 0.8;
-                    if (Math.abs(newZ) > limit) newZ = (newZ > 0 ? 1 : -1) * limit * 0.8;
-                    bot.targetX = newX;
-                    bot.targetZ = newZ;
-                }
-                bot.body.position.set(bot.x, 0.5, bot.z);
-                bot.hat.position.set(bot.x, 0.9, bot.z);
-                bot.sprite.position.set(bot.x, 1.4, bot.z);
-                bot.messageTimer++;
-                if (bot.messageTimer > bot.messageInterval && botChatEnabled) {
-                    bot.messageTimer = 0;
-                    bot.messageInterval = 300 + Math.random() * 400;
-                    const messages = ['Привет!', 'Как дела?', 'Иду исследовать!', 'Красиво тут!', 'Всем пока!'];
-                    addChatMessage(bot.name, messages[Math.floor(Math.random() * messages.length)], bot.color);
-                }
-            });
+        if (bot.fleeTimer > 0) bot.fleeTimer--;
+        const dx = bot.targetX - bot.x;
+        const dz = bot.targetZ - bot.z;
+        const dist = Math.sqrt(dx*dx+dz*dz);
+        if (dist > 0.1) {
+            bot.x += (dx/dist) * bot.speed;
+            bot.z += (dz/dist) * bot.speed;
+        } else {
+            const angle = Math.random() * Math.PI * 2;
+            let d2 = 3 + Math.random() * 15;
+            let nx = Math.cos(angle)*d2, nz = Math.sin(angle)*d2;
+            if (Math.abs(nx)>limit) nx = (nx>0?1:-1)*limit*0.8;
+            if (Math.abs(nz)>limit) nz = (nz>0?1:-1)*limit*0.8;
+            bot.targetX = nx; bot.targetZ = nz;
         }
-
-        // --- ПВП: СТРЕЛЬБА ---
-        let bullets = [];
-        let shootCooldown = 0;
-        let currentMode = 'explore';
-        let health = 100;
-        const healthFill = document.getElementById('healthFill');
-        const healthBar = document.getElementById('healthBar');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-
-        function shootBullet() {
-            if (currentMode !== 'pvp' || shootCooldown > 0) return;
-            shootCooldown = 20;
-
-            const bulletMat = new THREE.MeshStandardMaterial({ 
-                color: 0xff4444, 
-                emissive: 0xff4444, 
-                emissiveIntensity: 0.5 
-            });
-            const bullet = new THREE.Mesh(new THREE.SphereGeometry(0.1, 4, 4), bulletMat);
-            
-            const forward = new THREE.Vector3(0, 0, -1);
-            forward.applyQuaternion(camera.quaternion);
-            forward.y = 0;
-            forward.normalize();
-            
-            bullet.position.copy(camera.position);
-            bullet.position.y = 1.5;
+        bot.body.position.x = bot.x;
+        bot.body.position.z = bot.z;
+        bot.hat.position.x = bot.x;
+        bot.hat.position.z = bot.z;
+        bot.sprite.position.x = bot.x;
+        bot.sprite.position.z = bot.z;
+        bot.messageTimer++;
+        if (bot.messageTimer > bot.messageInterval && botChatEnabled) {
+            bot.messageTimer = 0;
+            bot.messageInterval = 300 + Math.random() * 400;
+            const msgs = ['Привет!','Как дела?','Иду исследовать!','Красиво тут!','Всем пока!','Ого!','Круто!'];
+            addChatMessage(bot.name, msgs[Math.floor(Math.random()*msgs.length)], bot.color);
+        }
+        if (currentMode === 'pvp' && Math.random() < 0.005) {
+            const dir = new THREE.Vector3(0,0,-1);
+            const q = new THREE.Quaternion();
+            const angle2 = Math.atan2(camera.position.x - bot.x, camera.position.z - bot.z);
+            q.setFromAxisAngle(new THREE.Vector3(0,1,0), angle2);
+            dir.applyQuaternion(q);
+            const bullet = new THREE.Mesh(
+                new THREE.SphereGeometry(0.08,4,4),
+                new THREE.MeshStandardMaterial({ color:0xff8844, emissive:0xff4400, emissiveIntensity:0.3 })
+            );
+            bullet.position.set(bot.x, 1.2, bot.z);
             scene.add(bullet);
-
-            bullets.push({
-                mesh: bullet,
-                direction: forward,
-                speed: 0.3,
-                distance: 0,
-                maxDistance: 30
-            });
-
-            addChatMessage('🎯 Вы', 'Выстрел!', 0xff4444);
+            bullets.push({ mesh:bullet, direction:dir, speed:0.2, distance:0, maxDistance:25, isBot:true });
         }
+        if (currentMode === 'sandbox' && Math.random() < 0.002) {
+            const action = Math.random();
+            if (action < 0.5) {
+                const blockColors = { stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 };
+                const types = ['stone', 'wood', 'grass', 'diamond', 'gold'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                const block = new THREE.Mesh(
+                    new THREE.BoxGeometry(0.5,0.5,0.5),
+                    new THREE.MeshStandardMaterial({ color:blockColors[type], roughness:0.7, metalness:0.1 })
+                );
+                const bx = Math.round((bot.x + (Math.random()-0.5)*3)/0.5)*0.5;
+                const bz = Math.round((bot.z + (Math.random()-0.5)*3)/0.5)*0.5;
+                block.position.set(bx,0.25,bz);
+                block.castShadow = true; block.receiveShadow = true;
+                scene.add(block);
+                placedBlocks.push(block);
+            } else {
+                if (placedBlocks.length > 0) {
+                    const idx = Math.floor(Math.random() * placedBlocks.length);
+                    scene.remove(placedBlocks[idx]);
+                    placedBlocks.splice(idx, 1);
+                }
+            }
+        }
+    });
+}
 
-        function updateBullets() {
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                const b = bullets[i];
-                b.mesh.position.add(b.direction.clone().multiplyScalar(b.speed));
-                b.distance += b.speed;
+// ========== СТРЕЛЬБА ==========
+function shootBullet() {
+    if (currentMode !== 'pvp' || shootCooldown > 0) return;
+    shootCooldown = 20;
+    const bullet = new THREE.Mesh(
+        new THREE.SphereGeometry(0.1,4,4),
+        new THREE.MeshStandardMaterial({ color:0xff4444, emissive:0xff4444, emissiveIntensity:0.5 })
+    );
+    const forward = new THREE.Vector3(0,0,-1);
+    forward.applyQuaternion(camera.quaternion);
+    forward.y = 0; forward.normalize();
+    bullet.position.copy(camera.position);
+    bullet.position.y = 1.5;
+    scene.add(bullet);
+    bullets.push({ mesh:bullet, direction:forward, speed:0.3, distance:0, maxDistance:30, isBot:false });
+}
 
-                let hit = false;
-                bots.forEach((bot, index) => {
-                    if (!bot.alive || hit) return;
-                    const dx = b.mesh.position.x - bot.x;
-                    const dz = b.mesh.position.z - bot.z;
-                    if (Math.sqrt(dx*dx + dz*dz) < 0.8) {
+function updateBullets() {
+    for (let i = bullets.length-1; i >= 0; i--) {
+        const b = bullets[i];
+        b.mesh.position.add(b.direction.clone().multiplyScalar(b.speed));
+        b.distance += b.speed;
+        let hit = false;
+        if (!b.isBot) {
+            for (let idx = 0; idx < bots.length; idx++) {
+                const bot = bots[idx];
+                if (!bot.alive || hit) continue;
+                const dx = b.mesh.position.x - bot.x;
+                const dz = b.mesh.position.z - bot.z;
+                if (Math.sqrt(dx*dx+dz*dz) < 0.8) {
+                    bot.health -= 40;
+                    if (bot.health <= 0) {
                         bot.alive = false;
-                        scene.remove(bot.body);
-                        scene.remove(bot.hat);
-                        scene.remove(bot.sprite);
-                        score += 10;
-                        coins += 5;
+                        scene.remove(bot.body); scene.remove(bot.hat); scene.remove(bot.sprite);
+                        score += 10; coins += 5;
                         updateScore();
                         addChatMessage('💀 Система', `${bot.name} убит! +10 очков, +5 монет`, 0xff3333);
-                        hit = true;
                         setTimeout(() => {
                             if (currentMode === 'pvp') {
                                 bot.alive = true;
-                                const angle = Math.random() * Math.PI * 2;
-                                const dist = 3 + Math.random() * 10;
-                                bot.x = Math.cos(angle) * dist;
-                                bot.z = Math.sin(angle) * dist;
-                                bot.body.position.set(bot.x, 0.5, bot.z);
-                                bot.hat.position.set(bot.x, 0.9, bot.z);
-                                bot.sprite.position.set(bot.x, 1.4, bot.z);
-                                scene.add(bot.body);
-                                scene.add(bot.hat);
-                                scene.add(bot.sprite);
-                                botHealth[index] = 100;
+                                bot.health = 100;
+                                const a = Math.random()*Math.PI*2;
+                                const d = 3+Math.random()*10;
+                                bot.x = Math.cos(a)*d; bot.z = Math.sin(a)*d;
+                                bot.body.position.set(bot.x,0.5,bot.z);
+                                bot.hat.position.set(bot.x,0.9,bot.z);
+                                bot.sprite.position.set(bot.x,1.4,bot.z);
+                                scene.add(bot.body); scene.add(bot.hat); scene.add(bot.sprite);
                                 addChatMessage('🔄 Система', `${bot.name} воскрес!`, 0x44ff88);
                             }
-                        }, 3000);
+                        }, 5000);
+                    } else {
+                        addChatMessage('💥 Система', `${bot.name} ранен! (${bot.health} HP)`, 0xffaa44);
                     }
-                });
-
-                if (hit) {
-                    scene.remove(b.mesh);
-                    bullets.splice(i, 1);
-                    continue;
-                }
-
-                if (b.distance > b.maxDistance) {
-                    scene.remove(b.mesh);
-                    bullets.splice(i, 1);
+                    hit = true;
+                    break;
                 }
             }
-            if (shootCooldown > 0) shootCooldown--;
-        }
-
-        function updateScore() {
-            scoreDisplay.textContent = `🎯 Очки: ${score} | 🪙 ${coins}`;
-        }
-
-        function updateHealth() {
-            const percent = Math.max(0, health);
-            healthFill.style.width = percent + '%';
-            if (percent < 30) {
-                healthFill.style.background = 'linear-gradient(90deg, #ff0000, #ff4444)';
-            } else if (percent < 60) {
-                healthFill.style.background = 'linear-gradient(90deg, #ffaa00, #ffdd00)';
-            } else {
-                healthFill.style.background = 'linear-gradient(90deg, #44ff44, #00ff88)';
+        } else {
+            const dx = b.mesh.position.x - camera.position.x;
+            const dz = b.mesh.position.z - camera.position.z;
+            if (Math.sqrt(dx*dx+dz*dz) < 0.8) {
+                health -= 10;
+                updateHealth();
+                if (health <= 0) {
+                    health = 0;
+                    addChatMessage('💀 Система', 'Вы погибли! Возрождение...', 0xff0000);
+                    setTimeout(() => { health = 100; updateHealth(); addChatMessage('🔄 Система', 'Вы воскресли!', 0x44ff88); }, 3000);
+                }
+                hit = true;
             }
         }
+        if (hit) { scene.remove(b.mesh); bullets.splice(i,1); continue; }
+        if (b.distance > b.maxDistance) { scene.remove(b.mesh); bullets.splice(i,1); }
+    }
+    if (shootCooldown > 0) shootCooldown--;
+}
 
-        // --- ПЕСОЧНИЦА: БЛОКИ ---
-        let selectedBlock = 'stone';
-        let placedBlocks = [];
-        const blockColors = {
-            stone: 0x888888,
-            wood: 0x8B6A4A,
-            grass: 0x4CAF50,
-            diamond: 0x4FC3F7,
-            gold: 0xFFD700
-        };
+function updateScore() {
+    scoreDisplay.textContent = `🎯 Очки: ${score} | 🪙 ${coins}`;
+    Storage.set('coins', coins);
+}
 
-        function placeBlock() {
-            if (currentMode !== 'sandbox') return;
+function updateHealth() {
+    const percent = Math.max(0, health);
+    healthFill.style.width = percent + '%';
+    if (percent < 30) healthFill.style.background = 'linear-gradient(90deg,#ff0000,#ff4444)';
+    else if (percent < 60) healthFill.style.background = 'linear-gradient(90deg,#ffaa00,#ffdd00)';
+    else healthFill.style.background = 'linear-gradient(90deg,#44ff44,#00ff88)';
+}
 
-            const forward = new THREE.Vector3(0, 0, -1);
-            forward.applyQuaternion(camera.quaternion);
-            forward.y = 0;
-            forward.normalize();
+function updateTimeOfDay() {
+    timeOfDay += daySpeed;
+    if (timeOfDay > 24) timeOfDay = 0;
+    let skyColor, lightIntensity;
+    if (timeOfDay < 6 || timeOfDay > 20) { 
+        skyColor = new THREE.Color(0x0a0a1a); lightIntensity = 0.1; 
+        timeIndicator.textContent = '🌙 НОЧЬ'; 
+    } else if (timeOfDay < 8 || timeOfDay > 18) { 
+        skyColor = new THREE.Color(0x1a2b4a); lightIntensity = 0.4; 
+        timeIndicator.textContent = '🌅 РАССВЕТ/ЗАКАТ'; 
+    } else { 
+        skyColor = new THREE.Color(0x4a8aff); lightIntensity = 1.0; 
+        timeIndicator.textContent = '☀️ ДЕНЬ'; 
+    }
+    scene.background = skyColor; scene.fog.color = skyColor; sun.intensity = lightIntensity;
+}
 
-            const pos = camera.position.clone().add(forward.multiplyScalar(2));
-            pos.y = 0.5;
-            pos.x = Math.round(pos.x / 0.5) * 0.5;
-            pos.z = Math.round(pos.z / 0.5) * 0.5;
+function updateInventory() {
+    document.getElementById('invStone').textContent = inventory.stone;
+    document.getElementById('invWood').textContent = inventory.wood;
+    document.getElementById('invGrass').textContent = inventory.grass;
+    document.getElementById('invDiamond').textContent = inventory.diamond;
+    document.getElementById('invGold').textContent = inventory.gold;
+}
 
-            const blockMat = new THREE.MeshStandardMaterial({ 
-                color: blockColors[selectedBlock] || 0x888888,
-                roughness: 0.7,
-                metalness: 0.1
-            });
-            const block = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), blockMat);
-            block.position.set(pos.x, 0.25, pos.z);
-            block.castShadow = true;
-            block.receiveShadow = true;
+function placeBlock() {
+    if (currentMode !== 'sandbox' || isDeleteMode) return;
+    const blockType = selectedBlock;
+    if (inventory[blockType] <= 0) {
+        addChatMessage('❌ Система', `Нет блоков ${blockType}!`, 0xff4444);
+        return;
+    }
+    const forward = new THREE.Vector3(0,0,-1);
+    forward.applyQuaternion(camera.quaternion);
+    forward.y = 0; forward.normalize();
+    const pos = camera.position.clone().add(forward.multiplyScalar(2));
+    pos.y = 0.5;
+    pos.x = Math.round(pos.x/0.5)*0.5;
+    pos.z = Math.round(pos.z/0.5)*0.5;
+    const colors = { stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 };
+    const block = new THREE.Mesh(
+        new THREE.BoxGeometry(0.5,0.5,0.5),
+        new THREE.MeshStandardMaterial({ color:colors[blockType]||0x888888, roughness:0.7, metalness:0.1 })
+    );
+    block.position.set(pos.x,0.25,pos.z);
+    block.castShadow = true; block.receiveShadow = true;
+    scene.add(block);
+    placedBlocks.push(block);
+    inventory[blockType]--;
+    updateInventory();
+}
+
+function deleteBlock() {
+    if (currentMode !== 'sandbox' || !isDeleteMode) return;
+    const forward = new THREE.Vector3(0,0,-1);
+    forward.applyQuaternion(camera.quaternion);
+    forward.y = 0; forward.normalize();
+    const pos = camera.position.clone().add(forward.multiplyScalar(2));
+    const bx = Math.round(pos.x/0.5)*0.5;
+    const bz = Math.round(pos.z/0.5)*0.5;
+    for (let i = placedBlocks.length - 1; i >= 0; i--) {
+        const block = placedBlocks[i];
+        if (Math.abs(block.position.x - bx) < 0.1 && Math.abs(block.position.z - bz) < 0.1) {
+            scene.remove(block);
+            placedBlocks.splice(i, 1);
+            // Возвращаем блок в инвентарь
+            const type = Object.keys({ stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 }).find(k => 
+                block.material.color.getHex() === { stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 }[k]
+            );
+            if (type && inventory[type] !== undefined) {
+                inventory[type]++;
+                updateInventory();
+            }
+            addChatMessage('🗑️ Система', 'Блок удалён!', 0xff4444);
+            return;
+        }
+    }
+}
+
+// ========== ЗАГРУЗКА КАРТЫ ==========
+function loadMapData(mapData) {
+    placedBlocks.forEach(b => scene.remove(b));
+    placedBlocks = [];
+    if (!mapData || !mapData.grid) return;
+    const grid = mapData.grid;
+    const size = mapData.gridSize || 20;
+    const blockColors = { 
+        grass:0x4CAF50, stone:0x888888, wood:0x8B6A4A, 
+        diamond:0x4FC3F7, gold:0xFFD700, water:0x2196F3 
+    };
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            const type = grid[y]?.[x] || 'grass';
+            if (type === 'grass') continue;
+            const color = blockColors[type] || 0x888888;
+            const block = new THREE.Mesh(
+                new THREE.BoxGeometry(0.5,0.5,0.5),
+                new THREE.MeshStandardMaterial({ color, roughness:0.7, metalness:0.1 })
+            );
+            const wx = (x - size/2) * 0.5;
+            const wz = (y - size/2) * 0.5;
+            block.position.set(wx, 0.25, wz);
+            block.castShadow = true; block.receiveShadow = true;
             scene.add(block);
             placedBlocks.push(block);
-            addChatMessage('🧱 Система', 'Блок поставлен!', 0x44ff88);
         }
+    }
+    addChatMessage('📂 Система', `Карта загружена! (${placedBlocks.length} блоков)`, 0x44ff88);
+}
 
-        // --- УПРАВЛЕНИЕ ДЖОЙСТИКАМИ ---
-        let moveX = 0, moveZ = 0, rotateX = 0, invertY = false;
-        let speedMultiplier = 1.0;
-        const moveZone = document.getElementById('joystickMove');
-        const rotateZone = document.getElementById('joystickRotate');
-        const knobMove = document.getElementById('knobMove');
-        const knobRotate = document.getElementById('knobRotate');
-        const statusDiv = document.getElementById('status');
+// ========== ДЖОЙСТИКИ ==========
+function setupJoystick(zone, knob, onUpdate, maxDist=45) {
+    let isDragging = false, center={x:0,y:0};
+    function start(cx,cy) {
+        const rect = zone.getBoundingClientRect();
+        center = { x:rect.left+rect.width/2, y:rect.top+rect.height/2 };
+        isDragging = true; move(cx,cy);
+    }
+    function move(cx,cy) {
+        if(!isDragging) return;
+        const dx = cx-center.x, dy = cy-center.y;
+        const dist = Math.sqrt(dx*dx+dy*dy);
+        let cd=dx, cd2=dy;
+        if(dist>maxDist){ cd=(dx/dist)*maxDist; cd2=(dy/dist)*maxDist; }
+        const nx=cd/maxDist, ny=-cd2/maxDist;
+        knob.style.transform = `translate(${cd}px,${cd2}px)`;
+        onUpdate(nx,ny);
+    }
+    function end(){ 
+        if(isDragging){ isDragging=false; knob.style.transform='translate(0px,0px)'; onUpdate(0,0); } 
+    }
+    zone.addEventListener('mousedown', e=>{ e.preventDefault(); start(e.clientX,e.clientY); });
+    window.addEventListener('mousemove', e=>{ if(isDragging){ e.preventDefault(); move(e.clientX,e.clientY); } });
+    window.addEventListener('mouseup', end);
+    zone.addEventListener('touchstart', e=>{ const t=e.touches[0]; if(t) start(t.clientX,t.clientY); }, {passive:true});
+    window.addEventListener('touchmove', e=>{ if(isDragging){ const t=e.touches[0]; if(t) move(t.clientX,t.clientY); } }, {passive:true});
+    window.addEventListener('touchend', end, {passive:true});
+    window.addEventListener('touchcancel', end, {passive:true});
+}
 
-        function setupJoystick(zone, knob, onUpdate, maxDist = 45) {
-            let isDragging = false, center = { x: 0, y: 0 };
-            function start(cx, cy) {
-                const rect = zone.getBoundingClientRect();
-                center = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
-                isDragging = true;
-                move(cx, cy);
-            }
-            function move(cx, cy) {
-                if (!isDragging) return;
-                const dx = cx - center.x, dy = cy - center.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                let cd = dx, cd2 = dy;
-                if (dist > maxDist) { cd = (dx/dist)*maxDist; cd2 = (dy/dist)*maxDist; }
-                const nx = cd/maxDist, ny = -cd2/maxDist;
-                knob.style.transform = `translate(${cd}px, ${cd2}px)`;
-                onUpdate(nx, ny);
-            }
-            function end() {
-                if (isDragging) { isDragging = false; knob.style.transform = 'translate(0px, 0px)'; onUpdate(0, 0); }
-            }
-            zone.addEventListener('mousedown', e => { e.preventDefault(); start(e.clientX, e.clientY); });
-            window.addEventListener('mousemove', e => { if (isDragging) { e.preventDefault(); move(e.clientX, e.clientY); } });
-            window.addEventListener('mouseup', end);
-            zone.addEventListener('touchstart', e => { const t = e.touches[0]; if (t) start(t.clientX, t.clientY); }, { passive: true });
-            window.addEventListener('touchmove', e => { if (isDragging) { const t = e.touches[0]; if (t) move(t.clientX, t.clientY); } }, { passive: true });
-            window.addEventListener('touchend', end, { passive: true });
-            window.addEventListener('touchcancel', end, { passive: true });
+setupJoystick(
+    document.getElementById('joystickMove'), 
+    document.getElementById('knobMove'), 
+    (x,y)=>{ moveX=x; moveZ=invertY ? -y : y; updateStatus(); }
+);
+setupJoystick(
+    document.getElementById('joystickRotate'), 
+    document.getElementById('knobRotate'), 
+    (x,y)=>{ rotateX=x; updateStatus(); }
+);
+
+function updateStatus() {
+    const moving = Math.abs(moveX)>0.08 || Math.abs(moveZ)>0.08;
+    const rotating = Math.abs(rotateX)>0.08;
+    if(moving && rotating){ statusDiv.textContent='🚶 Движение + Поворот'; statusDiv.style.color='#88ddff'; }
+    else if(moving){ statusDiv.textContent='🚶 Движение'; statusDiv.style.color='#88ddff'; }
+    else if(rotating){ statusDiv.textContent='🔄 Поворот'; statusDiv.style.color='#ffaa66'; }
+    else { statusDiv.textContent='📍 Стоим'; statusDiv.style.color='rgba(200,220,255,0.6)'; }
+}
+
+// ========== ПРЫЖОК ==========
+function jump() {
+    if (!isJumping) {
+        isJumping = true;
+        jumpVelocity = JUMP_FORCE;
+    }
+}
+
+// Кнопка прыжка
+jumpBtn.addEventListener('click', jump);
+jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
+
+// Клавиша пробел для прыжка
+document.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        if (gameUI.classList.contains('active')) {
+            jump();
         }
+    }
+});
 
-        setupJoystick(moveZone, knobMove, (x, y) => { moveX = x; moveZ = invertY ? -y : y; updateStatus(); });
-        setupJoystick(rotateZone, knobRotate, (x, y) => { rotateX = x; updateStatus(); });
-
-        function updateStatus() {
-            const moving = Math.abs(moveX) > 0.08 || Math.abs(moveZ) > 0.08;
-            const rotating = Math.abs(rotateX) > 0.08;
-            if (moving && rotating) { statusDiv.textContent = '🚶 Движение + Поворот'; statusDiv.style.color = '#88ddff'; }
-            else if (moving) { statusDiv.textContent = '🚶 Движение'; statusDiv.style.color = '#88ddff'; }
-            else if (rotating) { statusDiv.textContent = '🔄 Поворот'; statusDiv.style.color = '#ffaa66'; }
-            else { statusDiv.textContent = '📍 Стоим'; statusDiv.style.color = 'rgba(200,220,255,0.6)'; }
+// Двойной тап для прыжка на мобильных
+let lastTapTime = 0;
+document.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2 && gameUI.classList.contains('active')) {
+        const now = Date.now();
+        if (now - lastTapTime < 300) {
+            jump();
         }
+        lastTapTime = now;
+    }
+});
 
-        // --- ЧАТ ---
-        const chatInput = document.getElementById('chatInput');
-        const chatInputField = document.getElementById('chatInputField');
-        const chatSendBtn = document.getElementById('chatSendBtn');
-        const chatToggle = document.getElementById('chatToggle');
-        let chatOpen = false;
+// ========== ЧАТ ==========
+let chatOpen = false;
+const chatInput = document.getElementById('chatInput');
+const chatInputField = document.getElementById('chatInputField');
+const chatSendBtn = document.getElementById('chatSendBtn');
+const chatToggleBtn = document.getElementById('chatToggle');
 
-        chatToggle.addEventListener('click', () => {
-            chatOpen = !chatOpen;
-            chatInput.classList.toggle('active', chatOpen);
-            chatToggle.textContent = chatOpen ? '✕ Закрыть чат' : '💬 Чат';
-            if (chatOpen) chatInputField.focus();
-        });
+chatToggleBtn.addEventListener('click', () => {
+    chatOpen = !chatOpen;
+    chatInput.classList.toggle('active', chatOpen);
+    chatToggleBtn.textContent = chatOpen ? '✕ Закрыть чат' : '💬 Чат';
+    if(chatOpen) chatInputField.focus();
+});
 
-        function sendMessage() {
-            const text = chatInputField.value.trim();
-            if (text) {
-                addChatMessage('👤 Вы', text, 0x88ddff);
-                chatInputField.value = '';
-                if (Math.random() > 0.5 && botChatEnabled) {
-                    const bot = bots[Math.floor(Math.random() * bots.length)];
-                    if (bot && bot.alive) {
-                        setTimeout(() => {
-                            const replies = ['Привет!', 'Согласен!', 'Круто!', 'Понял!', 'Ок!'];
-                            addChatMessage(bot.name, replies[Math.floor(Math.random() * replies.length)], bot.color);
-                        }, 500 + Math.random() * 1000);
-                    }
+function sendMessage() {
+    const text = chatInputField.value.trim();
+    if(text) {
+        addChatMessage('👤 '+myNick, text, 0x88ddff);
+        chatInputField.value = '';
+        if(Math.random()>0.5 && botChatEnabled) {
+            const bot = bots[Math.floor(Math.random()*bots.length)];
+            if(bot && bot.alive) {
+                setTimeout(() => {
+                    const replies = ['Привет!','Согласен!','Круто!','Понял!','Ок!','Давай!'];
+                    addChatMessage(bot.name, replies[Math.floor(Math.random()*replies.length)], bot.color);
+                }, 500+Math.random()*1000);
+            }
+        }
+    }
+}
+chatSendBtn.addEventListener('click', sendMessage);
+chatInputField.addEventListener('keydown', e => { if(e.key==='Enter') sendMessage(); });
+
+// ========== МАГАЗИН СКИНОВ ==========
+const skinShop = document.getElementById('skinShop');
+const skinGrid = document.getElementById('skinGrid');
+
+function renderSkins() {
+    skinGrid.innerHTML = '';
+    SKIN_URLS.forEach((url, index) => {
+        const div = document.createElement('div');
+        div.className = 'skin-item' + (index === currentSkinIndex ? ' active' : '');
+        const imgSrc = skinLoaded[index] && skinImages[index] ? skinImages[index].src : getSkinDataURL(index);
+        div.innerHTML = `
+            <div class="preview"><img src="${imgSrc}" alt="${SKIN_NAMES[index]}"></div>
+            <div class="name">${SKIN_NAMES[index]}</div>
+            <div class="price">${index === 0 ? '✅ Бесплатно' : '100 монет'}</div>
+            ${index === 0 ? '<div class="owned">Базовый</div>' : ''}
+        `;
+        div.addEventListener('click', () => {
+            if (index === 0 || coins >= 100) {
+                if (index !== 0 && coins >= 100) {
+                    coins -= 100;
+                    Storage.set('coins', coins);
+                    updateScore();
+                    addChatMessage('🛒 Система', `Скин "${SKIN_NAMES[index]}" куплен!`, 0x44ff88);
                 }
-            }
-        }
-        chatSendBtn.addEventListener('click', sendMessage);
-        chatInputField.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-
-        // --- МАГАЗИН СКИНОВ ---
-        const skinShop = document.getElementById('skinShop');
-        const skinGrid = document.getElementById('skinGrid');
-
-        function renderSkins() {
-            skinGrid.innerHTML = '';
-            skins.forEach((skin, index) => {
-                const div = document.createElement('div');
-                div.className = 'skin-item' + (index === currentSkin ? ' active' : '');
-                div.innerHTML = `
-                    <div class="preview" style="background: ${skin.bg};">
-                        ${skin.emoji}
-                    </div>
-                    <div class="name">${skin.name}</div>
-                    <div class="price">${skin.owned ? '✅ Владелец' : skin.price + ' монет'}</div>
-                    ${skin.owned ? '<div class="owned">Владелец</div>' : ''}
-                    ${index === 0 ? '<div class="skin-badge">⭐ Базовый</div>' : ''}
-                `;
-                div.addEventListener('click', () => {
-                    if (skin.owned) {
-                        currentSkin = index;
-                        renderSkins();
-                        addChatMessage('👤 Система', `Скин "${skin.name}" выбран!`, 0xaa66ff);
-                    } else {
-                        if (coins >= skin.price) {
-                            if (confirm(`Купить скин "${skin.name}" за ${skin.price} монет?`)) {
-                                coins -= skin.price;
-                                skin.owned = true;
-                                currentSkin = index;
-                                renderSkins();
-                                updateScore();
-                                addChatMessage('🛒 Система', `Скин "${skin.name}" куплен!`, 0x44ff88);
-                            }
-                        } else {
-                            addChatMessage('❌ Система', `Недостаточно монет! Нужно ${skin.price}`, 0xff4444);
-                        }
-                    }
-                });
-                skinGrid.appendChild(div);
-            });
-        }
-
-        // Открыть магазин
-        document.getElementById('btnSkin').addEventListener('click', () => {
-            skinShop.classList.add('active');
-            renderSkins();
-        });
-
-        document.getElementById('skinClose').addEventListener('click', () => {
-            skinShop.classList.remove('active');
-        });
-
-        // --- МЕНЮ ---
-        const mainMenu = document.getElementById('mainMenu');
-        const gameUI = document.getElementById('gameUI');
-        const menuToggle = document.getElementById('menuToggle');
-        const modeSelect = document.getElementById('modeSelect');
-        const modeBack = document.getElementById('modeBack');
-        const modeIndicator = document.getElementById('modeIndicator');
-        const sandboxTools = document.getElementById('sandboxTools');
-
-        // Кнопка "Играть" - открывает выбор режима
-        document.getElementById('btnPlay').addEventListener('click', () => {
-            modeSelect.classList.add('active');
-        });
-
-        // Выбор режима
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const mode = btn.dataset.mode;
-                startGame(mode);
-            });
-        });
-
-        function startGame(mode) {
-            currentMode = mode;
-            modeSelect.classList.remove('active');
-            mainMenu.classList.add('hidden');
-            gameUI.classList.add('active');
-            menuToggle.style.display = 'block';
-            
-            const modeNames = {
-                pvp: '⚔️ ПВП',
-                sandbox: '🧱 Песочница',
-                explore: '🚶 Исследование'
-            };
-            modeIndicator.textContent = `РЕЖИМ: ${modeNames[mode]}`;
-            
-            sandboxTools.classList.toggle('active', mode === 'sandbox');
-            healthBar.classList.toggle('active', mode === 'pvp');
-            scoreDisplay.classList.toggle('active', mode === 'pvp');
-            
-            if (mode === 'pvp') {
-                health = 100;
-                updateHealth();
-                score = 0;
-                updateScore();
-                bots.forEach(b => { scene.remove(b.body); scene.remove(b.hat); scene.remove(b.sprite); });
-                bots.length = 0;
-                createBots();
-                addChatMessage('⚔️ Система', 'Режим ПВП! Стреляй по ботам!', 0xff4444);
-            } else if (mode === 'sandbox') {
-                bullets.forEach(b => scene.remove(b.mesh));
-                bullets = [];
-                addChatMessage('🧱 Система', 'Режим Песочница! Строй блоки!', 0x44ff88);
+                currentSkinIndex = index;
+                Storage.set('currentSkin', index);
+                updatePlayerAvatar();
+                renderSkins();
+                addChatMessage('👤 Система', `Скин "${SKIN_NAMES[index]}" выбран!`, 0xaa66ff);
             } else {
-                bullets.forEach(b => scene.remove(b.mesh));
-                bullets = [];
-                addChatMessage('🚶 Система', 'Режим Исследование! Свободное перемещение', 0x88ccff);
-            }
-            
-            camera.position.set(0, 1.8, 10);
-            camera.lookAt(0, 1.8, 0);
-        }
-
-        modeBack.addEventListener('click', () => {
-            modeSelect.classList.remove('active');
-        });
-
-        // --- РЕДАКТОР КАРТ ---
-        const editorPanel = document.getElementById('editorPanel');
-        const editorCanvas = document.getElementById('editorCanvas');
-        const ctx = editorCanvas.getContext('2d');
-        const GRID_SIZE = 20;
-        const CELL_SIZE = editorCanvas.width / GRID_SIZE;
-        
-        let gridData = [];
-        let selectedTool = 'grass';
-        let isDrawing = false;
-
-        const toolColors = {
-            grass: '#4CAF50',
-            stone: '#888888',
-            wood: '#8B6A4A',
-            diamond: '#4FC3F7',
-            gold: '#FFD700',
-            water: '#2196F3',
-            erase: '#1a2a3a'
-        };
-
-        function initGrid() {
-            gridData = [];
-            for (let y = 0; y < GRID_SIZE; y++) {
-                gridData[y] = [];
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    gridData[y][x] = 'grass';
-                }
-            }
-            for (let i = 5; i < 15; i++) {
-                for (let j = 5; j < 15; j++) {
-                    if ((i + j) % 3 === 0) gridData[j][i] = 'stone';
-                    if (i === 7 || i === 12 || j === 7 || j === 12) gridData[j][i] = 'wood';
-                }
-            }
-            gridData[10][10] = 'diamond';
-            gridData[8][8] = 'gold';
-            gridData[12][12] = 'water';
-            renderGrid();
-        }
-
-        function renderGrid() {
-            ctx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    const color = toolColors[gridData[y][x]] || toolColors.grass;
-                    ctx.fillStyle = color;
-                    ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-                    ctx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-                }
-            }
-        }
-
-        function getGridPos(e) {
-            const rect = editorCanvas.getBoundingClientRect();
-            const scaleX = editorCanvas.width / rect.width;
-            const scaleY = editorCanvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
-            const gridX = Math.floor(x / CELL_SIZE);
-            const gridY = Math.floor(y / CELL_SIZE);
-            if (gridX >= 0 && gridX < GRID_SIZE && gridY >= 0 && gridY < GRID_SIZE) {
-                return { x: gridX, y: gridY };
-            }
-            return null;
-        }
-
-        function paintCell(gridX, gridY) {
-            if (selectedTool === 'erase') {
-                gridData[gridY][gridX] = 'grass';
-            } else {
-                gridData[gridY][gridX] = selectedTool;
-            }
-            renderGrid();
-        }
-
-        editorCanvas.addEventListener('mousedown', (e) => {
-            const pos = getGridPos(e);
-            if (pos) {
-                isDrawing = true;
-                paintCell(pos.x, pos.y);
+                addChatMessage('❌ Система', `Недостаточно монет! Нужно 100`, 0xff4444);
             }
         });
+        skinGrid.appendChild(div);
+    });
+}
 
-        editorCanvas.addEventListener('mousemove', (e) => {
-            if (isDrawing) {
-                const pos = getGridPos(e);
-                if (pos) paintCell(pos.x, pos.y);
-            }
-        });
+document.getElementById('btnSkin').addEventListener('click', () => {
+    skinShop.classList.add('active');
+    renderSkins();
+});
+document.getElementById('skinClose').addEventListener('click', () => {
+    skinShop.classList.remove('active');
+});
 
-        editorCanvas.addEventListener('mouseup', () => { isDrawing = false; });
-        editorCanvas.addEventListener('mouseleave', () => { isDrawing = false; });
+// ========== МЕНЮ И РЕЖИМЫ ==========
+document.getElementById('btnPlay').addEventListener('click', () => { modeSelect.classList.add('active'); });
+document.getElementById('modeBack').addEventListener('click', () => { modeSelect.classList.remove('active'); });
 
-        editorCanvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const pos = getGridPos(touch);
-            if (pos) {
-                isDrawing = true;
-                paintCell(pos.x, pos.y);
-            }
-        }, { passive: false });
+document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        startGame(mode);
+    });
+});
 
-        editorCanvas.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (isDrawing) {
-                const touch = e.touches[0];
-                const pos = getGridPos(touch);
-                if (pos) paintCell(pos.x, pos.y);
-            }
-        }, { passive: false });
-
-        editorCanvas.addEventListener('touchend', () => { isDrawing = false; });
-
-        document.querySelectorAll('.editor-tool').forEach(tool => {
-            tool.addEventListener('click', () => {
-                document.querySelectorAll('.editor-tool').forEach(t => t.classList.remove('active'));
-                tool.classList.add('active');
-                selectedTool = tool.dataset.tool;
-            });
-        });
-
-        document.getElementById('saveMap').addEventListener('click', () => {
-            const data = {
-                version: '1.0',
-                name: 'Kotnot_Sandbox_Map',
-                gridSize: GRID_SIZE,
-                grid: gridData
-            };
-            const json = JSON.stringify(data);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'map.kmap';
-            a.click();
-            URL.revokeObjectURL(url);
-            addChatMessage('💾 Система', 'Карта сохранена в map.kmap!', 0x88ccff);
-        });
-
-        document.getElementById('loadMap').addEventListener('click', () => {
-            document.getElementById('fileInput').click();
-        });
-
-        document.getElementById('fileInput').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const data = JSON.parse(event.target.result);
-                    if (data.grid && data.gridSize === GRID_SIZE) {
-                        gridData = data.grid;
-                        renderGrid();
-                        addChatMessage('📂 Система', 'Карта загружена!', 0x88ccff);
-                    } else {
-                        addChatMessage('❌ Система', 'Неверный формат .kmap', 0xff4444);
-                    }
-                } catch (err) {
-                    addChatMessage('❌ Система', 'Ошибка загрузки карты', 0xff4444);
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        });
-
-        document.getElementById('clearMap').addEventListener('click', () => {
-            if (confirm('Очистить карту?')) {
-                initGrid();
-                addChatMessage('🗑️ Система', 'Карта очищена', 0xffaa44);
-            }
-        });
-
-        document.getElementById('closeEditor').addEventListener('click', () => {
-            editorPanel.classList.remove('active');
-        });
-
-        document.getElementById('btnEditor').addEventListener('click', () => {
-            editorPanel.classList.add('active');
-            initGrid();
-        });
-
-        // --- НАСТРОЙКИ ---
-        document.getElementById('btnSettings').addEventListener('click', () => {
-            document.getElementById('settingsPanel').classList.add('active');
-        });
-
-        document.getElementById('settingsClose').addEventListener('click', () => {
-            document.getElementById('settingsPanel').classList.remove('active');
-        });
-
-        const invertToggle = document.getElementById('invertY');
-        invertToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            invertY = this.classList.contains('active');
-            if (this.classList.contains('active')) {
-                this.querySelector('.dot').style.left = '25px';
-                this.querySelector('.dot').style.background = '#88ccff';
-            } else {
-                this.querySelector('.dot').style.left = '3px';
-                this.querySelector('.dot').style.background = '#6688aa';
-            }
-        });
-
-        const soundToggle = document.getElementById('soundToggle');
-        soundToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            if (this.classList.contains('active')) {
-                this.querySelector('.dot').style.left = '25px';
-                this.querySelector('.dot').style.background = '#88ccff';
-            } else {
-                this.querySelector('.dot').style.left = '3px';
-                this.querySelector('.dot').style.background = '#6688aa';
-            }
-        });
-
-        const botToggle = document.getElementById('botToggle');
-        botToggle.addEventListener('click', function() {
-            this.classList.toggle('active');
-            botChatEnabled = this.classList.contains('active');
-            if (this.classList.contains('active')) {
-                this.querySelector('.dot').style.left = '25px';
-                this.querySelector('.dot').style.background = '#88ccff';
-                addChatMessage('🤖 Система', 'Чат ботов включен', 0x88ccff);
-            } else {
-                this.querySelector('.dot').style.left = '3px';
-                this.querySelector('.dot').style.background = '#6688aa';
-                addChatMessage('🤖 Система', 'Чат ботов отключен', 0xff8888);
-            }
-        });
-
-        menuToggle.addEventListener('click', () => {
-            mainMenu.classList.remove('hidden');
-            gameUI.classList.remove('active');
-            menuToggle.style.display = 'none';
-            chatInput.classList.remove('active');
-            chatToggle.textContent = '💬 Чат';
-            chatOpen = false;
-            sandboxTools.classList.remove('active');
-            healthBar.classList.remove('active');
-            scoreDisplay.classList.remove('active');
-        });
-
-        // --- БЛОКИ ДЛЯ ПЕСОЧНИЦЫ ---
-        document.querySelectorAll('.block-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.block-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedBlock = btn.dataset.block;
-            });
-        });
-
-        // --- КЛИК ДЛЯ ДЕЙСТВИЙ ---
-        document.addEventListener('click', (e) => {
-            if (gameUI.classList.contains('active') && !mainMenu.classList.contains('hidden')) return;
-            if (gameUI.classList.contains('active')) {
-                if (currentMode === 'pvp') {
-                    shootBullet();
-                } else if (currentMode === 'sandbox') {
-                    placeBlock();
-                }
-            }
-        });
-
-        // --- РЕСАЙЗ ---
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-
-        // --- АНИМАЦИЯ ---
-        function animate() {
-            requestAnimationFrame(animate);
-
-            updateTimeOfDay();
-            updateBots();
-            updateBullets();
-
-            if (gameUI.classList.contains('active')) {
-                if (Math.abs(moveX) > 0.05 || Math.abs(moveZ) > 0.05 || Math.abs(rotateX) > 0.05) {
-                    const speed = 0.12 * speedMultiplier;
-                    const rotSpeed = 0.03;
-
-                    if (Math.abs(rotateX) > 0.05) {
-                        const euler = new THREE.Euler(0, 0, 0, 'YXZ');
-                        euler.copy(camera.rotation);
-                        euler.y -= rotateX * rotSpeed;
-                        camera.rotation.copy(euler);
-                    }
-
-                    const forward = new THREE.Vector3(0, 0, -1);
-                    forward.applyQuaternion(camera.quaternion);
-                    forward.y = 0;
-                    forward.normalize();
-
-                    const right = new THREE.Vector3(1, 0, 0);
-                    right.applyQuaternion(camera.quaternion);
-                    right.y = 0;
-                    right.normalize();
-
-                    const moveVec = new THREE.Vector3();
-                    moveVec.addScaledVector(forward, -moveZ * speed);
-                    moveVec.addScaledVector(right, moveX * speed);
-
-                    const newPos = camera.position.clone().add(moveVec);
-                    const limit = 22;
-                    if (Math.abs(newPos.x) < limit && Math.abs(newPos.z) < limit) {
-                        camera.position.copy(newPos);
-                    } else {
-                        if (Math.abs(newPos.x) >= limit) moveVec.x = 0;
-                        if (Math.abs(newPos.z) >= limit) moveVec.z = 0;
-                        camera.position.add(moveVec);
-                    }
-                }
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        // Инициализация
+function startGame(mode) {
+    currentMode = mode;
+    modeSelect.classList.remove('active');
+    mainMenu.classList.add('hidden');
+    gameUI.classList.add('active');
+    menuToggle.style.display = 'block';
+    nickDisplay.classList.add('active');
+    jumpBtn.classList.add('active');
+    document.getElementById('inventoryDisplay').classList.add('active');
+    
+    const modeNames = { pvp:'⚔️ ПВП', sandbox:'🧱 Песочница', explore:'🚶 Исследование' };
+    modeIndicator.textContent = `РЕЖИМ: ${modeNames[mode]}`;
+    sandboxTools.classList.toggle('active', mode === 'sandbox');
+    healthBar.classList.toggle('active', mode === 'pvp');
+    scoreDisplay.classList.toggle('active', mode === 'pvp');
+    isDeleteMode = false;
+    document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
+    
+    if(mode === 'pvp') {
+        health = 100; updateHealth();
+        score = 0; updateScore();
+        bullets.forEach(b => scene.remove(b.mesh));
+        bullets = [];
         createBots();
-        updateHealth();
-        updateScore();
-        animate();
+        addChatMessage('⚔️ Система', 'Режим ПВП! Стреляй по ботам!', 0xff4444);
+    } else if(mode === 'sandbox') {
+        bullets.forEach(b => scene.remove(b.mesh));
+        bullets = [];
+        if (loadedMapData) {
+            loadMapData(loadedMapData);
+        } else {
+            createBots();
+        }
+        updateInventory();
+        addChatMessage('🧱 Система', 'Режим Песочница! Строй блоки!', 0x44ff88);
+    } else {
+        bullets.forEach(b => scene.remove(b.mesh));
+        bullets = [];
+        if (loadedMapData) {
+            loadMapData(loadedMapData);
+        } else {
+            createBots();
+        }
+        addChatMessage('🚶 Система', 'Режим Исследование! Свободное перемещение', 0x88ccff);
+    }
+    camera.position.set(0,1.8,10);
+    camera.lookAt(0,1.8,0);
+}
 
-        console.log('🐱 Kotnot_Sandbox v0.1 загружена!');
-    </script>
+menuToggle.addEventListener('click', () => {
+    mainMenu.classList.remove('hidden');
+    gameUI.classList.remove('active');
+    menuToggle.style.display = 'none';
+    nickDisplay.classList.remove('active');
+    jumpBtn.classList.remove('active');
+    document.getElementById('inventoryDisplay').classList.remove('active');
+    chatInput.classList.remove('active');
+    chatToggleBtn.textContent = '💬 Чат';
+    chatOpen = false;
+    sandboxTools.classList.remove('active');
+    healthBar.classList.remove('active');
+    scoreDisplay.classList.remove('active');
+});
+
+// ========== РЕДАКТОР КАРТ (фикс размера) ==========
+const editorPanel = document.getElementById('editorPanel');
+const editorCanvas = document.getElementById('editorCanvas');
+const ctx = editorCanvas.getContext('2d');
+const GRID_SIZE = 20;
+let CELL_SIZE = editorCanvas.width / GRID_SIZE;
+let gridData = [];
+let selectedTool = 'grass';
+let isDrawing = false;
+const toolColors = { 
+    grass:'#4CAF50', stone:'#888888', wood:'#8B6A4A', 
+    diamond:'#4FC3F7', gold:'#FFD700', water:'#2196F3', 
+    erase:'#1a2a3a' 
+};
+
+function initGrid() {
+    gridData = [];
+    for(let y=0; y<GRID_SIZE; y++) {
+        gridData[y] = [];
+        for(let x=0; x<GRID_SIZE; x++) {
+            gridData[y][x] = 'grass';
+        }
+    }
+    renderGrid();
+}
+
+function renderGrid() {
+    CELL_SIZE = editorCanvas.width / GRID_SIZE;
+    ctx.clearRect(0,0,editorCanvas.width,editorCanvas.height);
+    for(let y=0; y<GRID_SIZE; y++) {
+        for(let x=0; x<GRID_SIZE; x++) {
+            const color = toolColors[gridData[y][x]] || toolColors.grass;
+            ctx.fillStyle = color;
+            ctx.fillRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.strokeRect(x*CELL_SIZE, y*CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+    }
+}
+
+function getGridPos(e) {
+    const rect = editorCanvas.getBoundingClientRect();
+    const scaleX = editorCanvas.width / rect.width;
+    const scaleY = editorCanvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    const gx = Math.floor(x / CELL_SIZE);
+    const gy = Math.floor(y / CELL_SIZE);
+    if(gx>=0 && gx<GRID_SIZE && gy>=0 && gy<GRID_SIZE) return { x:gx, y:gy };
+    return null;
+}
+
+function paintCell(gx, gy) {
+    gridData[gy][gx] = selectedTool === 'erase' ? 'grass' : selectedTool;
+    renderGrid();
+}
+
+editorCanvas.addEventListener('mousedown', e => { const p=getGridPos(e); if(p){ isDrawing=true; paintCell(p.x,p.y); } });
+editorCanvas.addEventListener('mousemove', e => { if(isDrawing){ const p=getGridPos(e); if(p) paintCell(p.x,p.y); } });
+editorCanvas.addEventListener('mouseup', ()=>isDrawing=false);
+editorCanvas.addEventListener('mouseleave', ()=>isDrawing=false);
+editorCanvas.addEventListener('touchstart', e => { e.preventDefault(); const t=e.touches[0]; const p=getGridPos(t); if(p){ isDrawing=true; paintCell(p.x,p.y); } }, {passive:false});
+editorCanvas.addEventListener('touchmove', e => { e.preventDefault(); if(isDrawing){ const t=e.touches[0]; const p=getGridPos(t); if(p) paintCell(p.x,p.y); } }, {passive:false});
+editorCanvas.addEventListener('touchend', ()=>isDrawing=false);
+
+document.querySelectorAll('.editor-tool').forEach(tool => {
+    tool.addEventListener('click', () => {
+        document.querySelectorAll('.editor-tool').forEach(t => t.classList.remove('active'));
+        tool.classList.add('active');
+        selectedTool = tool.dataset.tool;
+    });
+});
+
+document.getElementById('saveMap').addEventListener('click', () => {
+    const data = { version:'1.0', name:'Kotnot_Map', gridSize:GRID_SIZE, grid:gridData };
+    const blob = new Blob([JSON.stringify(data)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'map.kmap'; a.click();
+    URL.revokeObjectURL(url);
+    addChatMessage('💾 Система', 'Карта сохранена!', 0x88ccff);
+});
+
+document.getElementById('loadMap').addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if(data.grid && data.gridSize === GRID_SIZE) {
+                gridData = data.grid;
+                loadedMapData = data;
+                renderGrid();
+                addChatMessage('📂 Система', 'Карта загружена! Нажмите "Играть" чтобы начать на ней', 0x88ccff);
+                if (gameUI.classList.contains('active') && currentMode !== 'pvp') {
+                    loadMapData(data);
+                }
+            } else {
+                addChatMessage('❌ Система', `Неверный размер карты (нужно ${GRID_SIZE}x${GRID_SIZE})`, 0xff4444);
+            }
+        } catch(err) { 
+            addChatMessage('❌ Система', 'Ошибка загрузки', 0xff4444); 
+        }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+});
+
+document.getElementById('clearMap').addEventListener('click', () => { if(confirm('Очистить карту?')){ initGrid(); addChatMessage('🗑️ Система', 'Карта очищена', 0xffaa44); } });
+document.getElementById('closeEditor').addEventListener('click', () => { editorPanel.classList.remove('active'); });
+document.getElementById('btnEditor').addEventListener('click', () => { editorPanel.classList.add('active'); initGrid(); });
+
+// ========== НАСТРОЙКИ ==========
+document.getElementById('btnSettings').addEventListener('click', () => document.getElementById('settingsPanel').classList.add('active'));
+document.getElementById('settingsClose').addEventListener('click', () => document.getElementById('settingsPanel').classList.remove('active'));
+
+const invertToggle = document.getElementById('invertY');
+invertToggle.addEventListener('click', function() {
+    this.classList.toggle('active');
+    invertY = this.classList.contains('active');
+    this.querySelector('.dot').style.left = invertY ? '25px' : '3px';
+    this.querySelector('.dot').style.background = invertY ? '#88ccff' : '#6688aa';
+});
+
+const soundToggle = document.getElementById('soundToggle');
+soundToggle.addEventListener('click', function() {
+    this.classList.toggle('active');
+    this.querySelector('.dot').style.left = this.classList.contains('active') ? '25px' : '3px';
+    this.querySelector('.dot').style.background = this.classList.contains('active') ? '#88ccff' : '#6688aa';
+});
+
+const botToggle = document.getElementById('botToggle');
+botToggle.addEventListener('click', function() {
+    this.classList.toggle('active');
+    botChatEnabled = this.classList.contains('active');
+    this.querySelector('.dot').style.left = botChatEnabled ? '25px' : '3px';
+    this.querySelector('.dot').style.background = botChatEnabled ? '#88ccff' : '#6688aa';
+    addChatMessage('🤖 Система', botChatEnabled ? 'Чат ботов включен' : 'Чат ботов отключен', 0x88ccff);
+});
+
+// ========== БЛОКИ ДЛЯ ПЕСОЧНИЦЫ ==========
+document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(btn => {
+    btn.addEventListener('click', () => {
+        isDeleteMode = false;
+        document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
+        document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedBlock = btn.dataset.block;
+    });
+});
+
+document.getElementById('deleteBlockBtn').addEventListener('click', function() {
+    isDeleteMode = !isDeleteMode;
+    this.classList.toggle('delete-mode-active', isDeleteMode);
+    document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
+    addChatMessage('🗑️ Система', isDeleteMode ? 'Режим удаления блоков включён' : 'Режим удаления выключен', 0xff4444);
+});
+
+// ========== КЛИК ДЛЯ ДЕЙСТВИЙ ==========
+document.addEventListener('click', (e) => {
+    if(gameUI.classList.contains('active') && !mainMenu.classList.contains('hidden')) return;
+    if(gameUI.classList.contains('active')) {
+        if(currentMode === 'pvp') {
+            shootBullet();
+        } else if(currentMode === 'sandbox') {
+            if (isDeleteMode) {
+                deleteBlock();
+            } else {
+                placeBlock();
+            }
+        }
+    }
+});
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ========== АНИМАЦИЯ ==========
+function animate() {
+    requestAnimationFrame(animate);
+    updateTimeOfDay();
+    updateBots();
+    updateBullets();
+    
+    // Прыжок игрока
+    if (isJumping) {
+        camera.position.y += jumpVelocity;
+        jumpVelocity -= GRAVITY;
+        if (camera.position.y <= 1.8) {
+            camera.position.y = 1.8;
+            isJumping = false;
+            jumpVelocity = 0;
+        }
+    }
+    
+    if(gameUI.classList.contains('active')) {
+        if(Math.abs(moveX)>0.05 || Math.abs(moveZ)>0.05 || Math.abs(rotateX)>0.05) {
+            const speed = 0.12 * speedMultiplier;
+            const rotSpeed = 0.03;
+            if(Math.abs(rotateX)>0.05) {
+                const euler = new THREE.Euler(0,0,0,'YXZ');
+                euler.copy(camera.rotation);
+                euler.y -= rotateX * rotSpeed;
+                camera.rotation.copy(euler);
+            }
+            const forward = new THREE.Vector3(0,0,-1);
+            forward.applyQuaternion(camera.quaternion);
+            forward.y = 0; forward.normalize();
+            const right = new THREE.Vector3(1,0,0);
+            right.applyQuaternion(camera.quaternion);
+            right.y = 0; right.normalize();
+            const moveVec = new THREE.Vector3();
+            moveVec.addScaledVector(forward, -moveZ * speed);
+            moveVec.addScaledVector(right, moveX * speed);
+            const newPos = camera.position.clone().add(moveVec);
+            const limit = 22;
+            if(Math.abs(newPos.x) < limit && Math.abs(newPos.z) < limit) {
+                camera.position.x = newPos.x;
+                camera.position.z = newPos.z;
+            } else {
+                if(Math.abs(newPos.x) >= limit) moveVec.x = 0;
+                if(Math.abs(newPos.z) >= limit) moveVec.z = 0;
+                camera.position.x += moveVec.x;
+                camera.position.z += moveVec.z;
+            }
+        }
+    }
+    renderer.render(scene, camera);
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        if (r > w/2) r = w/2;
+        if (r > h/2) r = h/2;
+        this.moveTo(x + r, y);
+        this.lineTo(x + w - r, y);
+        this.quadraticCurveTo(x + w, y, x + w, y + r);
+        this.lineTo(x + w, y + h - r);
+        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        this.lineTo(x + r, y + h);
+        this.quadraticCurveTo(x, y + h, x, y + h - r);
+        this.lineTo(x, y + r);
+        this.quadraticCurveTo(x, y, x + r, y);
+        return this;
+    };
+}
+
+await loadSkins();
+updatePlayerAvatar();
+createBots();
+updateHealth();
+updateScore();
+updateInventory();
+animate();
+
+console.log('🐱 Kotnot_Sandbox v0.2 загружена!');
+console.log('Ник:', myNick);
+console.log('Сервер:', currentServer);
+console.log('Скины загружены:', skinLoaded);
+console.log('🎮 Нажми ПРОБЕЛ для прыжка!');
+</script>
 </body>
-  </html>
+</html>
