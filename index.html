@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kotnot_Sandbox v0.2</title>
+    <title>Kotnot_Sandbox v0.3</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { overflow:hidden; background:#0a0a1a; font-family:'Segoe UI',sans-serif; touch-action:none; user-select:none; position:fixed; width:100%; height:100%; }
@@ -20,7 +20,34 @@
         .btn-editor { background:linear-gradient(135deg,#ff6b4a,#cc3a2a); color:white; box-shadow:0 0 40px rgba(255,100,50,0.2); }
         .btn-skin { background:linear-gradient(135deg,#aa66ff,#7a3acc); color:white; box-shadow:0 0 40px rgba(170,100,255,0.2); }
         .btn-settings { background:rgba(60,80,120,0.2); color:#aac0dd; border:1px solid rgba(100,180,255,0.15); }
+        .btn-account { background:rgba(60,200,120,0.2); color:#88ddbb; border:1px solid rgba(100,255,180,0.15); }
         .btn-icon { margin-right:12px; font-size:20px; }
+        
+        #roomsPanel { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.92); backdrop-filter:blur(20px); z-index:260; display:none; align-items:center; justify-content:center; flex-direction:column; }
+        #roomsPanel.active { display:flex; }
+        #roomsContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.2); border-radius:30px; padding:30px 35px; max-width:500px; width:95%; text-align:center; max-height:90vh; overflow-y:auto; }
+        #roomsContent h2 { color:#88ccff; font-size:28px; margin-bottom:8px; }
+        .rooms-list { max-height:300px; overflow-y:auto; margin-bottom:16px; }
+        .room-item { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; margin-bottom:8px; border-radius:14px; background:rgba(60,80,120,0.15); border:1px solid rgba(100,180,255,0.1); transition:0.2s; cursor:pointer; }
+        .room-item:active { transform:scale(0.96); }
+        .room-item .room-info { text-align:left; flex:1; }
+        .room-item .room-name { color:#c0d8ff; font-weight:600; font-size:15px; }
+        .room-item .room-details { color:rgba(200,220,255,0.4); font-size:12px; }
+        .room-item .room-join { padding:6px 16px; border-radius:10px; border:none; background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s; }
+        .room-item .room-join:active { transform:scale(0.95); }
+        .room-item .room-join:disabled { opacity:0.4; cursor:not-allowed; }
+        .room-item .room-players { color:#88ccff; font-size:12px; min-width:50px; }
+        .room-empty { color:rgba(200,220,255,0.3); padding:20px; }
+        .room-create { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+        .room-create input { flex:1; padding:12px 16px; border-radius:14px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; font-size:14px; outline:none; min-width:120px; }
+        .room-create input:focus { border-color:rgba(100,200,255,0.4); }
+        .room-create .room-btn { padding:12px 20px; border-radius:14px; border:none; font-weight:600; cursor:pointer; transition:0.2s; font-size:14px; }
+        .room-create .room-btn:active { transform:scale(0.95); }
+        .room-btn-create { background:linear-gradient(135deg,#66ffaa,#3acc7a); color:#0a1a0a; }
+        .room-btn-refresh { background:rgba(60,80,120,0.3); color:#aac0dd; border:1px solid rgba(100,180,255,0.15); }
+        .room-back { margin-top:12px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:12px; color:#ff8888; font-size:16px; cursor:pointer; width:100%; transition:0.2s; }
+        .room-back:active { transform:scale(0.96); }
+        .room-private .room-name::after { content:' 🔒'; font-size:14px; }
         
         #modeSelect { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(20px); z-index:250; display:none; align-items:center; justify-content:center; flex-direction:column; }
         #modeSelect.active { display:flex; }
@@ -116,6 +143,7 @@
         .block-btn.active { border-color:rgba(100,200,255,0.5); box-shadow:0 0 20px rgba(100,200,255,0.2); }
         .block-btn.delete-btn { background:rgba(255,50,50,0.3); border-color:rgba(255,50,50,0.3); }
         .block-btn.delete-btn.active { border-color:#ff4444; box-shadow:0 0 20px rgba(255,68,68,0.3); }
+        .block-btn.delete-mode-active { border-color:#ff4444; box-shadow:0 0 30px rgba(255,68,68,0.4); background:rgba(255,50,50,0.5); }
         #inventoryDisplay { position:absolute; left:20px; top:50%; transform:translateY(-50%); z-index:15; display:none; flex-direction:column; gap:6px; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); padding:12px; border-radius:12px; border:1px solid rgba(100,180,255,0.1); pointer-events:auto; }
         #inventoryDisplay.active { display:flex; }
         .inv-item { color:rgba(200,220,255,0.8); font-size:12px; display:flex; align-items:center; gap:8px; }
@@ -148,6 +176,8 @@
         #nickDisplay { position:absolute; top:200px; left:50%; transform:translateX(-50%); color:#88ccff; font-size:14px; background:rgba(0,0,0,0.5); padding:4px 16px; border-radius:20px; border:1px solid rgba(100,180,255,0.15); pointer-events:none; z-index:10; display:none; }
         #nickDisplay.active { display:block; }
         #avatarPreview { width:32px; height:32px; border-radius:50%; display:inline-block; vertical-align:middle; margin-right:8px; background:#444; }
+        #avatarPreview img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+        
         #nickInputModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:500; display:flex; align-items:center; justify-content:center; flex-direction:column; }
         #nickInputModal.hidden { display:none; }
         #nickInputModal input { padding:16px 24px; border-radius:16px; border:2px solid rgba(100,180,255,0.3); background:rgba(20,30,50,0.8); color:#c0d8ff; font-size:20px; text-align:center; outline:none; width:80%; max-width:300px; }
@@ -155,6 +185,38 @@
         #nickInputModal button { margin-top:16px; padding:12px 32px; border:none; border-radius:16px; background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; font-size:18px; font-weight:600; cursor:pointer; transition:0.2s; }
         #nickInputModal button:active { transform:scale(0.95); }
         #nickInputModal h2 { color:#88ccff; margin-bottom:16px; }
+        
+        #authModal { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); z-index:1000; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+        #authModal.hidden { display:none; }
+        #authContent { background:rgba(20,30,50,0.95); border:2px solid rgba(100,200,255,0.2); border-radius:30px; padding:40px 35px; max-width:400px; width:90%; text-align:center; max-height:90vh; overflow-y:auto; }
+        #authContent h2 { color:#88ccff; font-size:32px; margin-bottom:8px; }
+        #authContent .sub { color:rgba(200,220,255,0.4); font-size:14px; margin-bottom:25px; }
+        .auth-input { width:100%; padding:14px 18px; margin-bottom:12px; border-radius:14px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; font-size:16px; outline:none; transition:0.2s; box-sizing:border-box; }
+        .auth-input:focus { border-color:rgba(100,200,255,0.4); background:rgba(60,80,120,0.25); }
+        .auth-input::placeholder { color:rgba(200,220,255,0.3); }
+        .auth-btn { width:100%; padding:14px; margin-bottom:10px; border:none; border-radius:14px; font-size:16px; font-weight:600; cursor:pointer; transition:0.2s; touch-action:manipulation; }
+        .auth-btn:active { transform:scale(0.96); }
+        .auth-btn-primary { background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; box-shadow:0 0 40px rgba(70,150,255,0.2); }
+        .auth-btn-secondary { background:rgba(60,80,120,0.2); color:#aac0dd; border:1px solid rgba(100,180,255,0.15); }
+        .auth-btn-google { background:rgba(255,255,255,0.1); color:#c0d8ff; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; gap:12px; }
+        .auth-btn-google:hover { background:rgba(255,255,255,0.15); }
+        .auth-error { color:#ff4444; font-size:13px; margin-bottom:12px; min-height:20px; }
+        .auth-switch { color:rgba(200,220,255,0.5); font-size:14px; margin-top:10px; }
+        .auth-switch a { color:#88ccff; cursor:pointer; text-decoration:underline; }
+        .auth-switch a:hover { color:#aaddff; }
+        .auth-close { margin-top:16px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:12px; color:#ff8888; font-size:14px; cursor:pointer; width:100%; transition:0.2s; touch-action:manipulation; }
+        .auth-close:active { transform:scale(0.96); }
+        #authUserInfo { position:absolute; top:20px; right:20px; z-index:20; display:none; align-items:center; gap:12px; background:rgba(0,0,0,0.6); backdrop-filter:blur(8px); padding:8px 16px 8px 12px; border-radius:25px; border:1px solid rgba(100,180,255,0.15); pointer-events:auto; }
+        #authUserInfo.active { display:flex; }
+        #authAvatar { width:32px; height:32px; border-radius:50%; background:#4a8aff; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:14px; overflow:hidden; flex-shrink:0; }
+        #authAvatar img { width:100%; height:100%; object-fit:cover; }
+        #authUserName { color:#c0d8ff; font-size:13px; font-weight:500; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        #authLogoutBtn { background:rgba(255,70,70,0.2); border:none; color:#ff6666; padding:4px 12px; border-radius:12px; font-size:11px; cursor:pointer; transition:0.2s; touch-action:manipulation; }
+        #authLogoutBtn:active { transform:scale(0.95); }
+        #authLoading { display:none; color:#88ccff; font-size:14px; margin:10px 0; }
+        #authLoading.active { display:block; }
+        .auth-reset-link { color:#88ccff; cursor:pointer; font-size:12px; display:block; margin-top:8px; text-decoration:underline; }
+        .auth-reset-link:hover { color:#aaddff; }
         
         @media (max-width:600px) {
             #joysticksContainer { padding:0 16px; bottom:25px; }
@@ -170,21 +232,27 @@
             #inventoryDisplay { left:10px; padding:8px; }
             #sandboxTools { right:10px; gap:6px; }
             .block-btn { width:40px; height:40px; font-size:16px; }
+            #authUserInfo { top:10px; right:10px; padding:6px 12px; }
+            #authUserName { max-width:80px; font-size:12px; }
+            .rooms-list { max-height:200px; }
+            .room-create { flex-direction:column; }
         }
     </style>
 </head>
 <body>
 
+<!-- ========== МОДАЛКА НИКНЕЙМА ========== -->
 <div id="nickInputModal">
     <h2>🐱 Введите никнейм</h2>
     <input type="text" id="nickInput" placeholder="Ваш ник..." maxlength="20" value="Гость">
     <button id="nickConfirm">Войти</button>
 </div>
 
+<!-- ========== ГЛАВНОЕ МЕНЮ ========== -->
 <div id="mainMenu">
     <div id="menuContent">
         <h1>🐱 Kotnot_Sandbox</h1>
-        <div class="sub">ВЕРСИЯ 0.3 · ИССЛЕДУЙ · СТРОЙ · СРАЖАЙСЯ</div>
+        <div class="sub">ВЕРСИЯ 3 · МУЛЬТИПЛЕЕР · КОМНАТЫ</div>
         
         <div id="serverSelect">
             <button class="server-btn active" data-server="local">🏠 Локальный</button>
@@ -194,10 +262,32 @@
         <button class="menu-btn btn-play" id="btnPlay"><span class="btn-icon">▶</span> ИГРАТЬ</button>
         <button class="menu-btn btn-editor" id="btnEditor"><span class="btn-icon">✏️</span> РЕДАКТОР КАРТ</button>
         <button class="menu-btn btn-skin" id="btnSkin"><span class="btn-icon">👤</span> МАГАЗИН СКИНОВ</button>
+        <button class="menu-btn btn-account" id="btnAccount"><span class="btn-icon">🔐</span> АККАУНТ</button>
         <button class="menu-btn btn-settings" id="btnSettings"><span class="btn-icon">⚙️</span> НАСТРОЙКИ</button>
     </div>
 </div>
 
+<!-- ========== КОМНАТЫ ========== -->
+<div id="roomsPanel">
+    <div id="roomsContent">
+        <h2>🏠 КОМНАТЫ</h2>
+        <div class="sub">Выберите комнату или создайте свою</div>
+        
+        <div class="room-create">
+            <input type="text" id="roomCreateInput" placeholder="Название комнаты..." maxlength="20">
+            <button class="room-btn room-btn-create" id="roomCreateBtn">➕ Создать</button>
+            <button class="room-btn room-btn-refresh" id="roomRefreshBtn">🔄</button>
+        </div>
+        
+        <div class="rooms-list" id="roomsList">
+            <div class="room-empty">⏳ Загрузка комнат...</div>
+        </div>
+        
+        <button class="room-back" id="roomsBack">✕ Назад в меню</button>
+    </div>
+</div>
+
+<!-- ========== ВЫБОР РЕЖИМА ========== -->
 <div id="modeSelect">
     <div id="modeContent">
         <h2>🎮 ВЫБОР РЕЖИМА</h2>
@@ -209,6 +299,7 @@
     </div>
 </div>
 
+<!-- ========== РЕДАКТОР КАРТ ========== -->
 <div id="editorPanel">
     <div id="editorContent">
         <h2>✏️ РЕДАКТОР КАРТ</h2>
@@ -233,6 +324,7 @@
     </div>
 </div>
 
+<!-- ========== МАГАЗИН СКИНОВ ========== -->
 <div id="skinShop">
     <div id="skinContent">
         <h2>👤 МАГАЗИН СКИНОВ</h2>
@@ -242,6 +334,7 @@
     </div>
 </div>
 
+<!-- ========== НАСТРОЙКИ ========== -->
 <div id="settingsPanel">
     <div id="settingsContent">
         <h2>⚙️ НАСТРОЙКИ</h2>
@@ -254,6 +347,45 @@
     </div>
 </div>
 
+<!-- ========== МОДАЛКА АККАУНТА ========== -->
+<div id="authModal" class="hidden">
+    <div id="authContent">
+        <h2 id="authTitle">🔐 Вход</h2>
+        <div class="sub" id="authSub">Войдите в свой аккаунт</div>
+        
+        <div id="authError" class="auth-error"></div>
+        <div id="authLoading">⏳ Загрузка...</div>
+        
+        <div id="authLoginForm">
+            <input type="email" class="auth-input" id="authEmail" placeholder="Email" autocomplete="email">
+            <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" autocomplete="current-password">
+            <a class="auth-reset-link" id="authResetLink">Забыли пароль?</a>
+            <button class="auth-btn auth-btn-primary" id="authLoginBtn">🔑 Войти</button>
+        </div>
+        
+        <div id="authRegisterForm" style="display:none;">
+            <input type="text" class="auth-input" id="authRegNick" placeholder="Никнейм" autocomplete="nickname">
+            <input type="email" class="auth-input" id="authRegEmail" placeholder="Email" autocomplete="email">
+            <input type="password" class="auth-input" id="authRegPassword" placeholder="Пароль (минимум 6 символов)" autocomplete="new-password">
+            <input type="password" class="auth-input" id="authRegPassword2" placeholder="Повторите пароль" autocomplete="new-password">
+            <button class="auth-btn auth-btn-primary" id="authRegisterBtn">📝 Создать аккаунт</button>
+        </div>
+        
+        <button class="auth-btn auth-btn-google" id="authGoogleBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+            Войти через Google
+        </button>
+        
+        <div class="auth-switch">
+            <span id="authSwitchText">Нет аккаунта? </span>
+            <a id="authSwitchLink">Зарегистрироваться</a>
+        </div>
+        
+        <button class="auth-close" id="authCloseBtn">✕ Закрыть</button>
+    </div>
+</div>
+
+<!-- ========== ИГРОВОЙ ИНТЕРФЕЙС ========== -->
 <div id="gameUI">
     <div id="menuToggle">☰ МЕНЮ</div>
     <div id="crosshair"><div id="crosshair-dot"></div><div id="crosshair-reload"></div></div>
@@ -288,6 +420,22 @@
     </div>
 </div>
 
+<!-- ========== ИНФОРМАЦИЯ О ПОЛЬЗОВАТЕЛЕ ========== -->
+<div id="authUserInfo">
+    <div id="authAvatar"></div>
+    <span id="authUserName"></span>
+    <button id="authLogoutBtn">🚪 Выйти</button>
+</div>
+
+<!-- ========== FIREBASE SDK ========== -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<!-- ========== КОНФИГУРАЦИЯ FIREBASE ========== -->
+<script src="firebase-config.js"></script>
+
+<!-- ========== THREE.JS ========== -->
 <script type="importmap">
 {
     "imports": {
@@ -298,6 +446,19 @@
 
 <script type="module">
 import * as THREE from 'three';
+
+// ========== ПРОВЕРКА FIREBASE ==========
+if (typeof firebase === 'undefined') {
+    console.error('❌ Firebase не загружен!');
+} else {
+    console.log('✅ Firebase загружен');
+}
+
+if (typeof database === 'undefined') {
+    console.error('❌ База данных не инициализирована!');
+} else {
+    console.log('✅ База данных готова');
+}
 
 // ========== ХРАНИЛИЩЕ ==========
 const Storage = {
@@ -473,6 +634,15 @@ let isJumping = false;
 let jumpVelocity = 0;
 const GRAVITY = 0.015;
 const JUMP_FORCE = 0.25;
+let isAuthenticated = false;
+let currentUser = null;
+let multiplayer = null;
+let currentRoomId = null;
+let roomsListener = null;
+let playerObjects = {};
+let positionUpdateInterval = null;
+let chatListener = null;
+let playerPositions = {};
 
 // Инвентарь
 let inventory = {
@@ -483,6 +653,7 @@ let inventory = {
     gold: 10
 };
 
+// Элементы UI
 const chatContainer = document.getElementById('chatContainer');
 const healthFill = document.getElementById('healthFill');
 const healthBar = document.getElementById('healthBar');
@@ -497,6 +668,7 @@ const menuToggle = document.getElementById('menuToggle');
 const gameUI = document.getElementById('gameUI');
 const mainMenu = document.getElementById('mainMenu');
 const modeSelect = document.getElementById('modeSelect');
+const roomsPanel = document.getElementById('roomsPanel');
 const timeIndicator = document.getElementById('timeIndicator');
 const jumpBtn = document.getElementById('jumpBtn');
 
@@ -507,7 +679,143 @@ function updatePlayerAvatar() {
     nickNameText.textContent = myNick;
 }
 
-// ========== СОЗДАНИЕ ТЕКСТУРЫ ДЛЯ БОТА ==========
+// ========== СОЗДАНИЕ ИГРОКА ДЛЯ МУЛЬТИПЛЕЕРА ==========
+function createMultiplayerPlayer(id, data) {
+    const group = new THREE.Group();
+    
+    // Тело
+    const body = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 8, 8),
+        new THREE.MeshStandardMaterial({ 
+            color: 0x4a8aff, 
+            roughness: 0.3,
+            metalness: 0.1 
+        })
+    );
+    body.position.y = 0.5;
+    body.castShadow = true;
+    group.add(body);
+    
+    // Шляпа
+    const hat = new THREE.Mesh(
+        new THREE.ConeGeometry(0.3, 0.5, 6),
+        new THREE.MeshStandardMaterial({ color: 0xccaa88, roughness: 0.7 })
+    );
+    hat.position.y = 0.9;
+    group.add(hat);
+    
+    // Имя над головой
+    const sprite = createNameSprite(data.nick);
+    sprite.position.y = 1.4;
+    group.add(sprite);
+    
+    group.position.set(data.x || 0, data.y || 1.8, data.z || 0);
+    group.rotation.y = data.rotY || 0;
+    scene.add(group);
+    
+    const colors = [0x4a8aff, 0xff6b4a, 0xaa66ff];
+    body.material.color.setHex(colors[data.skin % colors.length]);
+    
+    playerObjects[id] = {
+        mesh: group,
+        nick: data.nick,
+        skinIndex: data.skin,
+        body: body,
+        hat: hat,
+        sprite: sprite,
+        lastUpdate: Date.now()
+    };
+}
+
+function createNameSprite(name) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 256;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.roundRect(10, 10, 236, 44, 10);
+    ctx.fill();
+    
+    ctx.font = 'bold 22px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(name, 128, 38);
+    
+    // Добавляем индикатор игрока
+    ctx.fillStyle = 'rgba(68, 255, 136, 0.3)';
+    ctx.beginPath();
+    ctx.arc(40, 32, 8, 0, Math.PI * 2);
+    ctx.fill();
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.SpriteMaterial({ 
+        map: texture, 
+        transparent: true,
+        depthTest: false
+    });
+    const sprite = new THREE.Sprite(material);
+    sprite.scale.set(2.2, 0.6, 1);
+    return sprite;
+}
+
+function updateMultiplayerPlayer(id, data) {
+    const player = playerObjects[id];
+    if (!player) return;
+    
+    // Интерполяция позиции для плавности
+    const targetPos = { x: data.x || 0, y: data.y || 1.8, z: data.z || 0 };
+    const currentPos = player.mesh.position;
+    
+    // Плавное движение
+    const lerpSpeed = 0.3;
+    currentPos.x += (targetPos.x - currentPos.x) * lerpSpeed;
+    currentPos.y += (targetPos.y - currentPos.y) * lerpSpeed;
+    currentPos.z += (targetPos.z - currentPos.z) * lerpSpeed;
+    
+    // Поворот
+    if (data.rotY !== undefined) {
+        let diff = data.rotY - player.mesh.rotation.y;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        player.mesh.rotation.y += diff * 0.2;
+    }
+    
+    // Обновляем скин если изменился
+    if (player.skinIndex !== data.skin) {
+        const colors = [0x4a8aff, 0xff6b4a, 0xaa66ff];
+        player.body.material.color.setHex(colors[data.skin % colors.length]);
+        player.skinIndex = data.skin;
+    }
+    
+    // Обновляем ник если изменился
+    if (player.nick !== data.nick) {
+        player.mesh.remove(player.sprite);
+        const newSprite = createNameSprite(data.nick);
+        newSprite.position.y = 1.4;
+        player.mesh.add(newSprite);
+        player.sprite = newSprite;
+        player.nick = data.nick;
+    }
+    
+    player.lastUpdate = Date.now();
+}
+
+function removeMultiplayerPlayer(id) {
+    const player = playerObjects[id];
+    if (player) {
+        scene.remove(player.mesh);
+        delete playerObjects[id];
+        addChatMessage('👤 Система', `${player.nick} вышел из игры`, 0xff4444);
+    }
+}
+
+// ========== БОТЫ ==========
+const botNames = ['🧙 Маг','⚔️ Воин','🏹 Лучник','🛡️ Защитник','💀 Некромант','🔥 Пиромант'];
+const botColors = [0xff5555,0x55ff55,0x5555ff,0xffaa55,0xff55ff,0x55ffff];
+let bots = [];
+
 function createBotSprite(name, skinIndex) {
     const canvas = document.createElement('canvas');
     canvas.width = 256; canvas.height = 64;
@@ -533,11 +841,6 @@ function createBotSprite(name, skinIndex) {
     const spriteMat = new THREE.SpriteMaterial({ map:texture, transparent:true, depthTest:false });
     return new THREE.Sprite(spriteMat);
 }
-
-// ========== БОТЫ ==========
-const botNames = ['🧙 Маг','⚔️ Воин','🏹 Лучник','🛡️ Защитник','💀 Некромант','🔥 Пиромант'];
-const botColors = [0xff5555,0x55ff55,0x5555ff,0xffaa55,0xff55ff,0x55ffff];
-let bots = [];
 
 function createBots() {
     bots.forEach(b => { 
@@ -853,7 +1156,6 @@ function deleteBlock() {
         if (Math.abs(block.position.x - bx) < 0.1 && Math.abs(block.position.z - bz) < 0.1) {
             scene.remove(block);
             placedBlocks.splice(i, 1);
-            // Возвращаем блок в инвентарь
             const type = Object.keys({ stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 }).find(k => 
                 block.material.color.getHex() === { stone:0x888888, wood:0x8B6A4A, grass:0x4CAF50, diamond:0x4FC3F7, gold:0xFFD700 }[k]
             );
@@ -956,29 +1258,15 @@ function jump() {
     }
 }
 
-// Кнопка прыжка
 jumpBtn.addEventListener('click', jump);
 jumpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); jump(); });
 
-// Клавиша пробел для прыжка
 document.addEventListener('keydown', (e) => {
     if (e.key === ' ' || e.code === 'Space') {
         e.preventDefault();
         if (gameUI.classList.contains('active')) {
             jump();
         }
-    }
-});
-
-// Двойной тап для прыжка на мобильных
-let lastTapTime = 0;
-document.addEventListener('touchstart', (e) => {
-    if (e.touches.length === 2 && gameUI.classList.contains('active')) {
-        const now = Date.now();
-        if (now - lastTapTime < 300) {
-            jump();
-        }
-        lastTapTime = now;
     }
 });
 
@@ -996,11 +1284,47 @@ chatToggleBtn.addEventListener('click', () => {
     if(chatOpen) chatInputField.focus();
 });
 
+function sendChatMessage(text) {
+    if (!text) return;
+    
+    // Отправляем в Firebase если в комнате
+    if (currentRoomId && isAuthenticated) {
+        database.ref('rooms/' + currentRoomId + '/messages').push({
+            nick: myNick,
+            text: text,
+            uid: currentUser.uid,
+            skin: currentSkinIndex,
+            timestamp: Date.now()
+        });
+    }
+    
+    // Показываем в локальном чате
+    addChatMessage('👤 ' + myNick, text, 0x88ddff);
+    chatInputField.value = '';
+}
+
+// Слушаем сообщения комнаты
+function listenRoomChat(roomId) {
+    if (chatListener) {
+        chatListener.off();
+        chatListener = null;
+    }
+    
+    chatListener = database.ref('rooms/' + roomId + '/messages').orderByChild('timestamp').limitToLast(50);
+    chatListener.on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        // Не показываем свои сообщения дважды
+        if (data.uid !== currentUser?.uid) {
+            addChatMessage('💬 ' + data.nick, data.text, 0x88ddff);
+        }
+    });
+}
+
 function sendMessage() {
     const text = chatInputField.value.trim();
     if(text) {
-        addChatMessage('👤 '+myNick, text, 0x88ddff);
-        chatInputField.value = '';
+        sendChatMessage(text);
+        // Ответ бота
         if(Math.random()>0.5 && botChatEnabled) {
             const bot = bots[Math.floor(Math.random()*bots.length)];
             if(bot && bot.alive) {
@@ -1061,8 +1385,31 @@ document.getElementById('skinClose').addEventListener('click', () => {
 });
 
 // ========== МЕНЮ И РЕЖИМЫ ==========
-document.getElementById('btnPlay').addEventListener('click', () => { modeSelect.classList.add('active'); });
+document.getElementById('btnPlay').addEventListener('click', () => { 
+    if (currentServer === 'public') {
+        if (!isAuthenticated) {
+            document.getElementById('authModal').classList.remove('hidden');
+            addChatMessage('🔐 Система', 'Войдите в аккаунт для игры на публичном сервере', 0xffaa44);
+            return;
+        }
+        roomsPanel.classList.add('active');
+        loadRooms();
+    } else {
+        modeSelect.classList.add('active'); 
+    }
+});
 document.getElementById('modeBack').addEventListener('click', () => { modeSelect.classList.remove('active'); });
+document.getElementById('roomsBack').addEventListener('click', () => { 
+    roomsPanel.classList.remove('active');
+    if (roomsListener) {
+        roomsListener.off();
+        roomsListener = null;
+    }
+});
+
+document.getElementById('roomRefreshBtn').addEventListener('click', () => {
+    loadRooms();
+});
 
 document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -1071,6 +1418,579 @@ document.querySelectorAll('.mode-btn').forEach(btn => {
     });
 });
 
+// ========== ЗАГРУЗКА КОМНАТ ==========
+function loadRooms() {
+    const list = document.getElementById('roomsList');
+    list.innerHTML = '<div class="room-empty">⏳ Загрузка комнат...</div>';
+    
+    if (roomsListener) {
+        roomsListener.off();
+    }
+    
+    roomsListener = database.ref('rooms').orderByChild('createdAt');
+    roomsListener.on('value', (snapshot) => {
+        const data = snapshot.val();
+        renderRooms(data);
+    });
+}
+
+function renderRooms(data) {
+    const list = document.getElementById('roomsList');
+    list.innerHTML = '';
+    
+    if (!data) {
+        list.innerHTML = '<div class="room-empty">🏠 Нет созданных комнат</div>';
+        return;
+    }
+
+    const rooms = Object.entries(data).filter(([id, room]) => {
+        return room.active !== false && room.players < room.maxPlayers;
+    });
+
+    if (rooms.length === 0) {
+        list.innerHTML = '<div class="room-empty">🏠 Нет доступных комнат</div>';
+        return;
+    }
+
+    rooms.forEach(([id, room]) => {
+        const div = document.createElement('div');
+        div.className = 'room-item';
+        if (room.password) {
+            div.classList.add('room-private');
+        }
+        
+        const isFull = room.players >= room.maxPlayers;
+        const modeNames = { explore:'🚶', sandbox:'🧱', pvp:'⚔️' };
+        
+        div.innerHTML = `
+            <div class="room-info">
+                <div class="room-name">${room.name || 'Комната'}</div>
+                <div class="room-details">
+                    ${modeNames[room.mode] || '🚶'} ${room.mode || 'Исследование'}
+                    <span style="margin:0 6px;">·</span>
+                    👤 ${room.players}/${room.maxPlayers}
+                    ${room.password ? ' 🔒' : ''}
+                    <span style="margin-left:6px;font-size:11px;color:rgba(200,220,255,0.2);">
+                        ${room.hostName ? 'Хост: ' + room.hostName : ''}
+                    </span>
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <div class="room-players">
+                    ${'🟢'.repeat(Math.min(room.players, 5))}
+                    ${'⚪'.repeat(Math.max(0, Math.min(room.maxPlayers - room.players, 5)))}
+                </div>
+                <button class="room-join" data-roomid="${id}" ${isFull ? 'disabled' : ''}>
+                    ${isFull ? '🔴 Полная' : '🚪 Войти'}
+                </button>
+            </div>
+        `;
+        
+        const joinBtn = div.querySelector('.room-join');
+        joinBtn.addEventListener('click', async () => {
+            if (!isFull) {
+                await joinRoom(id, room);
+            }
+        });
+        
+        list.appendChild(div);
+    });
+}
+
+// ========== СОЗДАНИЕ КОМНАТЫ ==========
+document.getElementById('roomCreateBtn').addEventListener('click', async () => {
+    const name = document.getElementById('roomCreateInput').value.trim();
+    if (!name) {
+        addChatMessage('❌ Система', 'Введите название комнаты', 0xff4444);
+        return;
+    }
+    
+    if (!isAuthenticated || !currentUser) {
+        addChatMessage('❌ Система', 'Войдите в аккаунт для создания комнаты', 0xff4444);
+        return;
+    }
+    
+    const mode = prompt('Выберите режим комнаты:\n1 - Исследование\n2 - Песочница\n3 - ПВП', '1');
+    const modes = ['explore', 'sandbox', 'pvp'];
+    const modeIndex = parseInt(mode) - 1;
+    const selectedMode = modes[modeIndex] || 'explore';
+    
+    const maxPlayers = parseInt(prompt('Максимум игроков (2-12):', '8')) || 8;
+    const password = prompt('Пароль комнаты (оставьте пустым для открытой):', '');
+    
+    await createRoom(name, selectedMode, Math.min(12, Math.max(2, maxPlayers)), password);
+    document.getElementById('roomCreateInput').value = '';
+});
+
+// ========== СОЗДАНИЕ КОМНАТЫ В FIREBASE ==========
+async function createRoom(name, mode, maxPlayers, password) {
+    try {
+        const roomData = {
+            name: name || 'Комната ' + myNick,
+            mode: mode || 'explore',
+            maxPlayers: maxPlayers || 8,
+            password: password || '',
+            host: currentUser.uid,
+            hostName: myNick,
+            createdAt: Date.now(),
+            active: true,
+            started: false,
+            gameStarted: false,
+            players: 1
+        };
+
+        const ref = await database.ref('rooms').push(roomData);
+        currentRoomId = ref.key;
+        
+        await database.ref('rooms/' + ref.key + '/players_list/' + currentUser.uid).set({
+            uid: currentUser.uid,
+            nick: myNick,
+            skin: currentSkinIndex,
+            isHost: true,
+            joinedAt: Date.now(),
+            connected: true,
+            x: camera.position.x,
+            y: camera.position.y,
+            z: camera.position.z,
+            rotY: camera.rotation.y
+        });
+        
+        addChatMessage('🏠 Система', `Комната "${roomData.name}" создана!`, 0x44ff88);
+        roomsPanel.classList.remove('active');
+        modeSelect.classList.add('active');
+        
+        const modeBtn = document.querySelector(`.mode-btn[data-mode="${mode}"]`);
+        if (modeBtn) {
+            modeBtn.click();
+        } else {
+            document.querySelector('.mode-btn[data-mode="explore"]').click();
+        }
+        
+        return ref.key;
+    } catch (error) {
+        console.error('Ошибка создания комнаты:', error);
+        addChatMessage('❌ Система', 'Ошибка создания комнаты: ' + error.message, 0xff4444);
+    }
+}
+
+// ========== ВХОД В КОМНАТУ ==========
+async function joinRoom(roomId, roomData) {
+    if (!isAuthenticated || !currentUser) {
+        addChatMessage('❌ Система', 'Войдите в аккаунт для входа в комнату', 0xff4444);
+        return;
+    }
+
+    if (roomData.password) {
+        const pwd = prompt('Введите пароль комнаты:');
+        if (pwd !== roomData.password) {
+            addChatMessage('❌ Система', 'Неверный пароль!', 0xff4444);
+            return;
+        }
+    }
+
+    try {
+        const snapshot = await database.ref('rooms/' + roomId).once('value');
+        const room = snapshot.val();
+        if (!room || room.players >= room.maxPlayers) {
+            addChatMessage('❌ Система', 'Комната полная!', 0xff4444);
+            return;
+        }
+
+        await database.ref('rooms/' + roomId + '/players_list/' + currentUser.uid).set({
+            uid: currentUser.uid,
+            nick: myNick,
+            skin: currentSkinIndex,
+            isHost: false,
+            joinedAt: Date.now(),
+            connected: true,
+            x: camera.position.x,
+            y: camera.position.y,
+            z: camera.position.z,
+            rotY: camera.rotation.y
+        });
+
+        await database.ref('rooms/' + roomId + '/players').transaction((current) => {
+            return (current || 0) + 1;
+        });
+
+        currentRoomId = roomId;
+        addChatMessage('🏠 Система', `Вы вошли в комнату "${room.name || 'Комната'}"!`, 0x44ff88);
+        roomsPanel.classList.remove('active');
+        modeSelect.classList.add('active');
+        
+        // Слушаем чат комнаты
+        listenRoomChat(roomId);
+        
+        const modeBtn = document.querySelector(`.mode-btn[data-mode="${room.mode || 'explore'}"]`);
+        if (modeBtn) {
+            modeBtn.click();
+        } else {
+            document.querySelector('.mode-btn[data-mode="explore"]').click();
+        }
+    } catch (error) {
+        console.error('Ошибка входа в комнату:', error);
+        addChatMessage('❌ Система', 'Ошибка входа в комнату', 0xff4444);
+    }
+}
+
+// ========== ВЫХОД ИЗ КОМНАТЫ ==========
+async function leaveRoom() {
+    if (currentRoomId && isAuthenticated && currentUser) {
+        try {
+            if (chatListener) {
+                chatListener.off();
+                chatListener = null;
+            }
+            
+            await database.ref('rooms/' + currentRoomId + '/players_list/' + currentUser.uid).remove();
+            await database.ref('rooms/' + currentRoomId + '/players').transaction((current) => {
+                return Math.max(0, (current || 1) - 1);
+            });
+            
+            const snapshot = await database.ref('rooms/' + currentRoomId).once('value');
+            const room = snapshot.val();
+            if (room && room.players <= 0) {
+                await database.ref('rooms/' + currentRoomId).update({ active: false });
+            }
+            
+            addChatMessage('🏠 Система', 'Вы вышли из комнаты', 0xff8888);
+            currentRoomId = null;
+        } catch (error) {
+            console.error('Ошибка выхода из комнаты:', error);
+        }
+    }
+}
+
+// ========== ФУНКЦИИ АККАУНТА ==========
+function showUserInfo(user) {
+    const userInfo = document.getElementById('authUserInfo');
+    const userName = document.getElementById('authUserName');
+    const userAvatar = document.getElementById('authAvatar');
+    
+    userInfo.classList.add('active');
+    const displayName = user.displayName || user.email || 'Игрок';
+    userName.textContent = displayName;
+    userAvatar.textContent = displayName.charAt(0).toUpperCase();
+    if (user.photoURL) {
+        userAvatar.innerHTML = `<img src="${user.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">`;
+    }
+}
+
+function hideUserInfo() {
+    document.getElementById('authUserInfo').classList.remove('active');
+}
+
+// ========== АВТОРИЗАЦИЯ ==========
+firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+        currentUser = user;
+        isAuthenticated = true;
+        console.log('✅ Авторизован:', user.email);
+        showUserInfo(user);
+        loadUserData(user.uid);
+        addChatMessage('🔐 Система', `Добро пожаловать, ${user.displayName || user.email}!`, 0x44ff88);
+    } else {
+        // Удаляем всех игроков при выходе
+        Object.keys(playerObjects).forEach(id => {
+            removeMultiplayerPlayer(id);
+        });
+        currentUser = null;
+        isAuthenticated = false;
+        hideUserInfo();
+        console.log('👤 Не авторизован');
+    }
+});
+
+// ========== ЗАГРУЗКА ДАННЫХ ==========
+async function loadUserData(uid) {
+    try {
+        const snapshot = await database.ref('users/' + uid + '/data').once('value');
+        const data = snapshot.val();
+        if (data) {
+            if (data.nick) {
+                myNick = data.nick;
+                Storage.set('nick', myNick);
+                document.getElementById('nickNameText').textContent = myNick;
+            }
+            if (data.skin !== undefined) {
+                currentSkinIndex = data.skin;
+                Storage.set('currentSkin', currentSkinIndex);
+                updatePlayerAvatar();
+            }
+            if (data.coins !== undefined) {
+                coins = data.coins;
+                Storage.set('coins', coins);
+                updateScore();
+            }
+            if (data.score !== undefined) {
+                score = data.score;
+                updateScore();
+            }
+            if (data.inventory) {
+                inventory = data.inventory;
+                updateInventory();
+            }
+            console.log('📥 Данные загружены:', data);
+            addChatMessage('💾 Система', 'Прогресс загружен!', 0x88ccff);
+        }
+        return data;
+    } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        return null;
+    }
+}
+
+// ========== АВТО-СОХРАНЕНИЕ ==========
+async function autoSave() {
+    if (!isAuthenticated || !currentUser) return;
+    
+    const data = {
+        nick: myNick,
+        skin: currentSkinIndex,
+        coins: coins,
+        score: score,
+        inventory: inventory,
+        lastUpdate: Date.now()
+    };
+    
+    try {
+        await database.ref('users/' + currentUser.uid + '/data').set(data);
+        console.log('💾 Авто-сохранение выполнено');
+    } catch (error) {
+        console.error('Ошибка авто-сохранения:', error);
+    }
+}
+
+setInterval(autoSave, 30000);
+window.addEventListener('beforeunload', autoSave);
+
+// ========== ОБРАБОТЧИКИ АККАУНТА ==========
+document.getElementById('authLoginBtn').addEventListener('click', async function() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    
+    if (!email || !password) {
+        document.getElementById('authError').textContent = 'Заполните все поля';
+        return;
+    }
+    
+    try {
+        const result = await firebase.auth().signInWithEmailAndPassword(email, password);
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('authError').textContent = '';
+    } catch (error) {
+        let message = 'Ошибка входа';
+        switch (error.code) {
+            case 'auth/user-not-found': message = 'Пользователь не найден'; break;
+            case 'auth/wrong-password': message = 'Неверный пароль'; break;
+            case 'auth/invalid-email': message = 'Неверный формат email'; break;
+            default: message = error.message;
+        }
+        document.getElementById('authError').textContent = message;
+    }
+});
+
+document.getElementById('authRegisterBtn').addEventListener('click', async function() {
+    const nick = document.getElementById('authRegNick').value.trim();
+    const email = document.getElementById('authRegEmail').value.trim();
+    const password = document.getElementById('authRegPassword').value;
+    const password2 = document.getElementById('authRegPassword2').value;
+    
+    if (!nick || !email || !password || !password2) {
+        document.getElementById('authError').textContent = 'Заполните все поля';
+        return;
+    }
+    if (password.length < 6) {
+        document.getElementById('authError').textContent = 'Пароль должен быть минимум 6 символов';
+        return;
+    }
+    if (password !== password2) {
+        document.getElementById('authError').textContent = 'Пароли не совпадают';
+        return;
+    }
+    
+    try {
+        const result = await firebase.auth().createUserWithEmailAndPassword(email, password);
+        await result.user.updateProfile({ displayName: nick });
+        
+        await database.ref('users/' + result.user.uid + '/data').set({
+            nick: nick,
+            skin: 0,
+            coins: 500,
+            score: 0,
+            inventory: { stone: 100, wood: 100, grass: 50, diamond: 20, gold: 10 },
+            createdAt: Date.now()
+        });
+        
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('authError').textContent = '';
+        addChatMessage('🎉 Система', `Аккаунт создан! Добро пожаловать, ${nick}!`, 0x44ff88);
+    } catch (error) {
+        let message = 'Ошибка регистрации';
+        switch (error.code) {
+            case 'auth/email-already-in-use': message = 'Этот email уже используется'; break;
+            case 'auth/invalid-email': message = 'Неверный формат email'; break;
+            case 'auth/weak-password': message = 'Слишком слабый пароль'; break;
+            default: message = error.message;
+        }
+        document.getElementById('authError').textContent = message;
+    }
+});
+
+document.getElementById('authGoogleBtn').addEventListener('click', async function() {
+    try {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await firebase.auth().signInWithPopup(provider);
+        document.getElementById('authModal').classList.add('hidden');
+        document.getElementById('authError').textContent = '';
+        
+        const snapshot = await database.ref('users/' + result.user.uid + '/data').once('value');
+        if (!snapshot.exists()) {
+            await database.ref('users/' + result.user.uid + '/data').set({
+                nick: result.user.displayName || 'Игрок',
+                skin: 0,
+                coins: 500,
+                score: 0,
+                inventory: { stone: 100, wood: 100, grass: 50, diamond: 20, gold: 10 },
+                createdAt: Date.now()
+            });
+        }
+        addChatMessage('🔐 Система', `Добро пожаловать, ${result.user.displayName || result.user.email}!`, 0x44ff88);
+    } catch (error) {
+        document.getElementById('authError').textContent = 'Ошибка входа через Google: ' + error.message;
+    }
+});
+
+document.getElementById('authLogoutBtn').addEventListener('click', async function() {
+    try {
+        await leaveRoom();
+        if (positionUpdateInterval) {
+            clearInterval(positionUpdateInterval);
+            positionUpdateInterval = null;
+        }
+        await firebase.auth().signOut();
+        addChatMessage('👤 Система', 'Вы вышли из аккаунта', 0xff8888);
+        myNick = Storage.get('nick', 'Гость');
+        document.getElementById('nickNameText').textContent = myNick;
+    } catch (error) {
+        console.error('Ошибка выхода:', error);
+    }
+});
+
+document.getElementById('authSwitchLink').addEventListener('click', function() {
+    const isLogin = document.getElementById('authLoginForm').style.display !== 'none';
+    if (isLogin) {
+        document.getElementById('authLoginForm').style.display = 'none';
+        document.getElementById('authRegisterForm').style.display = 'block';
+        document.getElementById('authTitle').textContent = '📝 Регистрация';
+        document.getElementById('authSub').textContent = 'Создайте новый аккаунт';
+        this.textContent = 'Войти';
+        document.getElementById('authSwitchText').textContent = 'Уже есть аккаунт? ';
+    } else {
+        document.getElementById('authLoginForm').style.display = 'block';
+        document.getElementById('authRegisterForm').style.display = 'none';
+        document.getElementById('authTitle').textContent = '🔐 Вход';
+        document.getElementById('authSub').textContent = 'Войдите в свой аккаунт';
+        this.textContent = 'Зарегистрироваться';
+        document.getElementById('authSwitchText').textContent = 'Нет аккаунта? ';
+    }
+    document.getElementById('authError').textContent = '';
+});
+
+document.getElementById('authResetLink').addEventListener('click', function() {
+    const email = prompt('Введите email для восстановления пароля:');
+    if (email) {
+        firebase.auth().sendPasswordResetEmail(email)
+            .then(() => {
+                addChatMessage('📧 Система', 'Инструкции по восстановлению отправлены на email', 0x44ff88);
+            })
+            .catch((error) => {
+                document.getElementById('authError').textContent = 'Ошибка: ' + error.message;
+            });
+    }
+});
+
+document.getElementById('authCloseBtn').addEventListener('click', function() {
+    document.getElementById('authModal').classList.add('hidden');
+    document.getElementById('authError').textContent = '';
+});
+
+document.getElementById('btnAccount').addEventListener('click', function() {
+    if (isAuthenticated && currentUser) {
+        if (confirm(`Аккаунт: ${myNick}\nМонет: ${coins}\nОчков: ${score}\nСкин: ${SKIN_NAMES[currentSkinIndex]}\n\nВыйти из аккаунта?`)) {
+            firebase.auth().signOut();
+        }
+    } else {
+        document.getElementById('authModal').classList.remove('hidden');
+        document.getElementById('authError').textContent = '';
+    }
+});
+
+// ========== МУЛЬТИПЛЕЕР ==========
+function startMultiplayer(roomId) {
+    if (!roomId || !isAuthenticated || !currentUser) return;
+    
+    const playersRef = database.ref('rooms/' + roomId + '/players_list');
+    const myPlayerRef = playersRef.child(currentUser.uid);
+    
+    // Устанавливаем свои данные
+    myPlayerRef.set({
+        uid: currentUser.uid,
+        nick: myNick,
+        skin: currentSkinIndex,
+        isHost: false,
+        joinedAt: Date.now(),
+        connected: true,
+        x: camera.position.x,
+        y: camera.position.y,
+        z: camera.position.z,
+        rotY: camera.rotation.y
+    });
+    
+    // Обработка отключения
+    myPlayerRef.onDisconnect().update({ connected: false });
+    
+    // Слушаем других игроков
+    playersRef.on('child_added', (snapshot) => {
+        const data = snapshot.val();
+        if (snapshot.key === currentUser.uid) return;
+        if (data.connected) {
+            createMultiplayerPlayer(snapshot.key, data);
+        }
+    });
+    
+    playersRef.on('child_changed', (snapshot) => {
+        const data = snapshot.val();
+        if (snapshot.key === currentUser.uid) return;
+        if (data.connected) {
+            updateMultiplayerPlayer(snapshot.key, data);
+        } else {
+            removeMultiplayerPlayer(snapshot.key);
+        }
+    });
+    
+    playersRef.on('child_removed', (snapshot) => {
+        removeMultiplayerPlayer(snapshot.key);
+    });
+    
+    // Обновляем позицию каждые 50мс
+    if (positionUpdateInterval) {
+        clearInterval(positionUpdateInterval);
+    }
+    positionUpdateInterval = setInterval(() => {
+        if (gameUI.classList.contains('active') && currentRoomId) {
+            myPlayerRef.update({
+                x: camera.position.x,
+                y: camera.position.y,
+                z: camera.position.z,
+                rotY: camera.rotation.y,
+                lastUpdate: Date.now()
+            });
+        }
+    }, 50);
+}
+
+// ========== ОСНОВНАЯ ФУНКЦИЯ ЗАПУСКА ==========
 function startGame(mode) {
     currentMode = mode;
     modeSelect.classList.remove('active');
@@ -1118,9 +2038,31 @@ function startGame(mode) {
     }
     camera.position.set(0,1.8,10);
     camera.lookAt(0,1.8,0);
+    
+    // Запускаем мультиплеер
+    if (currentServer === 'public' && isAuthenticated && currentRoomId) {
+        startMultiplayer(currentRoomId);
+    }
 }
 
-menuToggle.addEventListener('click', () => {
+// ========== ОБРАБОТЧИК МЕНЮ ==========
+menuToggle.addEventListener('click', async () => {
+    if (positionUpdateInterval) {
+        clearInterval(positionUpdateInterval);
+        positionUpdateInterval = null;
+    }
+    
+    // Очищаем всех игроков
+    Object.keys(playerObjects).forEach(id => {
+        removeMultiplayerPlayer(id);
+    });
+    
+    if (chatListener) {
+        chatListener.off();
+        chatListener = null;
+    }
+    
+    await leaveRoom();
     mainMenu.classList.remove('hidden');
     gameUI.classList.remove('active');
     menuToggle.style.display = 'none';
@@ -1135,7 +2077,7 @@ menuToggle.addEventListener('click', () => {
     scoreDisplay.classList.remove('active');
 });
 
-// ========== РЕДАКТОР КАРТ (фикс размера) ==========
+// ========== РЕДАКТОР КАРТ ==========
 const editorPanel = document.getElementById('editorPanel');
 const editorCanvas = document.getElementById('editorCanvas');
 const ctx = editorCanvas.getContext('2d');
@@ -1324,7 +2266,6 @@ function animate() {
     updateBots();
     updateBullets();
     
-    // Прыжок игрока
     if (isJumping) {
         camera.position.y += jumpVelocity;
         jumpVelocity -= GRAVITY;
@@ -1396,10 +2337,12 @@ updateScore();
 updateInventory();
 animate();
 
-console.log('🐱 Kotnot_Sandbox v0.2 загружена!');
+console.log('🐱 Kotnot_Sandbox v0.3 загружена!');
+console.log('🔥 Firebase интегрирован!');
+console.log('👥 Мультиплеер активен!');
+console.log('🏠 Система комнат работает!');
 console.log('Ник:', myNick);
 console.log('Сервер:', currentServer);
-console.log('Скины загружены:', skinLoaded);
 console.log('🎮 Нажми ПРОБЕЛ для прыжка!');
 </script>
 </body>
