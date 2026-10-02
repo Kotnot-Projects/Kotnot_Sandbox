@@ -3,36 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kotnot_Sandbox v0.4 BETA</title>
+<title>Kotnot_Sandbox v0.5</title>
 <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { overflow:hidden; background:#0a0a1a; font-family:'Segoe UI',sans-serif; touch-action:none; user-select:none; position:fixed; width:100%; height:100%; }
     canvas { display:block; position:fixed; top:0; left:0; z-index:1; }
 
-    /* ================ ГЛАВНОЕ МЕНЮ ================ */
     #mainMenu { position:fixed; inset:0; background:rgba(10,15,30,0.92); backdrop-filter:blur(30px); z-index:200; display:flex; align-items:center; justify-content:center; transition:opacity .5s; overflow-y:auto; }
     #mainMenu.hidden { opacity:0; pointer-events:none; }
-    #menuContent { text-align:center; max-width:420px; width:90%; padding:20px; margin:auto; }
+    #menuContent { text-align:center; max-width:440px; width:92%; padding:20px; margin:auto; }
     #menuContent h1 { font-size:42px; color:#88ccff; margin-bottom:4px; text-shadow:0 0 40px rgba(100,200,255,0.2); }
-    #menuContent .sub { color:rgba(200,220,255,0.4); font-size:13px; letter-spacing:3px; margin-bottom:26px; }
-    .menu-btn { display:block; width:100%; padding:15px 20px; margin-bottom:10px; border:none; border-radius:16px; font-size:17px; font-weight:600; cursor:pointer; transition:.2s; touch-action:manipulation; }
+    #menuContent .sub { color:rgba(200,220,255,0.4); font-size:12px; letter-spacing:2px; margin-bottom:20px; }
+    .menu-btn { display:block; width:100%; padding:14px 18px; margin-bottom:9px; border:none; border-radius:16px; font-size:16px; font-weight:600; cursor:pointer; transition:.2s; touch-action:manipulation; }
     .menu-btn:active { transform:scale(0.96); }
     .btn-play { background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:white; box-shadow:0 0 40px rgba(70,150,255,0.2); }
     .btn-editor { background:linear-gradient(135deg,#ff6b4a,#cc3a2a); color:white; box-shadow:0 0 40px rgba(255,100,50,0.2); }
     .btn-skin { background:linear-gradient(135deg,#aa66ff,#7a3acc); color:white; box-shadow:0 0 40px rgba(170,100,255,0.2); }
+    .btn-skin-editor { background:linear-gradient(135deg,#ff44aa,#cc2288); color:white; box-shadow:0 0 40px rgba(255,68,170,0.2); }
     .btn-posts { background:linear-gradient(135deg,#ffaa44,#cc7722); color:white; box-shadow:0 0 40px rgba(255,170,68,0.2); }
     .btn-account { background:rgba(60,200,120,0.2); color:#88ddbb; border:1px solid rgba(100,255,180,0.15); }
     .btn-settings { background:rgba(60,80,120,0.2); color:#aac0dd; border:1px solid rgba(100,180,255,0.15); }
     .btn-icon { margin-right:10px; }
 
-    /* ================ ОБЩИЕ ПАНЕЛИ ================ */
     .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.92); backdrop-filter:blur(20px); z-index:250; display:none; align-items:center; justify-content:center; padding:16px; overflow-y:auto; }
     .overlay.active { display:flex; }
     .panel { background:rgba(20,30,50,0.97); border:2px solid rgba(100,200,255,0.2); border-radius:26px; padding:28px 30px; max-width:520px; width:100%; text-align:center; max-height:92vh; overflow-y:auto; margin:auto; }
     .panel h2 { color:#88ccff; font-size:26px; margin-bottom:6px; }
     .panel .sub { color:rgba(200,220,255,0.4); font-size:13px; margin-bottom:18px; }
 
-    /* ================ КОМНАТЫ ================ */
     .rooms-list { max-height:340px; overflow-y:auto; margin-bottom:14px; text-align:left; }
     .room-item { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; margin-bottom:8px; border-radius:14px; background:rgba(60,80,120,0.15); border:1px solid rgba(100,180,255,0.1); transition:.2s; }
     .room-item .room-info { text-align:left; flex:1; }
@@ -53,13 +51,11 @@
     .back-btn { margin-top:12px; background:rgba(255,70,70,0.1); border:1px solid rgba(255,70,70,0.15); border-radius:14px; padding:12px; color:#ff8888; font-size:15px; cursor:pointer; width:100%; }
     .back-btn:active { transform:scale(0.96); }
 
-    /* ================ ВЫБОР РЕЖИМА ================ */
-    .mode-btn { display:flex; align-items:center; gap:14px; width:100%; padding:16px 20px; margin-bottom:12px; border:2px solid rgba(100,180,255,0.15); border-radius:16px; background:rgba(60,80,120,0.15); color:#c0d8ff; font-size:17px; font-weight:500; cursor:pointer; text-align:left; }
+    .mode-btn { display:flex; align-items:center; gap:14px; width:100%; padding:15px 18px; margin-bottom:10px; border:2px solid rgba(100,180,255,0.15); border-radius:16px; background:rgba(60,80,120,0.15); color:#c0d8ff; font-size:16px; font-weight:500; cursor:pointer; text-align:left; }
     .mode-btn:active { transform:scale(0.96); }
     .mode-btn .mode-icon { font-size:26px; }
     .mode-btn .mode-desc { font-size:12px; color:rgba(200,220,255,0.4); }
 
-    /* ================ РЕДАКТОР ================ */
     #editorPanel .panel { max-width:760px; }
     .editor-tools { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:14px; }
     .editor-tool { padding:8px 14px; border-radius:12px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; cursor:pointer; font-size:13px; transition:.2s; display:flex; align-items:center; gap:6px; }
@@ -72,27 +68,37 @@
     .btn-load { background:linear-gradient(135deg,#66ffaa,#3acc7a); color:#0a1a0a; }
     .btn-clear { background:rgba(255,70,70,0.2); color:#ff8888; border:1px solid rgba(255,70,70,0.15); }
     .btn-close-editor { background:rgba(255,70,70,0.1); color:#ff8888; border:1px solid rgba(255,70,70,0.15); }
-    #fileInput { display:none; }
+    #fileInput, #skinFileInput, #rcFileInput { display:none; }
     .editor-info { color:rgba(200,220,255,0.5); font-size:12px; margin:8px 0; }
 
-    /* ================ СКИНЫ ================ */
+    #skinEditorPanel .panel { max-width:600px; }
+    #skinEditorCanvas { display:block; margin:0 auto; border:2px solid rgba(255,68,170,0.3); border-radius:12px; background:#1a0a1a; cursor:crosshair; touch-action:none; width:100%; max-width:420px; height:auto; image-rendering:pixelated; }
+    .skin-editor-palette { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; margin:14px auto; max-width:420px; }
+    .color-swatch { aspect-ratio:1; border-radius:6px; border:2px solid rgba(255,255,255,0.1); cursor:pointer; transition:.2s; }
+    .color-swatch.active { border-color:#fff; box-shadow:0 0 12px rgba(255,255,255,0.5); transform:scale(1.1); }
+    .skin-editor-preview { display:flex; justify-content:center; align-items:center; gap:20px; margin:14px 0; }
+    .skin-editor-preview .pixel-preview { width:96px; height:96px; border-radius:12px; background:rgba(0,0,0,0.4); border:2px solid rgba(255,68,170,0.3); image-rendering:pixelated; }
+    .skin-editor-input { width:100%; padding:11px 14px; margin-bottom:10px; border-radius:12px; border:2px solid rgba(255,68,170,0.2); background:rgba(60,20,50,0.2); color:#ffd0ee; font-size:14px; outline:none; box-sizing:border-box; }
+    .skin-editor-input:focus { border-color:rgba(255,68,170,0.5); }
+
     .skin-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
     .skin-item { background:rgba(60,80,120,0.15); border:2px solid rgba(100,180,255,0.1); border-radius:16px; padding:12px; cursor:pointer; transition:.2s; position:relative; }
     .skin-item.active { border-color:rgba(100,200,255,0.5); background:rgba(60,80,120,0.3); }
-    .skin-item .preview { width:100%; aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; background:rgba(0,0,0,0.3); overflow:hidden; font-size:48px; }
-    .skin-item .preview img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+    .skin-item .preview { width:100%; aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:6px; background:rgba(0,0,0,0.3); overflow:hidden; font-size:48px; image-rendering:pixelated; }
+    .skin-item .preview img { width:100%; height:100%; object-fit:cover; border-radius:8px; image-rendering:pixelated; }
     .skin-item .name { color:#c0d8ff; font-size:12px; font-weight:500; }
     .skin-item .price { color:rgba(200,220,255,0.4); font-size:10px; }
     .skin-item .owned { position:absolute; top:8px; right:8px; background:rgba(68,255,136,0.2); color:#44ff88; font-size:9px; padding:2px 8px; border-radius:10px; }
 
-    /* ================ НАСТРОЙКИ ================ */
     .setting-item { display:flex; align-items:center; justify-content:space-between; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.05); color:#c0d8ff; font-size:15px; }
     .setting-toggle { width:50px; height:28px; border-radius:14px; background:rgba(60,80,120,0.3); border:1px solid rgba(100,180,255,0.15); cursor:pointer; position:relative; transition:.3s; flex-shrink:0; }
     .setting-toggle.active { background:rgba(70,150,255,0.4); border-color:rgba(100,200,255,0.4); }
     .setting-toggle .dot { width:20px; height:20px; border-radius:50%; background:#6688aa; position:absolute; top:3px; left:3px; transition:.3s; }
     .setting-toggle.active .dot { background:#88ccff; left:25px; box-shadow:0 0 20px rgba(100,200,255,0.3); }
+    .lang-switch { display:flex; gap:8px; }
+    .lang-btn { padding:6px 14px; border-radius:10px; border:2px solid rgba(100,180,255,0.15); background:rgba(60,80,120,0.15); color:#c0d8ff; cursor:pointer; font-size:13px; font-weight:600; }
+    .lang-btn.active { border-color:rgba(100,200,255,0.5); background:rgba(60,80,120,0.35); }
 
-    /* ================ ИГРОВОЙ UI ================ */
     #gameUI { display:none; position:fixed; inset:0; z-index:10; pointer-events:none; }
     #gameUI.active { display:block; }
     #crosshair { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; }
@@ -143,11 +149,35 @@
     #nickDisplay { position:absolute; top:200px; left:50%; transform:translateX(-50%); color:#88ccff; font-size:14px; background:rgba(0,0,0,0.5); padding:4px 16px; border-radius:20px; pointer-events:none; z-index:10; display:none; }
     #nickDisplay.active { display:block; }
     #avatarPreview { width:32px; height:32px; border-radius:50%; display:inline-block; vertical-align:middle; margin-right:8px; background:#444; overflow:hidden; }
-    #avatarPreview img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+    #avatarPreview img { width:100%; height:100%; border-radius:50%; object-fit:cover; image-rendering:pixelated; }
     #onlineIndicator { position:absolute; top:110px; right:20px; padding:6px 14px; border-radius:20px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); color:#44ff88; font-size:12px; z-index:15; pointer-events:none; display:none; border:1px solid rgba(68,255,136,0.2); }
     #onlineIndicator.active { display:block; }
 
-    /* ================ АВТОРИЗАЦИЯ ================ */
+    #footballScore { position:absolute; top:70px; left:50%; transform:translateX(-50%); padding:10px 24px; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); border-radius:20px; border:2px solid rgba(100,200,255,0.2); color:#fff; font-size:20px; font-weight:bold; z-index:15; display:none; pointer-events:none; font-family:monospace; }
+    #footballScore.active { display:block; }
+    #footballScore .red { color:#ff6666; }
+    #footballScore .blue { color:#6699ff; }
+    #footballTimer { position:absolute; top:120px; left:50%; transform:translateX(-50%); padding:6px 18px; background:rgba(0,0,0,0.5); border-radius:16px; color:#ffdd66; font-size:14px; z-index:15; display:none; pointer-events:none; font-family:monospace; }
+    #footballTimer.active { display:block; }
+    #teamIndicator { position:absolute; top:160px; left:50%; transform:translateX(-50%); padding:5px 14px; border-radius:14px; font-size:13px; font-weight:600; z-index:15; display:none; pointer-events:none; }
+    #teamIndicator.active { display:block; }
+    #teamIndicator.red { background:rgba(255,68,68,0.3); color:#ffaaaa; border:1px solid rgba(255,68,68,0.4); }
+    #teamIndicator.blue { background:rgba(68,102,255,0.3); color:#aaccff; border:1px solid rgba(68,102,255,0.4); }
+    #goalMessage { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:80px; font-weight:900; color:#ffdd44; text-shadow:0 0 40px rgba(255,200,0,0.8), 0 0 80px rgba(255,200,0,0.5); z-index:20; display:none; pointer-events:none; animation:goalPop 0.5s ease; }
+    #goalMessage.active { display:block; }
+    @keyframes goalPop { 0% { transform:translate(-50%,-50%) scale(0.3); opacity:0; } 50% { transform:translate(-50%,-50%) scale(1.2); opacity:1; } 100% { transform:translate(-50%,-50%) scale(1); opacity:1; } }
+
+    #parkourHUD { position:absolute; top:70px; left:20px; padding:14px 20px; background:rgba(0,0,0,0.7); backdrop-filter:blur(10px); border-radius:16px; border:2px solid rgba(255,68,170,0.3); color:#fff; font-size:14px; z-index:15; display:none; pointer-events:none; font-family:monospace; min-width:160px; }
+    #parkourHUD.active { display:block; }
+    #parkourHUD .time { font-size:24px; font-weight:bold; color:#ff88dd; margin:4px 0; }
+    #parkourHUD .best { font-size:12px; color:rgba(255,200,255,0.7); }
+    #parkourHUD .checkpoint { font-size:12px; color:#88ffcc; margin-top:4px; }
+    #parkourFinishMsg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); padding:30px 50px; background:rgba(20,30,50,0.95); backdrop-filter:blur(20px); border-radius:24px; border:3px solid rgba(255,68,170,0.5); color:#fff; text-align:center; z-index:20; display:none; pointer-events:none; box-shadow:0 0 60px rgba(255,68,170,0.4); }
+    #parkourFinishMsg.active { display:block; animation:goalPop 0.5s ease; }
+    #parkourFinishMsg h2 { color:#ff88dd; font-size:32px; margin-bottom:8px; }
+    #parkourFinishMsg .time { font-size:38px; font-weight:bold; color:#ffdd44; margin:10px 0; }
+    #parkourFinishMsg .best { font-size:14px; color:rgba(255,200,255,0.7); }
+
     #authModal { position:fixed; inset:0; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); z-index:1000; display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto; }
     #authModal.hidden { display:none; }
     #authContent { background:rgba(20,30,50,0.97); border:2px solid rgba(100,200,255,0.2); border-radius:26px; padding:30px; max-width:400px; width:100%; text-align:center; margin:auto; }
@@ -168,21 +198,19 @@
     #authUserName { color:#c0d8ff; font-size:13px; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     #authLogoutBtn { background:rgba(255,70,70,0.2); border:none; color:#ff6666; padding:5px 12px; border-radius:12px; font-size:11px; cursor:pointer; }
 
-    /* ================ МОДАЛКА НИКА ================ */
     #nickInputModal { position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:500; display:flex; align-items:center; justify-content:center; flex-direction:column; padding:20px; }
     #nickInputModal.hidden { display:none; }
     #nickInputModal input { padding:14px 20px; border-radius:14px; border:2px solid rgba(100,180,255,0.3); background:rgba(20,30,50,0.8); color:#c0d8ff; font-size:18px; text-align:center; outline:none; width:100%; max-width:300px; }
     #nickInputModal button { margin-top:16px; padding:12px 32px; border:none; border-radius:14px; background:linear-gradient(135deg,#4a8aff,#2a5a9a); color:#fff; font-size:17px; font-weight:600; cursor:pointer; }
     #nickInputModal h2 { color:#88ccff; margin-bottom:16px; }
 
-    /* ================ ПОСТЫ ================ */
     #postsPanel .panel { max-width:640px; }
     .posts-list { text-align:left; margin-bottom:14px; }
     .post-card { background:rgba(60,80,120,0.15); border:1px solid rgba(100,180,255,0.1); border-radius:16px; padding:16px; margin-bottom:12px; cursor:pointer; transition:.2s; }
     .post-card:hover { border-color:rgba(100,200,255,0.35); background:rgba(60,80,120,0.25); }
     .post-header { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
     .post-avatar { width:36px; height:36px; border-radius:50%; overflow:hidden; background:#4a8aff; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; flex-shrink:0; }
-    .post-avatar img { width:100%; height:100%; object-fit:cover; }
+    .post-avatar img { width:100%; height:100%; object-fit:cover; image-rendering:pixelated; }
     .post-author { color:#88ccff; font-weight:600; font-size:14px; }
     .post-time { color:rgba(200,220,255,0.35); font-size:11px; }
     .post-title { color:#c0d8ff; font-size:16px; font-weight:600; margin-bottom:6px; }
@@ -211,7 +239,9 @@
     .post-form textarea { min-height:120px; resize:vertical; }
     .post-form input:focus, .post-form textarea:focus { border-color:rgba(100,200,255,0.4); }
 
-    /* ================ МОБИЛЬНАЯ ================ */
+    #pcHint { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.5); font-size:12px; background:rgba(0,0,0,0.5); padding:8px 18px; border-radius:20px; z-index:15; pointer-events:none; display:none; max-width:90%; text-align:center; }
+    #pcHint.active { display:block; }
+
     @media (max-width:600px) {
         #joysticksContainer { padding:0 16px; bottom:25px; }
         #joystickMove, #joystickRotate { width:90px; height:90px; }
@@ -225,179 +255,190 @@
         #jumpBtn { bottom:150px; right:20px; width:50px; height:50px; font-size:20px; }
         .block-btn { width:40px; height:40px; font-size:16px; }
         #authUserInfo { top:8px; right:8px; }
+        #goalMessage { font-size:50px; }
+        #parkourHUD { top:60px; left:10px; padding:10px 14px; font-size:12px; }
+        #parkourHUD .time { font-size:18px; }
     }
-
-    #pcHint { position:absolute; bottom:30px; left:50%; transform:translateX(-50%); color:rgba(200,220,255,0.5); font-size:12px; background:rgba(0,0,0,0.5); padding:8px 18px; border-radius:20px; z-index:15; pointer-events:none; display:none; }
-    #pcHint.active { display:block; }
 </style>
 </head>
 <body>
 
-<!-- ========== МОДАЛКА НИКА ========== -->
 <div id="nickInputModal">
-    <h2>🐱 Введите никнейм</h2>
+    <h2 data-i18n="nickTitle">🐱 Введите никнейм</h2>
     <input type="text" id="nickInput" placeholder="Ваш ник..." maxlength="20" value="Гость">
-    <button id="nickConfirm">Войти</button>
+    <button id="nickConfirm" data-i18n="nickConfirm">Войти</button>
 </div>
 
-<!-- ========== ГЛАВНОЕ МЕНЮ ========== -->
 <div id="mainMenu">
     <div id="menuContent">
-        <h1>🐱 Kotnot_Sandbox</h1>
-        <div class="sub">ВЕРСИЯ 5 · МУЛЬТИПЛЕЕР · ПОСТЫ</div>
-
+        <h1 data-i18n="appTitle">🐱 Kotnot_Sandbox</h1>
+        <div class="sub" data-i18n="appSub">ВЕРСИЯ 5.5 · МУЛЬТИПЛЕЕР · ФУТБОЛ · ПАРКУР</div>
         <div id="serverSelect" style="margin:16px 0; display:flex; gap:12px; justify-content:center;">
-            <button class="server-btn active" data-server="local" style="padding:10px 20px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;cursor:pointer;font-size:14px;">🏠 Локальный</button>
-            <button class="server-btn" data-server="public" style="padding:10px 20px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;cursor:pointer;font-size:14px;">🌍 Публичный</button>
+            <button class="server-btn active" data-server="local" data-i18n="serverLocal" style="padding:10px 20px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;cursor:pointer;font-size:14px;">🏠 Локальный</button>
+            <button class="server-btn" data-server="public" data-i18n="serverPublic" style="padding:10px 20px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;cursor:pointer;font-size:14px;">🌍 Публичный</button>
         </div>
-
-        <button class="menu-btn btn-play" id="btnPlay"><span class="btn-icon">▶</span> ИГРАТЬ</button>
-        <button class="menu-btn btn-editor" id="btnEditor"><span class="btn-icon">✏️</span> РЕДАКТОР КАРТ</button>
-        <button class="menu-btn btn-skin" id="btnSkin"><span class="btn-icon">👤</span> МАГАЗИН СКИНОВ</button>
-        <button class="menu-btn btn-posts" id="btnPosts"><span class="btn-icon">📝</span> ПОСТЫ</button>
-        <button class="menu-btn btn-account" id="btnAccount"><span class="btn-icon">🔐</span> АККАУНТ</button>
-        <button class="menu-btn btn-settings" id="btnSettings"><span class="btn-icon">⚙️</span> НАСТРОЙКИ</button>
+        <button class="menu-btn btn-play" id="btnPlay"><span class="btn-icon">▶</span><span data-i18n="play">ИГРАТЬ</span></button>
+        <button class="menu-btn btn-editor" id="btnEditor"><span class="btn-icon">✏️</span><span data-i18n="editor">РЕДАКТОР КАРТ</span></button>
+        <button class="menu-btn btn-skin" id="btnSkin"><span class="btn-icon">👤</span><span data-i18n="skins">МАГАЗИН СКИНОВ</span></button>
+        <button class="menu-btn btn-skin-editor" id="btnSkinEditor"><span class="btn-icon">🎨</span><span data-i18n="skinEditor">РЕДАКТОР СКИНОВ</span></button>
+        <button class="menu-btn btn-posts" id="btnPosts"><span class="btn-icon">📝</span><span data-i18n="posts">ПОСТЫ</span></button>
+        <button class="menu-btn btn-account" id="btnAccount"><span class="btn-icon">🔐</span><span data-i18n="account">АККАУНТ</span></button>
+        <button class="menu-btn btn-settings" id="btnSettings"><span class="btn-icon">⚙️</span><span data-i18n="settings">НАСТРОЙКИ</span></button>
     </div>
 </div>
 
-<!-- ========== КОМНАТЫ ========== -->
 <div id="roomsPanel" class="overlay">
     <div class="panel">
-        <h2>🏠 КОМНАТЫ</h2>
-        <div class="sub">Выберите комнату или создайте свою</div>
+        <h2 data-i18n="roomsTitle">🏠 КОМНАТЫ</h2>
+        <div class="sub" data-i18n="roomsSub">Выберите комнату или создайте свою</div>
         <div class="room-create">
             <input type="text" id="roomCreateInput" placeholder="Название..." maxlength="20">
-            <button class="room-btn room-btn-create" id="roomCreateBtn">➕ Создать</button>
+            <button class="room-btn room-btn-create" id="roomCreateBtn" data-i18n="roomCreateBtn">➕ Создать</button>
             <button class="room-btn room-btn-refresh" id="roomRefreshBtn">🔄</button>
         </div>
-        <div class="rooms-list" id="roomsList">
-            <div class="room-empty">⏳ Загрузка комнат...</div>
-        </div>
-        <button class="back-btn" id="roomsBack">✕ Назад в меню</button>
+        <div class="rooms-list" id="roomsList"><div class="room-empty" data-i18n="roomsLoading">⏳ Загрузка комнат...</div></div>
+        <button class="back-btn" id="roomsBack" data-i18n="roomsBack">✕ Назад в меню</button>
     </div>
 </div>
 
-<!-- ========== СОЗДАНИЕ КОМНАТЫ ========== -->
 <div id="roomCreatePanel" class="overlay">
     <div class="panel">
-        <h2>➕ СОЗДАТЬ КОМНАТУ</h2>
-        <div class="sub">Настройте параметры комнаты</div>
-
-        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;">Название комнаты</div>
+        <h2 data-i18n="createRoomTitle">➕ СОЗДАТЬ КОМНАТУ</h2>
+        <div class="sub" data-i18n="createRoomSub">Настройте параметры комнаты</div>
+        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;" data-i18n="roomName">Название комнаты</div>
         <input type="text" id="rcName" placeholder="Моя комната" maxlength="30" style="width:100%;padding:12px 14px;margin-bottom:12px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;font-size:14px;outline:none;box-sizing:border-box;">
-
-        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;">Режим</div>
+        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;" data-i18n="roomMode">Режим</div>
         <select id="rcMode" style="width:100%;padding:12px 14px;margin-bottom:12px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;font-size:14px;outline:none;box-sizing:border-box;">
             <option value="explore">🚶 Исследование</option>
             <option value="sandbox">🧱 Песочница</option>
             <option value="pvp">⚔️ ПВП</option>
+            <option value="football">⚽ Футбол</option>
+            <option value="parkour">🏃 Паркур</option>
         </select>
-
-        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;">Макс. игроков</div>
+        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;" data-i18n="roomMaxPlayers">Макс. игроков</div>
         <input type="number" id="rcMax" min="2" max="12" value="8" style="width:100%;padding:12px 14px;margin-bottom:12px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;font-size:14px;outline:none;box-sizing:border-box;">
-
-        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;">Пароль (необязательно)</div>
+        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;" data-i18n="roomPassword">Пароль (необязательно)</div>
         <input type="text" id="rcPassword" placeholder="Оставьте пустым для открытой" maxlength="20" style="width:100%;padding:12px 14px;margin-bottom:12px;border-radius:12px;border:2px solid rgba(100,180,255,0.15);background:rgba(60,80,120,0.15);color:#c0d8ff;font-size:14px;outline:none;box-sizing:border-box;">
-
-        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;">Карта</div>
+        <div style="text-align:left; color:#c0d8ff; font-size:13px; margin-bottom:6px;" data-i18n="roomMap">Карта</div>
         <div class="editor-actions" style="margin-bottom:14px;">
-            <button class="editor-btn btn-load" id="rcLoadMapBtn">📂 Загрузить .kmap</button>
-            <button class="editor-btn btn-clear" id="rcClearMapBtn">🗑️ Убрать карту</button>
+            <button class="editor-btn btn-load" id="rcLoadMapBtn" data-i18n="roomLoadMap">📂 Загрузить .kmap</button>
+            <button class="editor-btn btn-clear" id="rcClearMapBtn" data-i18n="roomClearMap">🗑️ Убрать карту</button>
         </div>
-        <div id="rcMapInfo" class="editor-info" style="margin-bottom:14px;">Карта: стандартная</div>
-        <input type="file" id="rcFileInput" accept=".kmap" style="display:none;">
-
-        <button class="editor-btn btn-save" id="rcConfirmBtn" style="width:100%;padding:14px;font-size:15px;">✅ Создать комнату</button>
-        <button class="back-btn" id="rcBackBtn" style="margin-top:10px;">✕ Отмена</button>
+        <div id="rcMapInfo" class="editor-info" style="margin-bottom:14px;" data-i18n="roomMapStandard">Карта: стандартная</div>
+        <input type="file" id="rcFileInput" accept=".kmap">
+        <button class="editor-btn btn-save" id="rcConfirmBtn" style="width:100%;padding:14px;font-size:15px;" data-i18n="roomConfirm">✅ Создать комнату</button>
+        <button class="back-btn" id="rcBackBtn" style="margin-top:10px;" data-i18n="roomCancel">✕ Отмена</button>
     </div>
 </div>
 
-<!-- ========== ВЫБОР РЕЖИМА ========== -->
 <div id="modeSelect" class="overlay">
     <div class="panel">
-        <h2>🎮 ВЫБОР РЕЖИМА</h2>
-        <div class="sub">Выбери свой путь</div>
-        <button class="mode-btn" data-mode="pvp"><span class="mode-icon">⚔️</span><div><div>ПВП</div><div class="mode-desc">Стреляй по ботам, набирай очки</div></div></button>
-        <button class="mode-btn" data-mode="sandbox"><span class="mode-icon">🧱</span><div><div>Песочница</div><div class="mode-desc">Строй и создавай что хочешь</div></div></button>
-        <button class="mode-btn" data-mode="explore"><span class="mode-icon">🚶</span><div><div>Исследование</div><div class="mode-desc">Свободное перемещение по карте</div></div></button>
-        <button class="back-btn" id="modeBack">✕ Назад</button>
+        <h2 data-i18n="modeTitle">🎮 ВЫБОР РЕЖИМА</h2>
+        <div class="sub" data-i18n="modeSub">Выбери свой путь</div>
+        <button class="mode-btn" data-mode="pvp"><span class="mode-icon">⚔️</span><div><div data-i18n="modePvp">ПВП</div><div class="mode-desc" data-i18n="modePvpDesc">Стреляй по ботам, набирай очки</div></div></button>
+        <button class="mode-btn" data-mode="sandbox"><span class="mode-icon">🧱</span><div><div data-i18n="modeSandbox">Песочница</div><div class="mode-desc" data-i18n="modeSandboxDesc">Строй и создавай что хочешь</div></div></button>
+        <button class="mode-btn" data-mode="explore"><span class="mode-icon">🚶</span><div><div data-i18n="modeExplore">Исследование</div><div class="mode-desc" data-i18n="modeExploreDesc">Свободное перемещение по карте</div></div></button>
+        <button class="mode-btn" data-mode="football"><span class="mode-icon">⚽</span><div><div data-i18n="modeFootball">Футбол</div><div class="mode-desc" data-i18n="modeFootballDesc">Играй в футбол с ботами и друзьями</div></div></button>
+        <button class="mode-btn" data-mode="parkour"><span class="mode-icon">🏃</span><div><div data-i18n="modeParkour">Паркур</div><div class="mode-desc" data-i18n="modeParkourDesc">Прыгай по платформам на время</div></div></button>
+        <button class="back-btn" id="modeBack" data-i18n="modeBack">✕ Назад</button>
     </div>
 </div>
 
-<!-- ========== РЕДАКТОР КАРТ ========== -->
 <div id="editorPanel" class="overlay">
     <div class="panel">
-        <h2>✏️ РЕДАКТОР КАРТ</h2>
-        <div class="sub">Создай свою карту 20×20 в формате .kmap</div>
+        <h2 data-i18n="editorTitle">✏️ РЕДАКТОР КАРТ</h2>
+        <div class="sub" data-i18n="editorSub">Создай свою карту 20×20 в формате .kmap</div>
         <div class="editor-tools">
-            <div class="editor-tool active" data-tool="grass"><span class="preview" style="background:#4CAF50;"></span> Трава</div>
-            <div class="editor-tool" data-tool="stone"><span class="preview" style="background:#888888;"></span> Камень</div>
-            <div class="editor-tool" data-tool="wood"><span class="preview" style="background:#8B6A4A;"></span> Дерево</div>
-            <div class="editor-tool" data-tool="diamond"><span class="preview" style="background:#4FC3F7;"></span> Алмаз</div>
-            <div class="editor-tool" data-tool="gold"><span class="preview" style="background:#FFD700;"></span> Золото</div>
-            <div class="editor-tool" data-tool="water"><span class="preview" style="background:#2196F3;"></span> Вода</div>
-            <div class="editor-tool" data-tool="erase"><span class="preview" style="background:#ff4444;"></span> 🧹 Ластик</div>
+            <div class="editor-tool active" data-tool="grass"><span class="preview" style="background:#4CAF50;"></span><span data-i18n="editorGrass">Трава</span></div>
+            <div class="editor-tool" data-tool="stone"><span class="preview" style="background:#888888;"></span><span data-i18n="editorStone">Камень</span></div>
+            <div class="editor-tool" data-tool="wood"><span class="preview" style="background:#8B6A4A;"></span><span data-i18n="editorWood">Дерево</span></div>
+            <div class="editor-tool" data-tool="diamond"><span class="preview" style="background:#4FC3F7;"></span><span data-i18n="editorDiamond">Алмаз</span></div>
+            <div class="editor-tool" data-tool="gold"><span class="preview" style="background:#FFD700;"></span><span data-i18n="editorGold">Золото</span></div>
+            <div class="editor-tool" data-tool="water"><span class="preview" style="background:#2196F3;"></span><span data-i18n="editorWater">Вода</span></div>
+            <div class="editor-tool" data-tool="erase"><span class="preview" style="background:#ff4444;"></span><span data-i18n="editorErase">🧹 Ластик</span></div>
         </div>
-        <div class="editor-info">🖱️ Клик — поставить · Зажать и вести — рисовать линию</div>
+        <div class="editor-info" data-i18n="editorInfo">🖱️ Клик — поставить · Зажать и вести — рисовать линию</div>
         <canvas id="editorCanvas" width="500" height="500"></canvas>
         <div class="editor-actions">
-            <button class="editor-btn btn-save" id="saveMap">💾 Сохранить .kmap</button>
-            <button class="editor-btn btn-load" id="loadMap">📂 Загрузить .kmap</button>
-            <button class="editor-btn btn-clear" id="clearMap">🗑️ Очистить</button>
-            <button class="editor-btn btn-close-editor" id="closeEditor">✕ Закрыть</button>
+            <button class="editor-btn btn-save" id="saveMap" data-i18n="editorSave">💾 Сохранить .kmap</button>
+            <button class="editor-btn btn-load" id="loadMap" data-i18n="editorLoad">📂 Загрузить .kmap</button>
+            <button class="editor-btn btn-clear" id="clearMap" data-i18n="editorClear">🗑️ Очистить</button>
+            <button class="editor-btn btn-close-editor" id="closeEditor" data-i18n="editorClose">✕ Закрыть</button>
         </div>
         <input type="file" id="fileInput" accept=".kmap">
     </div>
 </div>
 
-<!-- ========== МАГАЗИН СКИНОВ ========== -->
 <div id="skinShop" class="overlay">
     <div class="panel">
-        <h2>👤 МАГАЗИН СКИНОВ</h2>
-        <div class="sub">Выбери свой стиль</div>
+        <h2 data-i18n="skinsTitle">👤 МАГАЗИН СКИНОВ</h2>
+        <div class="sub" data-i18n="skinsSub">Выбери свой стиль</div>
         <div class="skin-grid" id="skinGrid"></div>
-        <button class="back-btn" id="skinClose">✕ Закрыть</button>
+        <button class="back-btn" id="skinClose" data-i18n="skinsClose">✕ Закрыть</button>
     </div>
 </div>
 
-<!-- ========== НАСТРОЙКИ ========== -->
+<div id="skinEditorPanel" class="overlay">
+    <div class="panel">
+        <h2 data-i18n="skinEditorTitle">🎨 РЕДАКТОР СКИНОВ</h2>
+        <div class="sub" data-i18n="skinEditorSub">Нарисуй свой скин 16×16 пикселей</div>
+        <input type="text" id="skinNameInput" class="skin-editor-input" placeholder="Название скина" maxlength="30" value="Мой скин">
+        <canvas id="skinEditorCanvas" width="256" height="256"></canvas>
+        <div class="skin-editor-palette" id="skinPalette"></div>
+        <div class="skin-editor-preview">
+            <canvas id="skinPreviewCanvas" class="pixel-preview" width="96" height="96"></canvas>
+            <div style="color:rgba(200,220,255,0.6); font-size:12px; text-align:left;">
+                <div>🖌️ <span id="skinToolLabel">Кисть</span></div>
+                <div>🎨 <span id="skinColorLabel">#FF0000</span></div>
+                <div>📐 16×16 пикселей</div>
+            </div>
+        </div>
+        <div class="editor-actions">
+            <button class="editor-btn btn-save" id="skinSaveBtn" data-i18n="skinEditorSave">💾 Сохранить .kss</button>
+            <button class="editor-btn btn-load" id="skinLoadBtn" data-i18n="skinEditorLoad">📂 Загрузить .kss</button>
+            <button class="editor-btn btn-clear" id="skinClearBtn" data-i18n="skinEditorClear">🗑️ Очистить</button>
+            <button class="editor-btn btn-load" id="skinApplyBtn" data-i18n="skinEditorApply">✅ Применить</button>
+            <button class="editor-btn btn-save" id="skinPublishBtn" data-i18n="skinEditorPublish">🌍 Опубликовать</button>
+            <button class="editor-btn btn-close-editor" id="skinEditorClose" data-i18n="skinEditorClose">✕ Закрыть</button>
+        </div>
+        <input type="file" id="skinFileInput" accept=".kss">
+    </div>
+</div>
+
 <div id="settingsPanel" class="overlay">
     <div class="panel">
-        <h2>⚙️ НАСТРОЙКИ</h2>
-        <div class="sub">Настройте игру</div>
-        <div class="setting-item"><span>🖱️ Чувствительность мыши</span><span style="color:#88ccff;" id="sensValue">1.0</span></div>
+        <h2 data-i18n="settingsTitle">⚙️ НАСТРОЙКИ</h2>
+        <div class="sub" data-i18n="settingsSub">Настройте игру</div>
+        <div class="setting-item"><span data-i18n="settingsSens">🖱️ Чувствительность мыши</span><span style="color:#88ccff;" id="sensValue">1.0</span></div>
         <input type="range" id="sensSlider" min="0.2" max="3" step="0.1" value="1" style="width:100%;margin-bottom:16px;">
-        <div class="setting-item"><span>🎮 Инвертировать Y</span><div class="setting-toggle" id="invertY"><div class="dot"></div></div></div>
-        <div class="setting-item"><span>🔊 Звук</span><div class="setting-toggle active" id="soundToggle"><div class="dot"></div></div></div>
-        <div class="setting-item"><span>🤖 Боты в чате</span><div class="setting-toggle active" id="botToggle"><div class="dot"></div></div></div>
-        <button class="back-btn" id="settingsClose">✕ Закрыть</button>
+        <div class="setting-item"><span data-i18n="settingsInvertY">🎮 Инвертировать Y</span><div class="setting-toggle" id="invertY"><div class="dot"></div></div></div>
+        <div class="setting-item"><span data-i18n="settingsSound">🔊 Звук</span><div class="setting-toggle active" id="soundToggle"><div class="dot"></div></div></div>
+        <div class="setting-item"><span data-i18n="settingsBotChat">🤖 Боты в чате</span><div class="setting-toggle active" id="botToggle"><div class="dot"></div></div></div>
+        <div class="setting-item"><span data-i18n="settingsLang">🌍 Язык</span><div class="lang-switch"><button class="lang-btn active" data-lang="ru">RU</button><button class="lang-btn" data-lang="en">EN</button></div></div>
+        <button class="back-btn" id="settingsClose" data-i18n="settingsClose" style="margin-top:16px;">✕ Закрыть</button>
     </div>
 </div>
 
-<!-- ========== ПОСТЫ ========== -->
 <div id="postsPanel" class="overlay">
     <div class="panel">
         <div id="postsListView">
-            <h2>📝 ПОСТЫ</h2>
-            <div class="sub">Сообщество Kotnot</div>
-            <button class="post-new-btn" id="postNewBtn">✏️ Создать пост</button>
-            <div class="posts-list" id="postsList">
-                <div class="room-empty">⏳ Загрузка постов...</div>
-            </div>
+            <h2 data-i18n="postsTitle">📝 ПОСТЫ</h2>
+            <div class="sub" data-i18n="postsSub">Сообщество Kotnot</div>
+            <button class="post-new-btn" id="postNewBtn" data-i18n="postsNew">✏️ Создать пост</button>
+            <div class="posts-list" id="postsList"><div class="room-empty" data-i18n="postsLoading">⏳ Загрузка постов...</div></div>
             <div class="pagination">
-                <button id="postsPrevBtn">◀ Назад</button>
+                <button id="postsPrevBtn" data-i18n="postsPrev">◀ Назад</button>
                 <span class="page-info" id="postsPageInfo">Стр. 1</span>
-                <button id="postsNextBtn">Вперёд ▶</button>
+                <button id="postsNextBtn" data-i18n="postsNext">Вперёд ▶</button>
             </div>
-            <button class="back-btn" id="postsBackBtn">✕ Назад в меню</button>
+            <button class="back-btn" id="postsBackBtn" data-i18n="postsBack">✕ Назад в меню</button>
         </div>
-
         <div id="postDetailView" style="display:none;">
-            <button class="back-btn" id="postDetailBackBtn" style="margin-bottom:14px;">◀ К постам</button>
+            <button class="back-btn" id="postDetailBackBtn" style="margin-bottom:14px;" data-i18n="postBackToList">◀ К постам</button>
             <div class="post-detail-view">
                 <div class="post-full" id="postFull"></div>
                 <div class="replies-section">
-                    <h3>💬 Ответы (<span id="replyCountLabel">0</span>)</h3>
+                    <h3><span data-i18n="postReplies">💬 Ответы</span> (<span id="replyCountLabel">0</span>)</h3>
                     <div id="repliesList"></div>
                     <div class="reply-input-row">
                         <textarea id="replyInput" rows="1" placeholder="Ваш ответ..." maxlength="500"></textarea>
@@ -406,57 +447,49 @@
                 </div>
             </div>
         </div>
-
         <div id="postCreateView" style="display:none;">
-            <button class="back-btn" id="postCreateBackBtn" style="margin-bottom:14px;">◀ Отмена</button>
-            <h2>✏️ НОВЫЙ ПОСТ</h2>
+            <button class="back-btn" id="postCreateBackBtn" style="margin-bottom:14px;" data-i18n="postCancel">◀ Отмена</button>
+            <h2 data-i18n="postsNew">✏️ НОВЫЙ ПОСТ</h2>
             <div class="post-form">
                 <input type="text" id="postTitleInput" placeholder="Заголовок (до 80 символов)" maxlength="80">
                 <textarea id="postTextInput" placeholder="Текст поста (до 1000 символов)" maxlength="1000"></textarea>
-                <button class="editor-btn btn-save" id="postSubmitBtn" style="width:100%;padding:14px;">📤 Опубликовать</button>
+                <button class="editor-btn btn-save" id="postSubmitBtn" style="width:100%;padding:14px;" data-i18n="postSubmit">📤 Опубликовать</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ========== АВТОРИЗАЦИЯ ========== -->
 <div id="authModal" class="hidden">
     <div id="authContent">
-        <h2 id="authTitle">🔐 Вход</h2>
-        <div class="sub" id="authSub" style="color:rgba(200,220,255,0.4);font-size:13px;margin-bottom:20px;">Войдите в свой аккаунт</div>
+        <h2 id="authTitle" data-i18n="authLogin">🔐 Вход</h2>
+        <div class="sub" id="authSub" style="color:rgba(200,220,255,0.4);font-size:13px;margin-bottom:20px;" data-i18n="authLoginSub">Войдите в свой аккаунт</div>
         <div id="authError" class="auth-error"></div>
         <div id="authLoading" style="display:none;color:#88ccff;font-size:13px;margin:8px 0;">⏳ Загрузка...</div>
-
         <div id="authLoginForm">
             <input type="email" class="auth-input" id="authEmail" placeholder="Email" autocomplete="email">
             <input type="password" class="auth-input" id="authPassword" placeholder="Пароль" autocomplete="current-password">
-            <a style="color:#88ccff;cursor:pointer;font-size:12px;display:block;margin-bottom:10px;text-decoration:underline;" id="authResetLink">Забыли пароль?</a>
-            <button class="auth-btn auth-btn-primary" id="authLoginBtn">🔑 Войти</button>
+            <a style="color:#88ccff;cursor:pointer;font-size:12px;display:block;margin-bottom:10px;text-decoration:underline;" id="authResetLink" data-i18n="authForgot">Забыли пароль?</a>
+            <button class="auth-btn auth-btn-primary" id="authLoginBtn" data-i18n="authLoginBtn">🔑 Войти</button>
         </div>
-
         <div id="authRegisterForm" style="display:none;">
             <input type="text" class="auth-input" id="authRegNick" placeholder="Никнейм" maxlength="20">
             <input type="email" class="auth-input" id="authRegEmail" placeholder="Email">
             <input type="password" class="auth-input" id="authRegPassword" placeholder="Пароль (мин. 6 символов)">
             <input type="password" class="auth-input" id="authRegPassword2" placeholder="Повторите пароль">
-            <button class="auth-btn auth-btn-primary" id="authRegisterBtn">📝 Создать аккаунт</button>
+            <button class="auth-btn auth-btn-primary" id="authRegisterBtn" data-i18n="authRegisterBtn">📝 Создать аккаунт</button>
         </div>
-
         <button class="auth-btn auth-btn-google" id="authGoogleBtn">
             <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-            Войти через Google
+            <span data-i18n="authGoogle">Войти через Google</span>
         </button>
-
         <div class="auth-switch">
-            <span id="authSwitchText">Нет аккаунта? </span>
-            <a id="authSwitchLink">Зарегистрироваться</a>
+            <span id="authSwitchText" data-i18n="authNoAccount">Нет аккаунта? </span>
+            <a id="authSwitchLink" data-i18n="authRegisterLink">Зарегистрироваться</a>
         </div>
-
-        <button class="auth-close" id="authCloseBtn">✕ Закрыть</button>
+        <button class="auth-close" id="authCloseBtn" data-i18n="authClose">✕ Закрыть</button>
     </div>
 </div>
 
-<!-- ========== ИГРОВОЙ ИНТЕРФЕЙС ========== -->
 <div id="gameUI">
     <div id="menuToggle">☰ МЕНЮ</div>
     <div id="crosshair"><div id="crosshair-dot"></div></div>
@@ -468,6 +501,21 @@
     <div id="nickDisplay"><span id="avatarPreview"></span><span id="nickNameText"></span></div>
     <div id="status">📍 Стоим</div>
     <div id="pcHint" class="active">🖱️ Кликните по экрану — управление мышью · WASD — движение · Shift — спринт · Space — прыжок · T — чат · Esc — выход</div>
+    <div id="footballScore"><span class="red" id="scoreRedHud">0</span> : <span class="blue" id="scoreBlueHud">0</span></div>
+    <div id="footballTimer">⏱️ 05:00</div>
+    <div id="teamIndicator"></div>
+    <div id="goalMessage">⚽ ГОЛ!</div>
+    <div id="parkourHUD">
+        <div data-i18n="parkourTime">⏱️ Время</div>
+        <div class="time" id="parkourTimer">00:00.00</div>
+        <div class="best">🏆 <span data-i18n="parkourBest">Рекорд</span>: <span id="parkourBest">--:--</span></div>
+        <div class="checkpoint" id="parkourCheckpoint"></div>
+    </div>
+    <div id="parkourFinishMsg">
+        <h2 data-i18n="parkourFinish">🏁 ФИНИШ!</h2>
+        <div class="time" id="parkourFinalTime">00:00.00</div>
+        <div class="best" id="parkourRecordMsg"></div>
+    </div>
     <div id="inventoryDisplay">
         <div class="inv-item">🪨 <span class="count" id="invStone">0</span></div>
         <div class="inv-item">🪵 <span class="count" id="invWood">0</span></div>
@@ -488,16 +536,15 @@
         <button class="block-btn delete-btn" id="deleteBlockBtn" style="background:rgba(255,50,50,0.3);">🗑️</button>
     </div>
     <div id="joysticksContainer">
-        <div id="joystickMove"><div id="knobMove" class="joystick-knob"></div><div class="joystick-label">ДВИЖЕНИЕ</div></div>
-        <div id="joystickRotate"><div id="knobRotate" class="joystick-knob"></div><div class="joystick-label">ПОВОРОТ</div></div>
+        <div id="joystickMove"><div id="knobMove" class="joystick-knob"></div><div class="joystick-label" data-i18n="joystickMove">ДВИЖЕНИЕ</div></div>
+        <div id="joystickRotate"><div id="knobRotate" class="joystick-knob"></div><div class="joystick-label" data-i18n="joystickRotate">ПОВОРОТ</div></div>
     </div>
 </div>
 
-<!-- ========== ИНФО ПОЛЬЗОВАТЕЛЯ ========== -->
 <div id="authUserInfo">
     <div id="authAvatar"></div>
     <span id="authUserName"></span>
-    <button id="authLogoutBtn">🚪 Выйти</button>
+    <button id="authLogoutBtn" data-i18n="authLogout">🚪 Выйти</button>
 </div>
 
 <!-- ========== FIREBASE SDK ========== -->
@@ -512,6 +559,177 @@
 
 <script type="module">
 import * as THREE from 'three';
+
+// =====================================================
+// ПЕРЕВОДЫ
+// =====================================================
+const translations = {
+    ru: {
+        appTitle: "🐱 Kotnot_Sandbox", appSub: "ВЕРСИЯ 5.5 · МУЛЬТИПЛЕЕР · ФУТБОЛ · ПАРКУР",
+        play: "ИГРАТЬ", editor: "РЕДАКТОР КАРТ", skins: "МАГАЗИН СКИНОВ",
+        skinEditor: "РЕДАКТОР СКИНОВ", posts: "ПОСТЫ", account: "АККАУНТ", settings: "НАСТРОЙКИ",
+        serverLocal: "🏠 Локальный", serverPublic: "🌍 Публичный",
+        roomsTitle: "🏠 КОМНАТЫ", roomsSub: "Выберите комнату или создайте свою",
+        roomCreateBtn: "➕ Создать", roomsLoading: "⏳ Загрузка комнат...",
+        roomsEmpty: "🏠 Нет активных комнат", roomsBack: "✕ Назад в меню",
+        roomJoin: "🚪 Войти", roomFull: "🔴 Полная",
+        createRoomTitle: "➕ СОЗДАТЬ КОМНАТУ", createRoomSub: "Настройте параметры комнаты",
+        roomName: "Название комнаты", roomMode: "Режим", roomMaxPlayers: "Макс. игроков",
+        roomPassword: "Пароль (необязательно)", roomMap: "Карта",
+        roomLoadMap: "📂 Загрузить .kmap", roomClearMap: "🗑️ Убрать карту",
+        roomMapStandard: "Карта: стандартная", roomConfirm: "✅ Создать комнату", roomCancel: "✕ Отмена",
+        modeTitle: "🎮 ВЫБОР РЕЖИМА", modeSub: "Выбери свой путь",
+        modePvp: "ПВП", modePvpDesc: "Стреляй по ботам, набирай очки",
+        modeSandbox: "Песочница", modeSandboxDesc: "Строй и создавай что хочешь",
+        modeExplore: "Исследование", modeExploreDesc: "Свободное перемещение по карте",
+        modeFootball: "Футбол", modeFootballDesc: "Играй в футбол с ботами и друзьями",
+        modeParkour: "Паркур", modeParkourDesc: "Прыгай по платформам на время",
+        modeBack: "✕ Назад",
+        editorTitle: "✏️ РЕДАКТОР КАРТ", editorSub: "Создай свою карту 20×20 в формате .kmap",
+        editorGrass: "Трава", editorStone: "Камень", editorWood: "Дерево",
+        editorDiamond: "Алмаз", editorGold: "Золото", editorWater: "Вода", editorErase: "🧹 Ластик",
+        editorInfo: "🖱️ Клик — поставить · Зажать и вести — рисовать линию",
+        editorSave: "💾 Сохранить .kmap", editorLoad: "📂 Загрузить .kmap",
+        editorClear: "🗑️ Очистить", editorClose: "✕ Закрыть",
+        skinsTitle: "👤 МАГАЗИН СКИНОВ", skinsSub: "Выбери свой стиль",
+        skinsOwned: "✅ Куплено", skinsBuy: "100 монет", skinsClose: "✕ Закрыть",
+        skinEditorTitle: "🎨 РЕДАКТОР СКИНОВ", skinEditorSub: "Нарисуй свой скин 16×16 пикселей",
+        skinEditorSave: "💾 Сохранить .kss", skinEditorLoad: "📂 Загрузить .kss",
+        skinEditorClear: "🗑️ Очистить", skinEditorApply: "✅ Применить",
+        skinEditorClose: "✕ Закрыть", skinEditorPublish: "🌍 Опубликовать",
+        settingsTitle: "⚙️ НАСТРОЙКИ", settingsSub: "Настройте игру",
+        settingsSens: "🖱️ Чувствительность мыши", settingsInvertY: "🎮 Инвертировать Y",
+        settingsSound: "🔊 Звук", settingsBotChat: "🤖 Боты в чате",
+        settingsLang: "🌍 Язык", settingsClose: "✕ Закрыть",
+        statusStanding: "📍 Стоим", statusMoving: "🚶 Движение",
+        statusRotating: "🔄 Поворот", statusMovingRot: "🚶 Движение + Поворот",
+        chatPlaceholder: "Введите сообщение...", chatToggle: "💬 Чат", chatClose: "✕ Закрыть чат",
+        joystickMove: "ДВИЖЕНИЕ", joystickRotate: "ПОВОРОТ",
+        postsTitle: "📝 ПОСТЫ", postsSub: "Сообщество Kotnot", postsNew: "✏️ Создать пост",
+        postsLoading: "⏳ Загрузка постов...", postsEmpty: "📝 Пока нет постов. Создайте первый!",
+        postsPrev: "◀ Назад", postsNext: "Вперёд ▶", postsBack: "✕ Назад в меню",
+        postSubmit: "📤 Опубликовать", postReplies: "💬 Ответы",
+        postNoReplies: "Пока нет ответов. Будьте первым!", postBackToList: "◀ К постам", postCancel: "◀ Отмена",
+        authLogin: "🔐 Вход", authRegister: "📝 Регистрация",
+        authLoginSub: "Войдите в свой аккаунт", authRegisterSub: "Создайте новый аккаунт",
+        authLoginBtn: "🔑 Войти", authRegisterBtn: "📝 Создать аккаунт",
+        authGoogle: "Войти через Google", authForgot: "Забыли пароль?",
+        authNoAccount: "Нет аккаунта? ", authHaveAccount: "Уже есть аккаунт? ",
+        authRegisterLink: "Зарегистрироваться", authLoginLink: "Войти",
+        authClose: "✕ Закрыть", authLogout: "🚪 Выйти",
+        nickTitle: "🐱 Введите никнейм", nickConfirm: "Войти",
+        welcome: "Добро пожаловать", roomCreated: "Комната создана!",
+        roomJoined: "Вы вошли в", roomLeft: "Вы вышли из комнаты",
+        roomClosed: "Комната закрыта (вы были хостом)",
+        roomClosedNoPlayers: "Лобби закрыто (нет игроков)",
+        playerLeft: "вышел из игры", killed: "убит!",
+        youDied: "Вы погибли! Возрождение...", noBlocks: "Нет блоков",
+        blockDeleted: "Блок удалён!", mapLoaded: "Карта загружена!",
+        mapSaved: "Карта сохранена!", mapCleared: "Карта очищена",
+        skinSelected: "Скин выбран!", skinBought: "Скин куплен!",
+        notEnoughCoins: "Недостаточно монет!", loginRequired: "Войдите в аккаунт",
+        loginRequiredPublic: "Войдите в аккаунт для игры на публичном сервере",
+        accountCreated: "Аккаунт создан! Добро пожаловать,",
+        loggedOut: "Вы вышли из аккаунта", progressLoaded: "Прогресс загружен!",
+        wrongPassword: "Неверный пароль!", roomFullMsg: "Комната полная!",
+        roomClosedMsg: "Комната закрыта", postPublished: "Пост опубликован!",
+        enterTitle: "Введите заголовок", enterText: "Введите текст",
+        goal: "⚽ ГОЛ!", parkourRecord: "🎉 Новый рекорд!",
+        skinSaved: "Скин сохранён!", skinLoaded: "Скин загружен!", skinPublished: "Скин опубликован!",
+        parkourTime: "⏱️ Время", parkourBest: "Рекорд", parkourFinish: "🏁 ФИНИШ!"
+    },
+    en: {
+        appTitle: "🐱 Kotnot_Sandbox", appSub: "VERSION 5.5 · MULTIPLAYER · FOOTBALL · PARKOUR",
+        play: "PLAY", editor: "MAP EDITOR", skins: "SKIN SHOP",
+        skinEditor: "SKIN EDITOR", posts: "POSTS", account: "ACCOUNT", settings: "SETTINGS",
+        serverLocal: "🏠 Local", serverPublic: "🌍 Public",
+        roomsTitle: "🏠 ROOMS", roomsSub: "Choose a room or create your own",
+        roomCreateBtn: "➕ Create", roomsLoading: "⏳ Loading rooms...",
+        roomsEmpty: "🏠 No active rooms", roomsBack: "✕ Back to menu",
+        roomJoin: "🚪 Join", roomFull: "🔴 Full",
+        createRoomTitle: "➕ CREATE ROOM", createRoomSub: "Configure room settings",
+        roomName: "Room name", roomMode: "Mode", roomMaxPlayers: "Max players",
+        roomPassword: "Password (optional)", roomMap: "Map",
+        roomLoadMap: "📂 Load .kmap", roomClearMap: "🗑️ Remove map",
+        roomMapStandard: "Map: standard", roomConfirm: "✅ Create room", roomCancel: "✕ Cancel",
+        modeTitle: "🎮 SELECT MODE", modeSub: "Choose your path",
+        modePvp: "PvP", modePvpDesc: "Shoot bots, earn points",
+        modeSandbox: "Sandbox", modeSandboxDesc: "Build and create anything",
+        modeExplore: "Explore", modeExploreDesc: "Free roam around the map",
+        modeFootball: "Football", modeFootballDesc: "Play football with bots and friends",
+        modeParkour: "Parkour", modeParkourDesc: "Jump on platforms against time",
+        modeBack: "✕ Back",
+        editorTitle: "✏️ MAP EDITOR", editorSub: "Create your 20×20 map in .kmap format",
+        editorGrass: "Grass", editorStone: "Stone", editorWood: "Wood",
+        editorDiamond: "Diamond", editorGold: "Gold", editorWater: "Water", editorErase: "🧹 Eraser",
+        editorInfo: "🖱️ Click — place · Hold and drag — draw line",
+        editorSave: "💾 Save .kmap", editorLoad: "📂 Load .kmap",
+        editorClear: "🗑️ Clear", editorClose: "✕ Close",
+        skinsTitle: "👤 SKIN SHOP", skinsSub: "Choose your style",
+        skinsOwned: "✅ Owned", skinsBuy: "100 coins", skinsClose: "✕ Close",
+        skinEditorTitle: "🎨 SKIN EDITOR", skinEditorSub: "Draw your 16×16 pixel skin",
+        skinEditorSave: "💾 Save .kss", skinEditorLoad: "📂 Load .kss",
+        skinEditorClear: "🗑️ Clear", skinEditorApply: "✅ Apply",
+        skinEditorClose: "✕ Close", skinEditorPublish: "🌍 Publish",
+        settingsTitle: "⚙️ SETTINGS", settingsSub: "Configure the game",
+        settingsSens: "🖱️ Mouse sensitivity", settingsInvertY: "🎮 Invert Y",
+        settingsSound: "🔊 Sound", settingsBotChat: "🤖 Bots in chat",
+        settingsLang: "🌍 Language", settingsClose: "✕ Close",
+        statusStanding: "📍 Standing", statusMoving: "🚶 Moving",
+        statusRotating: "🔄 Rotating", statusMovingRot: "🚶 Moving + Rotating",
+        chatPlaceholder: "Type a message...", chatToggle: "💬 Chat", chatClose: "✕ Close chat",
+        joystickMove: "MOVE", joystickRotate: "ROTATE",
+        postsTitle: "📝 POSTS", postsSub: "Kotnot community", postsNew: "✏️ Create post",
+        postsLoading: "⏳ Loading posts...", postsEmpty: "📝 No posts yet. Create the first one!",
+        postsPrev: "◀ Prev", postsNext: "Next ▶", postsBack: "✕ Back to menu",
+        postSubmit: "📤 Publish", postReplies: "💬 Replies",
+        postNoReplies: "No replies yet. Be the first!", postBackToList: "◀ To posts", postCancel: "◀ Cancel",
+        authLogin: "🔐 Login", authRegister: "📝 Register",
+        authLoginSub: "Sign in to your account", authRegisterSub: "Create a new account",
+        authLoginBtn: "🔑 Login", authRegisterBtn: "📝 Create account",
+        authGoogle: "Sign in with Google", authForgot: "Forgot password?",
+        authNoAccount: "No account? ", authHaveAccount: "Already have an account? ",
+        authRegisterLink: "Register", authLoginLink: "Login",
+        authClose: "✕ Close", authLogout: "🚪 Logout",
+        nickTitle: "🐱 Enter nickname", nickConfirm: "Enter",
+        welcome: "Welcome", roomCreated: "Room created!",
+        roomJoined: "You joined", roomLeft: "You left the room",
+        roomClosed: "Room closed (you were host)",
+        roomClosedNoPlayers: "Lobby closed (no players)",
+        playerLeft: "left the game", killed: "killed!",
+        youDied: "You died! Respawning...", noBlocks: "No blocks",
+        blockDeleted: "Block deleted!", mapLoaded: "Map loaded!",
+        mapSaved: "Map saved!", mapCleared: "Map cleared",
+        skinSelected: "Skin selected!", skinBought: "Skin bought!",
+        notEnoughCoins: "Not enough coins!", loginRequired: "Please log in",
+        loginRequiredPublic: "Log in to play on public server",
+        accountCreated: "Account created! Welcome,",
+        loggedOut: "You logged out", progressLoaded: "Progress loaded!",
+        wrongPassword: "Wrong password!", roomFullMsg: "Room is full!",
+        roomClosedMsg: "Room closed", postPublished: "Post published!",
+        enterTitle: "Enter title", enterText: "Enter text",
+        goal: "⚽ GOAL!", parkourRecord: "🎉 New record!",
+        skinSaved: "Skin saved!", skinLoaded: "Skin loaded!", skinPublished: "Skin published!",
+        parkourTime: "⏱️ Time", parkourBest: "Best", parkourFinish: "🏁 FINISH!"
+    }
+};
+
+let currentLang = localStorage.getItem('kotnot_lang') || 'ru';
+function t(key) { return (translations[currentLang] && translations[currentLang][key]) || (translations.ru[key]) || key; }
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('kotnot_lang', lang);
+    document.documentElement.lang = lang;
+    applyTranslations();
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+}
+function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const val = t(el.dataset.i18n);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = val;
+        else el.textContent = val;
+    });
+}
 
 // =====================================================
 // ХРАНИЛИЩЕ
@@ -536,7 +754,6 @@ if (myNick && myNick.length > 0) {
     nickModal.classList.remove('hidden');
     nickInput.focus();
 }
-
 nickConfirm.addEventListener('click', () => {
     const val = nickInput.value.trim();
     if (val.length > 0) {
@@ -544,7 +761,7 @@ nickConfirm.addEventListener('click', () => {
         Storage.set('nick', myNick);
         nickModal.classList.add('hidden');
         document.getElementById('nickNameText').textContent = myNick;
-        addChatMessage('👤 Система', `Добро пожаловать, ${myNick}!`, 0x88ccff);
+        addChatMessage('👤 Система', t('welcome') + ', ' + myNick + '!', 0x88ccff);
         updatePlayerAvatar();
     }
 });
@@ -560,6 +777,7 @@ let skinLoaded = [false, false, false];
 let currentSkinIndex = Storage.get('currentSkin', 0);
 let coins = Storage.get('coins', 500);
 let ownedSkins = Storage.get('ownedSkins', [0]);
+let customSkinDataURL = Storage.get('customSkin', null);
 
 function loadSkins() {
     return new Promise(resolve => {
@@ -588,16 +806,17 @@ function loadSkins() {
 }
 
 function getSkinDataURL(index) {
-    if (skinLoaded[index] && skinImages[index]) return skinImages[index].src;
+    if (index === 'custom' && customSkinDataURL) return customSkinDataURL;
+    if (typeof index === 'number' && skinLoaded[index] && skinImages[index]) return skinImages[index].src;
     const canvas = document.createElement('canvas');
     canvas.width = 64; canvas.height = 64;
     const ctx = canvas.getContext('2d');
     const colors = ['#4a8aff', '#ff6b4a', '#aa66ff'];
-    ctx.fillStyle = colors[index];
+    ctx.fillStyle = colors[index] || '#4a8aff';
     ctx.beginPath(); ctx.arc(32, 32, 28, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = 'bold 32px sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText((index + 1).toString(), 32, 34);
+    ctx.fillText(((index || 0) + 1).toString(), 32, 34);
     return canvas.toDataURL('image/png');
 }
 
@@ -698,7 +917,6 @@ let isHost = false;
 let keys = { w: false, a: false, s: false, d: false, shift: false };
 let mouseSensitivity = Storage.get('mouseSens', 1.0);
 let pointerLocked = false;
-
 let inventory = { stone: 100, wood: 100, grass: 50, diamond: 20, gold: 10 };
 
 const chatContainer = document.getElementById('chatContainer');
@@ -723,56 +941,24 @@ const onlineIndicator = document.getElementById('onlineIndicator');
 
 function isMobile() { return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 768; }
 
-// =====================================================
-// ВРЕМЯ АКТИВНОСТИ (для проверки онлайна)
-// =====================================================
-const HEARTBEAT_INTERVAL_MS = 5000;       // каждые 5 сек обновляем heartbeat
-const PLAYER_TIMEOUT_MS = 15000;            // если >15 сек нет heartbeat — считаем офлайн
-const HOST_CLEANUP_INTERVAL_MS = 10000;     // хост проверяет каждые 10 сек
+const HEARTBEAT_INTERVAL_MS = 5000;
+const PLAYER_TIMEOUT_MS = 15000;
+const HOST_CLEANUP_INTERVAL_MS = 10000;
 
 // =====================================================
 // АВАТАР
 // =====================================================
 function updatePlayerAvatar() {
-    const url = getSkinDataURL(currentSkinIndex);
-    avatarPreview.innerHTML = `<img src="${url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">`;
+    let url;
+    if (currentSkinIndex === 'custom' && customSkinDataURL) url = customSkinDataURL;
+    else url = getSkinDataURL(currentSkinIndex);
+    avatarPreview.innerHTML = `<img src="${url}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;image-rendering:pixelated;">`;
     nickNameText.textContent = myNick;
 }
 
 // =====================================================
-// МУЛЬТИПЛЕЕР — игроки
+// ИМЯ НАД ГОЛОВОЙ
 // =====================================================
-function createMultiplayerPlayer(id, data) {
-    const group = new THREE.Group();
-    const body = new THREE.Mesh(
-        new THREE.SphereGeometry(0.4, 8, 8),
-        new THREE.MeshStandardMaterial({ color: 0x4a8aff, roughness: 0.3, metalness: 0.1 })
-    );
-    body.position.y = 0.5; body.castShadow = true;
-    group.add(body);
-
-    const hat = new THREE.Mesh(
-        new THREE.ConeGeometry(0.3, 0.5, 6),
-        new THREE.MeshStandardMaterial({ color: 0xccaa88, roughness: 0.7 })
-    );
-    hat.position.y = 0.9;
-    group.add(hat);
-
-    const sprite = createNameSprite(data.nick);
-    sprite.position.y = 1.4;
-    group.add(sprite);
-
-    group.position.set(data.x || 0, data.y || 1.8, data.z || 0);
-    group.rotation.y = data.rotY || 0;
-    scene.add(group);
-
-    const colors = [0x4a8aff, 0xff6b4a, 0xaa66ff];
-    body.material.color.setHex(colors[(data.skin || 0) % colors.length]);
-
-    playerObjects[id] = { mesh: group, nick: data.nick, skinIndex: data.skin, body, hat, sprite, lastUpdate: Date.now() };
-    updateOnlineIndicator();
-}
-
 function createNameSprite(name) {
     const canvas = document.createElement('canvas');
     canvas.width = 256; canvas.height = 64;
@@ -788,6 +974,35 @@ function createNameSprite(name) {
     ctx.fillText(name, 128, 38);
     const texture = new THREE.CanvasTexture(canvas);
     return new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false }));
+}
+
+// =====================================================
+// МУЛЬТИПЛЕЕР
+// =====================================================
+function createMultiplayerPlayer(id, data) {
+    const group = new THREE.Group();
+    const body = new THREE.Mesh(
+        new THREE.SphereGeometry(0.4, 8, 8),
+        new THREE.MeshStandardMaterial({ color: 0x4a8aff, roughness: 0.3, metalness: 0.1 })
+    );
+    body.position.y = 0.5; body.castShadow = true;
+    group.add(body);
+    const hat = new THREE.Mesh(
+        new THREE.ConeGeometry(0.3, 0.5, 6),
+        new THREE.MeshStandardMaterial({ color: 0xccaa88, roughness: 0.7 })
+    );
+    hat.position.y = 0.9;
+    group.add(hat);
+    const sprite = createNameSprite(data.nick);
+    sprite.position.y = 1.4;
+    group.add(sprite);
+    group.position.set(data.x || 0, data.y || 1.8, data.z || 0);
+    group.rotation.y = data.rotY || 0;
+    scene.add(group);
+    const colors = [0x4a8aff, 0xff6b4a, 0xaa66ff];
+    body.material.color.setHex(colors[(data.skin || 0) % colors.length]);
+    playerObjects[id] = { mesh: group, nick: data.nick, skinIndex: data.skin, body, hat, sprite, lastUpdate: Date.now() };
+    updateOnlineIndicator();
 }
 
 function updateMultiplayerPlayer(id, data) {
@@ -826,7 +1041,7 @@ function removeMultiplayerPlayer(id) {
     if (player) {
         scene.remove(player.mesh);
         delete playerObjects[id];
-        addChatMessage('👤 Система', `${player.nick} вышел из игры`, 0xff4444);
+        addChatMessage('👤 Система', `${player.nick} ${t('playerLeft')}`, 0xff4444);
         updateOnlineIndicator();
     }
 }
@@ -862,13 +1077,17 @@ function createBotSprite(name) {
 }
 
 function createBots() {
-    bots.forEach(b => { if (b.body) scene.remove(b.body); if (b.hat) scene.remove(b.hat); if (b.sprite) scene.remove(b.sprite); });
+    // ✅ Безопасная очистка
+    bots.forEach(b => {
+        if (b.body) scene.remove(b.body);
+        if (b.hat) scene.remove(b.hat);
+        if (b.sprite) scene.remove(b.sprite);
+    });
     bots = [];
     const count = currentMode === 'pvp' ? 6 : 4;
     for (let i = 0; i < count; i++) {
         const name = botNames[i % botNames.length];
         const color = botColors[i % botColors.length];
-        const skinIdx = i % SKIN_URLS.length;
         const angle = (i / count) * Math.PI * 2;
         const dist = 5 + Math.random() * 8;
         const x = Math.cos(angle) * dist, z = Math.sin(angle) * dist;
@@ -891,8 +1110,7 @@ function createBots() {
             speed: 0.02 + Math.random() * 0.03,
             messageTimer: 0, messageInterval: 200 + Math.random() * 300,
             alive: true, health: 100, fleeTimer: 0,
-            jumpTimer: Math.random() * 100, isJumping: false, jumpVelocity: 0,
-            skinIndex: skinIdx
+            jumpTimer: Math.random() * 100, isJumping: false, jumpVelocity: 0
         });
     }
 }
@@ -913,20 +1131,27 @@ function addChatMessage(name, text, color) {
     chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
+// =====================================================
+// ✅ ИСПРАВЛЕННЫЙ updateBots (защита от null)
+// =====================================================
 function updateBots() {
     const limit = 22;
     bots.forEach(bot => {
         if (!bot.alive) return;
+        // ✅ ЗАЩИТА: если body или sprite отсутствуют — пропускаем
+        if (!bot.body || !bot.sprite) return;
+
         if (bot.jumpTimer > 80 + Math.random() * 120 && !bot.isJumping) {
             bot.isJumping = true; bot.jumpVelocity = 0.2; bot.jumpTimer = 0;
         }
         bot.jumpTimer++;
         if (bot.isJumping) {
             bot.body.position.y += bot.jumpVelocity;
-            bot.hat.position.y += bot.jumpVelocity;
+            if (bot.hat) bot.hat.position.y += bot.jumpVelocity;
             bot.jumpVelocity -= 0.01;
             if (bot.body.position.y <= 0.5) {
-                bot.body.position.y = 0.5; bot.hat.position.y = 0.9;
+                bot.body.position.y = 0.5;
+                if (bot.hat) bot.hat.position.y = 0.9;
                 bot.isJumping = false; bot.jumpVelocity = 0;
             }
         }
@@ -952,8 +1177,9 @@ function updateBots() {
             bot.targetX = nx; bot.targetZ = nz;
         }
         bot.body.position.x = bot.x; bot.body.position.z = bot.z;
-        bot.hat.position.x = bot.x; bot.hat.position.z = bot.z;
+        if (bot.hat) { bot.hat.position.x = bot.x; bot.hat.position.z = bot.z; }
         bot.sprite.position.x = bot.x; bot.sprite.position.z = bot.z;
+
         bot.messageTimer++;
         if (bot.messageTimer > bot.messageInterval && botChatEnabled) {
             bot.messageTimer = 0;
@@ -999,32 +1225,34 @@ function shootBullet() {
 function updateBullets() {
     for (let i = bullets.length - 1; i >= 0; i--) {
         const b = bullets[i];
+        if (!b.mesh) { bullets.splice(i, 1); continue; }
         b.mesh.position.add(b.direction.clone().multiplyScalar(b.speed));
         b.distance += b.speed;
         let hit = false;
         if (!b.isBot) {
             for (let idx = 0; idx < bots.length; idx++) {
                 const bot = bots[idx];
-                if (!bot.alive || hit) continue;
+                if (!bot.alive || hit || !bot.body) continue;
                 const dx = b.mesh.position.x - bot.x, dz = b.mesh.position.z - bot.z;
                 if (Math.sqrt(dx * dx + dz * dz) < 0.8) {
                     bot.health -= 40;
                     if (bot.health <= 0) {
                         bot.alive = false;
-                        scene.remove(bot.body); scene.remove(bot.hat); scene.remove(bot.sprite);
+                        if (bot.body) scene.remove(bot.body);
+                        if (bot.hat) scene.remove(bot.hat);
+                        if (bot.sprite) scene.remove(bot.sprite);
                         score += 10; coins += 5;
                         updateScore();
-                        addChatMessage('💀 Система', `${bot.name} убит! +10 очков, +5 монет`, 0xff3333);
+                        addChatMessage('💀 Система', `${bot.name} ${t('killed')} +10 очков, +5 монет`, 0xff3333);
                         setTimeout(() => {
                             if (currentMode === 'pvp') {
                                 bot.alive = true; bot.health = 100;
                                 const a = Math.random() * Math.PI * 2;
                                 const d = 3 + Math.random() * 10;
                                 bot.x = Math.cos(a) * d; bot.z = Math.sin(a) * d;
-                                bot.body.position.set(bot.x, 0.5, bot.z);
-                                bot.hat.position.set(bot.x, 0.9, bot.z);
-                                bot.sprite.position.set(bot.x, 1.4, bot.z);
-                                scene.add(bot.body); scene.add(bot.hat); scene.add(bot.sprite);
+                                if (bot.body) { bot.body.position.set(bot.x, 0.5, bot.z); scene.add(bot.body); }
+                                if (bot.hat) { bot.hat.position.set(bot.x, 0.9, bot.z); scene.add(bot.hat); }
+                                if (bot.sprite) { bot.sprite.position.set(bot.x, 1.4, bot.z); scene.add(bot.sprite); }
                             }
                         }, 5000);
                     }
@@ -1038,7 +1266,7 @@ function updateBullets() {
                 updateHealth();
                 if (health <= 0) {
                     health = 0;
-                    addChatMessage('💀 Система', 'Вы погибли! Возрождение...', 0xff0000);
+                    addChatMessage('💀 Система', t('youDied'), 0xff0000);
                     setTimeout(() => { health = 100; updateHealth(); }, 3000);
                 }
                 hit = true;
@@ -1079,12 +1307,12 @@ function updateInventory() {
 }
 
 // =====================================================
-// БЛОКИ + СИНХРОНИЗАЦИЯ
+// БЛОКИ
 // =====================================================
 function placeBlock() {
     if (currentMode !== 'sandbox' || isDeleteMode) return;
     const blockType = selectedBlock;
-    if (inventory[blockType] <= 0) { addChatMessage('❌ Система', `Нет блоков ${blockType}!`, 0xff4444); return; }
+    if (inventory[blockType] <= 0) { addChatMessage('❌ Система', `${t('noBlocks')} ${blockType}!`, 0xff4444); return; }
     const forward = new THREE.Vector3(0, 0, -1);
     forward.applyQuaternion(camera.quaternion);
     forward.y = 0; forward.normalize();
@@ -1132,7 +1360,7 @@ function deleteBlock() {
             for (const [k, v] of Object.entries(blockColors)) {
                 if (v === hex && inventory[k] !== undefined) { inventory[k]++; updateInventory(); break; }
             }
-            addChatMessage('🗑️ Система', 'Блок удалён!', 0xff4444);
+            addChatMessage('🗑️ Система', t('blockDeleted'), 0xff4444);
             if (currentRoomId && isAuthenticated && currentServer === 'public') {
                 database.ref(`rooms/${currentRoomId}/blocks`).once('value').then(snap => {
                     const blocks = snap.val();
@@ -1198,7 +1426,7 @@ function loadMapData(mapData) {
             placedBlocks.push(block);
         }
     }
-    addChatMessage('📂 Система', `Карта загружена! (${placedBlocks.length} блоков)`, 0x44ff88);
+    addChatMessage('📂 Система', `${t('mapLoaded')} (${placedBlocks.length} блоков)`, 0x44ff88);
 }
 
 // =====================================================
@@ -1230,17 +1458,16 @@ function setupJoystick(zone, knob, onUpdate, maxDist = 45) {
     window.addEventListener('touchend', end, { passive: true });
     window.addEventListener('touchcancel', end, { passive: true });
 }
-
 setupJoystick(document.getElementById('joystickMove'), document.getElementById('knobMove'), (x, y) => { moveX = x; moveZ = invertY ? -y : y; updateStatus(); });
 setupJoystick(document.getElementById('joystickRotate'), document.getElementById('knobRotate'), (x, y) => { rotateX = x; updateStatus(); });
 
 function updateStatus() {
     const moving = Math.abs(moveX) > 0.08 || Math.abs(moveZ) > 0.08 || keys.w || keys.a || keys.s || keys.d;
     const rotating = Math.abs(rotateX) > 0.08;
-    if (moving && rotating) { statusDiv.textContent = '🚶 Движение + Поворот'; statusDiv.style.color = '#88ddff'; }
-    else if (moving) { statusDiv.textContent = '🚶 Движение'; statusDiv.style.color = '#88ddff'; }
-    else if (rotating) { statusDiv.textContent = '🔄 Поворот'; statusDiv.style.color = '#ffaa66'; }
-    else { statusDiv.textContent = '📍 Стоим'; statusDiv.style.color = 'rgba(200,220,255,0.6)'; }
+    if (moving && rotating) { statusDiv.textContent = t('statusMovingRot'); statusDiv.style.color = '#88ddff'; }
+    else if (moving) { statusDiv.textContent = t('statusMoving'); statusDiv.style.color = '#88ddff'; }
+    else if (rotating) { statusDiv.textContent = t('statusRotating'); statusDiv.style.color = '#ffaa66'; }
+    else { statusDiv.textContent = t('statusStanding'); statusDiv.style.color = 'rgba(200,220,255,0.6)'; }
 }
 
 // =====================================================
@@ -1265,6 +1492,8 @@ document.addEventListener('keydown', e => {
     if (key === 't') { e.preventDefault(); openChat(); }
     if (key === 'e' && currentMode === 'sandbox') { e.preventDefault(); isDeleteMode = !isDeleteMode; document.getElementById('deleteBlockBtn').classList.toggle('delete-mode-active', isDeleteMode); }
     if (key === 'f' && currentMode === 'pvp') { e.preventDefault(); shootBullet(); }
+    if (key === 'f' && currentMode === 'football') { e.preventDefault(); kickBall(); }
+    if (key === 'r' && currentMode === 'parkour') { e.preventDefault(); restartParkour(); }
 });
 document.addEventListener('keyup', e => {
     const key = e.key.toLowerCase();
@@ -1281,13 +1510,11 @@ renderer.domElement.addEventListener('click', () => {
         else handlePrimaryAction();
     }
 });
-
 document.addEventListener('pointerlockchange', () => {
     pointerLocked = document.pointerLockElement === renderer.domElement;
     if (pointerLocked) pcHint.classList.remove('active');
     else if (gameUI.classList.contains('active') && !isMobile()) pcHint.classList.add('active');
 });
-
 document.addEventListener('mousemove', e => {
     if (!pointerLocked || !gameUI.classList.contains('active')) return;
     const sens = 0.002 * mouseSensitivity;
@@ -1298,13 +1525,10 @@ document.addEventListener('mousemove', e => {
     euler.x = Math.max(-Math.PI / 2 + 0.01, Math.min(Math.PI / 2 - 0.01, euler.x));
     camera.rotation.copy(euler);
 });
-
 function handlePrimaryAction() {
     if (currentMode === 'pvp') shootBullet();
-    else if (currentMode === 'sandbox') {
-        if (isDeleteMode) deleteBlock();
-        else placeBlock();
-    }
+    else if (currentMode === 'sandbox') { if (isDeleteMode) deleteBlock(); else placeBlock(); }
+    else if (currentMode === 'football') kickBall();
 }
 
 // =====================================================
@@ -1319,17 +1543,16 @@ const chatToggleBtn = document.getElementById('chatToggle');
 function openChat() {
     chatOpen = true;
     chatInput.classList.add('active');
-    chatToggleBtn.textContent = '✕ Закрыть чат';
+    chatToggleBtn.textContent = t('chatClose');
     chatInputField.focus();
     if (document.exitPointerLock) document.exitPointerLock();
 }
 function closeChat() {
     chatOpen = false;
     chatInput.classList.remove('active');
-    chatToggleBtn.textContent = '💬 Чат';
+    chatToggleBtn.textContent = t('chatToggle');
 }
 chatToggleBtn.addEventListener('click', () => { chatOpen ? closeChat() : openChat(); });
-
 function sendChatMessage(text) {
     if (!text) return;
     if (currentRoomId && isAuthenticated && currentServer === 'public') {
@@ -1340,7 +1563,6 @@ function sendChatMessage(text) {
     addChatMessage('👤 ' + myNick, text, 0x88ddff);
     chatInputField.value = '';
 }
-
 function listenRoomChat(roomId) {
     if (chatListener) chatListener.off();
     chatListener = database.ref('rooms/' + roomId + '/messages').orderByChild('timestamp').limitToLast(50);
@@ -1349,12 +1571,11 @@ function listenRoomChat(roomId) {
         if (data.uid !== currentUser?.uid) addChatMessage('💬 ' + data.nick, data.text, 0x88ddff);
     });
 }
-
 function sendMessage() {
     const text = chatInputField.value.trim();
     if (text) {
         sendChatMessage(text);
-        if (Math.random() > 0.5 && botChatEnabled) {
+        if (Math.random() > 0.5 && botChatEnabled && bots.length > 0) {
             const bot = bots[Math.floor(Math.random() * bots.length)];
             if (bot && bot.alive) {
                 setTimeout(() => {
@@ -1388,7 +1609,7 @@ function renderSkins() {
         div.innerHTML = `
             <div class="preview"><img src="${imgSrc}" alt="${SKIN_NAMES[index]}"></div>
             <div class="name">${SKIN_NAMES[index]}</div>
-            <div class="price">${index === 0 || owned ? '✅ Куплено' : '100 монет'}</div>
+            <div class="price">${index === 0 || owned ? t('skinsOwned') : t('skinsBuy')}</div>
             ${owned ? '<div class="owned">✓</div>' : ''}
         `;
         div.addEventListener('click', () => {
@@ -1397,7 +1618,7 @@ function renderSkins() {
                 Storage.set('currentSkin', index);
                 updatePlayerAvatar();
                 renderSkins();
-                addChatMessage('👤 Система', `Скин "${SKIN_NAMES[index]}" выбран!`, 0xaa66ff);
+                addChatMessage('👤 Система', `${t('skinSelected')} "${SKIN_NAMES[index]}"`, 0xaa66ff);
             } else if (coins >= 100) {
                 coins -= 100;
                 Storage.set('coins', coins);
@@ -1408,9 +1629,9 @@ function renderSkins() {
                 updateScore();
                 updatePlayerAvatar();
                 renderSkins();
-                addChatMessage('🛒 Система', `Скин "${SKIN_NAMES[index]}" куплен!`, 0x44ff88);
+                addChatMessage('🛒 Система', `${t('skinBought')} "${SKIN_NAMES[index]}"`, 0x44ff88);
             } else {
-                addChatMessage('❌ Система', `Недостаточно монет! Нужно 100`, 0xff4444);
+                addChatMessage('❌ Система', t('notEnoughCoins'), 0xff4444);
             }
         });
         skinGrid.appendChild(div);
@@ -1426,7 +1647,7 @@ document.getElementById('btnPlay').addEventListener('click', () => {
     if (currentServer === 'public') {
         if (!isAuthenticated) {
             document.getElementById('authModal').classList.remove('hidden');
-            addChatMessage('🔐 Система', 'Войдите в аккаунт для игры на публичном сервере', 0xffaa44);
+            addChatMessage('🔐 Система', t('loginRequiredPublic'), 0xffaa44);
             return;
         }
         roomsPanel.classList.add('active');
@@ -1444,29 +1665,24 @@ document.getElementById('roomRefreshBtn').addEventListener('click', loadRooms);
 document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => startGame(btn.dataset.mode)));
 
 // =====================================================
-// ЗАГРУЗКА КОМНАТ (с проверкой онлайна)
+// КОМНАТЫ
 // =====================================================
 function loadRooms() {
     const list = document.getElementById('roomsList');
-    list.innerHTML = '<div class="room-empty">⏳ Загрузка комнат...</div>';
+    list.innerHTML = `<div class="room-empty">${t('roomsLoading')}</div>`;
     if (roomsListener) roomsListener.off();
     roomsListener = database.ref('rooms').orderByChild('createdAt');
     roomsListener.on('value', snapshot => {
         const data = snapshot.val();
-        // Чистим мёртвые лобби
         if (data) cleanupDeadRooms(data);
         renderRooms(data);
     });
 }
-
-// Удаление лобби с 0 онлайн игроков (или неактивных >30 мин)
 async function cleanupDeadRooms(data) {
     const now = Date.now();
     const promises = [];
     for (const [id, room] of Object.entries(data)) {
         if (!room.active) continue;
-
-        // Проверяем онлайн игроков через heartbeat
         const players = room.players_list || {};
         let onlineCount = 0;
         for (const pid in players) {
@@ -1475,27 +1691,19 @@ async function cleanupDeadRooms(data) {
             const hb = p.heartbeat || p.lastUpdate || p.joinedAt || 0;
             if (now - hb < PLAYER_TIMEOUT_MS) onlineCount++;
         }
-
-        // Если онлайн 0 и лобби старше 30 сек — удаляем
         const age = now - (room.createdAt || now);
-        if (onlineCount === 0 && age > 30000) {
-            promises.push(database.ref('rooms/' + id).remove());
-            console.log('🧹 Удалено мёртвое лобби:', room.name || id);
-        }
+        if (onlineCount === 0 && age > 30000) promises.push(database.ref('rooms/' + id).remove());
     }
     if (promises.length) await Promise.all(promises);
 }
-
 function renderRooms(data) {
     const list = document.getElementById('roomsList');
     list.innerHTML = '';
-    if (!data) { list.innerHTML = '<div class="room-empty">🏠 Нет созданных комнат</div>'; return; }
-
+    if (!data) { list.innerHTML = `<div class="room-empty">${t('roomsEmpty')}</div>`; return; }
     const now = Date.now();
     const rooms = Object.entries(data)
         .filter(([id, r]) => r.active !== false && (r.players || 0) < (r.maxPlayers || 8))
         .map(([id, r]) => {
-            // Считаем онлайн
             const players = r.players_list || {};
             let onlineCount = 0;
             for (const pid in players) {
@@ -1506,18 +1714,13 @@ function renderRooms(data) {
             }
             return { id, room: r, onlineCount };
         })
-        .filter(({ onlineCount }) => onlineCount > 0); // показываем только с онлайн
-
-    if (rooms.length === 0) {
-        list.innerHTML = '<div class="room-empty">🏠 Нет активных комнат</div>';
-        return;
-    }
-
+        .filter(({ onlineCount }) => onlineCount > 0);
+    if (rooms.length === 0) { list.innerHTML = `<div class="room-empty">${t('roomsEmpty')}</div>`; return; }
     rooms.forEach(({ id, room, onlineCount }) => {
         const div = document.createElement('div');
         div.className = 'room-item';
         const isFull = onlineCount >= (room.maxPlayers || 8);
-        const modeNames = { explore: '🚶', sandbox: '🧱', pvp: '⚔️' };
+        const modeNames = { explore: '🚶', sandbox: '🧱', pvp: '⚔️', football: '⚽', parkour: '🏃' };
         div.innerHTML = `
             <div class="room-info">
                 <div class="room-name">${escapeHtml(room.name || 'Комната')} ${room.password ? '🔒' : ''} ${room.mapData ? '🗺️' : ''}</div>
@@ -1528,7 +1731,7 @@ function renderRooms(data) {
                     ${room.hostName ? ' · Хост: ' + escapeHtml(room.hostName) : ''}
                 </div>
             </div>
-            <button class="room-join" ${isFull ? 'disabled' : ''}>${isFull ? '🔴 Полная' : '🚪 Войти'}</button>
+            <button class="room-join" ${isFull ? 'disabled' : ''}>${isFull ? t('roomFull') : t('roomJoin')}</button>
         `;
         div.querySelector('.room-join').addEventListener('click', async () => {
             if (!isFull) await joinRoom(id, room);
@@ -1549,10 +1752,9 @@ document.getElementById('roomCreateBtn').addEventListener('click', () => {
     document.getElementById('rcMax').value = '8';
     document.getElementById('rcPassword').value = '';
     pendingMapData = null;
-    document.getElementById('rcMapInfo').textContent = 'Карта: стандартная';
+    document.getElementById('rcMapInfo').textContent = t('roomMapStandard');
     roomCreatePanel.classList.add('active');
 });
-
 document.getElementById('rcLoadMapBtn').addEventListener('click', () => document.getElementById('rcFileInput').click());
 document.getElementById('rcFileInput').addEventListener('change', e => {
     const file = e.target.files[0];
@@ -1572,12 +1774,11 @@ document.getElementById('rcFileInput').addEventListener('change', e => {
 });
 document.getElementById('rcClearMapBtn').addEventListener('click', () => {
     pendingMapData = null;
-    document.getElementById('rcMapInfo').textContent = 'Карта: стандартная';
+    document.getElementById('rcMapInfo').textContent = t('roomMapStandard');
 });
 document.getElementById('rcBackBtn').addEventListener('click', () => roomCreatePanel.classList.remove('active'));
-
 document.getElementById('rcConfirmBtn').addEventListener('click', async () => {
-    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', 'Войдите в аккаунт', 0xff4444); return; }
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
     const name = document.getElementById('rcName').value.trim() || ('Комната ' + myNick);
     const mode = document.getElementById('rcMode').value;
     const maxPlayers = Math.min(12, Math.max(2, parseInt(document.getElementById('rcMax').value) || 8));
@@ -1585,63 +1786,48 @@ document.getElementById('rcConfirmBtn').addEventListener('click', async () => {
     await createRoom(name, mode, maxPlayers, password, pendingMapData);
     roomCreatePanel.classList.remove('active');
 });
-
 async function createRoom(name, mode, maxPlayers, password, mapData) {
     try {
         const now = Date.now();
         const roomData = {
             name, mode, maxPlayers: maxPlayers || 8,
             password: password || '',
-            host: currentUser.uid,
-            hostName: myNick,
-            createdAt: now,
-            lastHeartbeat: now,
-            active: true,
-            players: 1,
+            host: currentUser.uid, hostName: myNick,
+            createdAt: now, lastHeartbeat: now,
+            active: true, players: 1,
             mapData: mapData ? JSON.stringify(mapData) : null
         };
         const ref = await database.ref('rooms').push(roomData);
         currentRoomId = ref.key;
         isHost = true;
-
-        // Регистрируем себя с onDisconnect
         const myPlayerRef = database.ref(`rooms/${ref.key}/players_list/${currentUser.uid}`);
         await myPlayerRef.set({
-            uid: currentUser.uid, nick: myNick, skin: currentSkinIndex,
+            uid: currentUser.uid, nick: myNick, skin: currentSkinIndex, customSkin: customSkinDataURL,
             isHost: true, joinedAt: now, connected: true,
             x: camera.position.x, y: camera.position.y, z: camera.position.z, rotY: camera.rotation.y,
             heartbeat: now, lastUpdate: now
         });
-        // Если отключимся — удаляемся из списка
         myPlayerRef.onDisconnect().remove();
-
-        addChatMessage('🏠 Система', `Комната "${name}" создана!`, 0x44ff88);
+        addChatMessage('🏠 Система', `${t('roomCreated')} "${name}"`, 0x44ff88);
         roomsPanel.classList.remove('active');
-
         if (mapData) { loadedMapData = mapData; loadMapData(mapData); }
         startGame(mode);
         return ref.key;
     } catch (error) {
         console.error(error);
-        addChatMessage('❌ Система', 'Ошибка создания: ' + error.message, 0xff4444);
+        addChatMessage('❌ Система', 'Ошибка: ' + error.message, 0xff4444);
     }
 }
-
-// =====================================================
-// ВХОД В КОМНАТУ
-// =====================================================
 async function joinRoom(roomId, roomData) {
-    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', 'Войдите в аккаунт', 0xff4444); return; }
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
     if (roomData.password) {
         const pwd = prompt('Введите пароль комнаты:');
-        if (pwd !== roomData.password) { addChatMessage('❌ Система', 'Неверный пароль!', 0xff4444); return; }
+        if (pwd !== roomData.password) { addChatMessage('❌ Система', t('wrongPassword'), 0xff4444); return; }
     }
     try {
         const snapshot = await database.ref('rooms/' + roomId).once('value');
         const room = snapshot.val();
-        if (!room || !room.active) { addChatMessage('❌ Система', 'Комната закрыта', 0xff4444); return; }
-
-        // Считаем онлайн игроков
+        if (!room || !room.active) { addChatMessage('❌ Система', t('roomClosedMsg'), 0xff4444); return; }
         const now = Date.now();
         const players = room.players_list || {};
         let onlineCount = 0;
@@ -1651,31 +1837,23 @@ async function joinRoom(roomId, roomData) {
             const hb = p.heartbeat || p.lastUpdate || p.joinedAt || 0;
             if (now - hb < PLAYER_TIMEOUT_MS) onlineCount++;
         }
-        if (onlineCount >= (room.maxPlayers || 8)) {
-            addChatMessage('❌ Система', 'Комната полная!', 0xff4444); return;
-        }
-
+        if (onlineCount >= (room.maxPlayers || 8)) { addChatMessage('❌ Система', t('roomFullMsg'), 0xff4444); return; }
         const myPlayerRef = database.ref(`rooms/${roomId}/players_list/${currentUser.uid}`);
         await myPlayerRef.set({
-            uid: currentUser.uid, nick: myNick, skin: currentSkinIndex,
+            uid: currentUser.uid, nick: myNick, skin: currentSkinIndex, customSkin: customSkinDataURL,
             isHost: false, joinedAt: now, connected: true,
             x: camera.position.x, y: camera.position.y, z: camera.position.z, rotY: camera.rotation.y,
             heartbeat: now, lastUpdate: now
         });
         myPlayerRef.onDisconnect().remove();
-
-        // Обновляем счётчик (на случай рассинхрона)
         await database.ref('rooms/' + roomId + '/players').transaction(() => onlineCount + 1);
-
         currentRoomId = roomId;
         isHost = false;
-        addChatMessage('🏠 Система', `Вы вошли в "${room.name || 'Комната'}"!`, 0x44ff88);
+        addChatMessage('🏠 Система', `${t('roomJoined')} "${room.name || 'Комната'}"!`, 0x44ff88);
         roomsPanel.classList.remove('active');
-
         if (room.mapData) {
             try { const mapData = JSON.parse(room.mapData); loadedMapData = mapData; loadMapData(mapData); } catch (e) {}
         }
-
         listenRoomChat(roomId);
         startGame(room.mode || 'explore');
     } catch (error) {
@@ -1683,41 +1861,1176 @@ async function joinRoom(roomId, roomData) {
         addChatMessage('❌ Система', 'Ошибка входа', 0xff4444);
     }
 }
-
-// =====================================================
-// ВЫХОД ИЗ КОМНАТЫ
-// =====================================================
 async function leaveRoom() {
-    // Останавливаем все интервалы
     if (positionUpdateInterval) { clearInterval(positionUpdateInterval); positionUpdateInterval = null; }
     if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
     if (hostCleanupInterval) { clearInterval(hostCleanupInterval); hostCleanupInterval = null; }
-
     if (currentRoomId && isAuthenticated && currentUser) {
         try {
             if (chatListener) { chatListener.off(); chatListener = null; }
             if (blocksListener) { blocksListener.off(); blocksListener = null; }
             if (playersListener) { playersListener.off(); playersListener = null; }
-
             const myPlayerRef = database.ref(`rooms/${currentRoomId}/players_list/${currentUser.uid}`);
             myPlayerRef.onDisconnect().cancel();
             await myPlayerRef.remove();
-
-            // Если я хост — удаляю комнату целиком
             if (isHost) {
                 await database.ref('rooms/' + currentRoomId).remove();
-                addChatMessage('🏠 Система', 'Комната закрыта (вы были хостом)', 0xff8888);
+                addChatMessage('🏠 Система', t('roomClosed'), 0xff8888);
             } else {
-                // Иначе уменьшаем счётчик
                 await database.ref('rooms/' + currentRoomId + '/players').transaction(c => Math.max(0, (c || 1) - 1));
-                addChatMessage('🏠 Система', 'Вы вышли из комнаты', 0xff8888);
+                addChatMessage('🏠 Система', t('roomLeft'), 0xff8888);
             }
-
             currentRoomId = null;
             isHost = false;
             onlineIndicator.classList.remove('active');
         } catch (e) { console.error(e); }
     }
+}
+
+// =====================================================
+// ✅ ИСПРАВЛЕННЫЙ СТАРТ ИГРЫ (с очисткой ботов и платформ)
+// =====================================================
+function startGame(mode) {
+    // ✅ ОЧИСТКА СТАРЫХ БОТОВ перед сменой режима
+    bots.forEach(b => {
+        if (b.body) scene.remove(b.body);
+        if (b.hat) scene.remove(b.hat);
+        if (b.sprite) scene.remove(b.sprite);
+    });
+    bots = [];
+
+    // ✅ Очистка паркур-платформ
+    if (typeof parkourPlatforms !== 'undefined' && parkourPlatforms.length) {
+        parkourPlatforms.forEach(p => scene.remove(p));
+        parkourPlatforms = [];
+    }
+
+    // ✅ Остановка футбола/паркура от прошлого режима
+    if (typeof footballActive !== 'undefined' && footballActive) endFootball();
+    if (typeof parkourActive !== 'undefined' && parkourActive) {
+        parkourActive = false;
+        if (parkourTimerInterval) { clearInterval(parkourTimerInterval); parkourTimerInterval = null; }
+    }
+
+    currentMode = mode;
+    modeSelect.classList.remove('active');
+    mainMenu.classList.add('hidden');
+    gameUI.classList.add('active');
+    menuToggle.style.display = 'block';
+    nickDisplay.classList.add('active');
+    jumpBtn.classList.add('active');
+    document.getElementById('inventoryDisplay').classList.add('active');
+
+    const modeNames = { pvp: '⚔️ ПВП', sandbox: '🧱 Песочница', explore: '🚶 Исследование', football: '⚽ Футбол', parkour: '🏃 Паркур' };
+    modeIndicator.textContent = `РЕЖИМ: ${modeNames[mode]}`;
+    sandboxTools.classList.toggle('active', mode === 'sandbox');
+    healthBar.classList.toggle('active', mode === 'pvp');
+    scoreDisplay.classList.toggle('active', mode === 'pvp' || mode === 'football');
+    isDeleteMode = false;
+    document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
+
+    document.getElementById('footballScore').classList.remove('active');
+    document.getElementById('footballTimer').classList.remove('active');
+    document.getElementById('teamIndicator').classList.remove('active');
+    document.getElementById('parkourHUD').classList.remove('active');
+    document.getElementById('parkourFinishMsg').classList.remove('active');
+
+    if (mode === 'pvp') {
+        health = 100; updateHealth();
+        score = 0; updateScore();
+        bullets.forEach(b => { if (b.mesh) scene.remove(b.mesh); }); bullets = [];
+        createBots();
+        addChatMessage('⚔️ Система', 'Режим ПВП! F или клик — стрелять', 0xff4444);
+    } else if (mode === 'sandbox') {
+        bullets.forEach(b => { if (b.mesh) scene.remove(b.mesh); }); bullets = [];
+        if (loadedMapData) loadMapData(loadedMapData); else createBots();
+        updateInventory();
+        addChatMessage('🧱 Система', 'Режим Песочница! Клик — поставить блок, E — удалять', 0x44ff88);
+    } else if (mode === 'football') {
+        bullets.forEach(b => { if (b.mesh) scene.remove(b.mesh); }); bullets = [];
+        startFootball();
+    } else if (mode === 'parkour') {
+        bullets.forEach(b => { if (b.mesh) scene.remove(b.mesh); }); bullets = [];
+        startParkour();
+    } else {
+        bullets.forEach(b => { if (b.mesh) scene.remove(b.mesh); }); bullets = [];
+        if (loadedMapData) loadMapData(loadedMapData); else createBots();
+        addChatMessage('🚶 Система', 'Режим Исследование', 0x88ccff);
+    }
+    camera.position.set(0, 1.8, 10);
+    camera.lookAt(0, 1.8, 0);
+
+    if (currentServer === 'public' && isAuthenticated && currentRoomId) startMultiplayer(currentRoomId);
+    if (!isMobile()) pcHint.classList.add('active');
+    else pcHint.classList.remove('active');
+    updateOnlineIndicator();
+}
+
+// =====================================================
+// МУЛЬТИПЛЕЕР + HEARTBEAT
+// =====================================================
+function startMultiplayer(roomId) {
+    if (!roomId || !isAuthenticated || !currentUser) return;
+    const playersRef = database.ref('rooms/' + roomId + '/players_list');
+    const myPlayerRef = playersRef.child(currentUser.uid);
+    myPlayerRef.set({
+        uid: currentUser.uid, nick: myNick, skin: currentSkinIndex, customSkin: customSkinDataURL,
+        isHost, joinedAt: Date.now(), connected: true,
+        x: camera.position.x, y: camera.position.y, z: camera.position.z, rotY: camera.rotation.y,
+        heartbeat: Date.now(), lastUpdate: Date.now()
+    });
+    myPlayerRef.onDisconnect().remove();
+    playersRef.on('child_added', snap => {
+        const data = snap.val();
+        if (snap.key === currentUser.uid) return;
+        if (data.connected !== false) createMultiplayerPlayer(snap.key, data);
+    });
+    playersRef.on('child_changed', snap => {
+        const data = snap.val();
+        if (snap.key === currentUser.uid) return;
+        if (data.connected !== false) updateMultiplayerPlayer(snap.key, data);
+        else removeMultiplayerPlayer(snap.key);
+    });
+    playersRef.on('child_removed', snap => { removeMultiplayerPlayer(snap.key); });
+    if (positionUpdateInterval) clearInterval(positionUpdateInterval);
+    positionUpdateInterval = setInterval(() => {
+        if (gameUI.classList.contains('active') && currentRoomId) {
+            myPlayerRef.update({
+                x: camera.position.x, y: camera.position.y, z: camera.position.z,
+                rotY: camera.rotation.y, lastUpdate: Date.now()
+            });
+        }
+    }, 50);
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    heartbeatInterval = setInterval(() => {
+        if (currentRoomId && currentUser) myPlayerRef.update({ heartbeat: Date.now() });
+    }, HEARTBEAT_INTERVAL_MS);
+    if (isHost) {
+        if (hostCleanupInterval) clearInterval(hostCleanupInterval);
+        hostCleanupInterval = setInterval(() => checkRoomAlive(), HOST_CLEANUP_INTERVAL_MS);
+    }
+    listenRoomBlocks(roomId);
+    updateOnlineIndicator();
+}
+async function checkRoomAlive() {
+    if (!currentRoomId || !isHost) return;
+    try {
+        const snap = await database.ref('rooms/' + currentRoomId + '/players_list').once('value');
+        const players = snap.val() || {};
+        const now = Date.now();
+        let onlineCount = 0;
+        for (const pid in players) {
+            const p = players[pid];
+            if (p.connected === false) continue;
+            const hb = p.heartbeat || p.lastUpdate || p.joinedAt || 0;
+            if (now - hb < PLAYER_TIMEOUT_MS) onlineCount++;
+        }
+        if (onlineCount === 0) {
+            await database.ref('rooms/' + currentRoomId).remove();
+            currentRoomId = null;
+            isHost = false;
+            addChatMessage('🏠 Система', t('roomClosedNoPlayers'), 0xff8888);
+            if (gameUI.classList.contains('active')) menuToggle.click();
+        }
+    } catch (e) { console.error(e); }
+}
+setInterval(() => {
+    if (!currentRoomId) return;
+    const now = Date.now();
+    for (const id in playerObjects) {
+        const p = playerObjects[id];
+        if (now - p.lastUpdate > PLAYER_TIMEOUT_MS * 2) removeMultiplayerPlayer(id);
+    }
+}, 5000);
+
+// =====================================================
+// ⚽ ФУТБОЛ
+// =====================================================
+let footballActive = false;
+let ballMesh = null;
+let ballVel = { x: 0, y: 0, z: 0 };
+let ballPos = { x: 0, y: 0.4, z: 0 };
+let footballScore = { red: 0, blue: 0 };
+let myTeam = 'red';
+let footballTimer = 300;
+let footballTimerInterval = null;
+let goalCooldown = 0;
+
+function startFootball() {
+    footballActive = true;
+    footballScore = { red: 0, blue: 0 };
+    footballTimer = 300;
+    goalCooldown = 0;
+    myTeam = 'red';
+    document.getElementById('footballScore').classList.add('active');
+    document.getElementById('footballTimer').classList.add('active');
+    const teamEl = document.getElementById('teamIndicator');
+    teamEl.classList.add('active', 'red');
+    teamEl.textContent = `🔴 ${t('footballRed') || 'Красные'}`;
+    document.getElementById('scoreRedHud').textContent = '0';
+    document.getElementById('scoreBlueHud').textContent = '0';
+    updateFootballTimerDisplay();
+    createFootballField();
+    ballMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(0.35, 16, 16),
+        new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.1 })
+    );
+    ballMesh.position.set(0, 0.4, 0);
+    ballMesh.castShadow = true;
+    scene.add(ballMesh);
+    ballPos = { x: 0, y: 0.4, z: 0 };
+    ballVel = { x: 0, y: 0, z: 0 };
+    createFootballBots();
+    if (footballTimerInterval) clearInterval(footballTimerInterval);
+    footballTimerInterval = setInterval(() => {
+        if (!footballActive) return;
+        footballTimer--;
+        updateFootballTimerDisplay();
+        if (footballTimer <= 0) endFootball();
+    }, 1000);
+    addChatMessage('⚽ Система', 'Футбол начался! F или клик — ударить по мячу', 0x88ff88);
+}
+
+function createFootballField() {
+    const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const circle = new THREE.Mesh(new THREE.RingGeometry(2.8, 3, 32), lineMat);
+    circle.rotation.x = -Math.PI / 2;
+    circle.position.set(0, 0.02, 0);
+    scene.add(circle);
+    const centerLine = new THREE.Mesh(new THREE.PlaneGeometry(0.15, 20), lineMat);
+    centerLine.rotation.x = -Math.PI / 2;
+    centerLine.position.set(0, 0.02, 0);
+    scene.add(centerLine);
+    createGoal(-15, 0, 0xff4444);
+    createGoal(15, 0, 0x4466ff);
+}
+
+function createGoal(x, z, color) {
+    const goalMat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.2 });
+    const postGeo = new THREE.BoxGeometry(0.2, 3, 0.2);
+    const p1 = new THREE.Mesh(postGeo, goalMat); p1.position.set(x, 1.5, z - 2.5); scene.add(p1);
+    const p2 = new THREE.Mesh(postGeo, goalMat); p2.position.set(x, 1.5, z + 2.5); scene.add(p2);
+    const crossbar = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 5), goalMat);
+    crossbar.position.set(x, 3, z); scene.add(crossbar);
+    const netMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.15, side: THREE.DoubleSide });
+    const net = new THREE.Mesh(new THREE.PlaneGeometry(2, 3), netMat);
+    net.rotation.y = Math.PI / 2;
+    net.position.set(x + (x < 0 ? -1 : 1), 1.5, z);
+    scene.add(net);
+}
+
+// ✅ ИСПРАВЛЕНО: у футбольных ботов теперь есть hat (не null)
+function createFootballBots() {
+    bots.forEach(b => {
+        if (b.body) scene.remove(b.body);
+        if (b.hat) scene.remove(b.hat);
+        if (b.sprite) scene.remove(b.sprite);
+    });
+    bots = [];
+    for (let i = 0; i < 5; i++) {
+        const color = 0x4466ff;
+        const angle = (i / 5) * Math.PI * 2;
+        const dist = 5 + Math.random() * 5;
+        const x = Math.cos(angle) * dist + 8, z = Math.sin(angle) * dist;
+        const body = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4, 8, 8),
+            new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.1, roughness: 0.3 })
+        );
+        body.position.set(x, 0.5, z); body.castShadow = true; scene.add(body);
+        // ✅ ДОБАВЛЕН HAT
+        const hat = new THREE.Mesh(
+            new THREE.ConeGeometry(0.3, 0.5, 6),
+            new THREE.MeshStandardMaterial({ color: 0xccaa88, roughness: 0.7 })
+        );
+        hat.position.set(x, 0.9, z); hat.castShadow = true; scene.add(hat);
+        const sprite = createBotSprite('🤖 Бот');
+        sprite.position.set(x, 1.4, z); sprite.scale.set(2, 0.5, 1);
+        scene.add(sprite);
+        bots.push({
+            name: '🤖 Бот', color, body, hat, sprite, x, z,
+            targetX: x, targetZ: z, speed: 0.05,
+            messageTimer: 0, messageInterval: 500,
+            alive: true, health: 100, fleeTimer: 0,
+            jumpTimer: 0, isJumping: false, jumpVelocity: 0,
+            team: 'blue', isFootball: true
+        });
+    }
+}
+
+function kickBall() {
+    if (!footballActive || !ballMesh) return;
+    const dx = ballPos.x - camera.position.x;
+    const dz = ballPos.z - camera.position.z;
+    const dist = Math.sqrt(dx * dx + dz * dz);
+    if (dist > 2.5) {
+        addChatMessage('⚽ Система', 'Слишком далеко от мяча!', 0xffaa44);
+        return;
+    }
+    const forward = new THREE.Vector3(0, 0, -1);
+    forward.applyQuaternion(camera.quaternion);
+    forward.y = 0; forward.normalize();
+    const power = 0.5;
+    ballVel.x = forward.x * power + dx * 0.1;
+    ballVel.z = forward.z * power + dz * 0.1;
+    ballVel.y = 0.15;
+    addChatMessage('⚽ Система', 'Удар!', 0x88ff88);
+}
+
+function updateFootball() {
+    if (!footballActive || !ballMesh) return;
+    ballPos.x += ballVel.x;
+    ballPos.y += ballVel.y;
+    ballPos.z += ballVel.z;
+    ballVel.y -= 0.02;
+    ballVel.x *= 0.98;
+    ballVel.z *= 0.98;
+    if (ballPos.y <= 0.4) {
+        ballPos.y = 0.4;
+        if (Math.abs(ballVel.y) > 0.05) ballVel.y = -ballVel.y * 0.6;
+        else ballVel.y = 0;
+    }
+    const fieldLimit = 18;
+    if (Math.abs(ballPos.x) > fieldLimit) { ballVel.x = -ballVel.x * 0.7; ballPos.x = Math.sign(ballPos.x) * fieldLimit; }
+    if (Math.abs(ballPos.z) > fieldLimit) { ballVel.z = -ballVel.z * 0.7; ballPos.z = Math.sign(ballPos.z) * fieldLimit; }
+    ballMesh.position.set(ballPos.x, ballPos.y, ballPos.z);
+    ballMesh.rotation.x += ballVel.z * 0.5;
+    ballMesh.rotation.z -= ballVel.x * 0.5;
+    if (goalCooldown > 0) goalCooldown--;
+    if (goalCooldown === 0) {
+        if (ballPos.x < -14.5 && Math.abs(ballPos.z) < 2.5) {
+            footballScore.blue++;
+            onGoal('blue');
+        } else if (ballPos.x > 14.5 && Math.abs(ballPos.z) < 2.5) {
+            footballScore.red++;
+            onGoal('red');
+        }
+    }
+    bots.forEach(bot => {
+        if (!bot.alive || !bot.body || !bot.isFootball) return;
+        const dx = ballPos.x - bot.x, dz = ballPos.z - bot.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist > 0.5) {
+            bot.x += (dx / dist) * bot.speed;
+            bot.z += (dz / dist) * bot.speed;
+        } else {
+            ballVel.x = -0.4 - Math.random() * 0.2;
+            ballVel.z = (Math.random() - 0.5) * 0.3;
+            ballVel.y = 0.1;
+        }
+        bot.body.position.x = bot.x; bot.body.position.z = bot.z;
+        if (bot.hat) { bot.hat.position.x = bot.x; bot.hat.position.z = bot.z; }
+        if (bot.sprite) { bot.sprite.position.x = bot.x; bot.sprite.position.z = bot.z; }
+    });
+}
+
+function onGoal(team) {
+    goalCooldown = 120;
+    document.getElementById('scoreRedHud').textContent = footballScore.red;
+    document.getElementById('scoreBlueHud').textContent = footballScore.blue;
+    const goalEl = document.getElementById('goalMessage');
+    goalEl.textContent = team === 'red' ? '🔴 ГОЛ!' : '🔵 ГОЛ!';
+    goalEl.classList.add('active');
+    setTimeout(() => goalEl.classList.remove('active'), 2000);
+    addChatMessage('⚽ Система', `${team === 'red' ? '🔴' : '🔵'} ГОЛ! ${footballScore.red} : ${footballScore.blue}`, 0xffff44);
+    setTimeout(() => {
+        ballPos = { x: 0, y: 0.4, z: 0 };
+        ballVel = { x: 0, y: 0, z: 0 };
+        if (ballMesh) ballMesh.position.set(0, 0.4, 0);
+    }, 1500);
+}
+
+function updateFootballTimerDisplay() {
+    const min = Math.floor(footballTimer / 60);
+    const sec = footballTimer % 60;
+    document.getElementById('footballTimer').textContent = `⏱️ ${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
+function endFootball() {
+    footballActive = false;
+    if (footballTimerInterval) { clearInterval(footballTimerInterval); footballTimerInterval = null; }
+    let winner = 'Ничья';
+    if (footballScore.red > footballScore.blue) winner = '🔴 Красные';
+    else if (footballScore.blue > footballScore.red) winner = '🔵 Синие';
+    addChatMessage('⚽ Система', `Матч окончен! ${footballScore.red} : ${footballScore.blue} — ${winner}`, 0xffff44);
+    document.getElementById('footballScore').classList.remove('active');
+    document.getElementById('footballTimer').classList.remove('active');
+    document.getElementById('teamIndicator').classList.remove('active');
+    if (ballMesh) { scene.remove(ballMesh); ballMesh = null; }
+}
+
+// =====================================================
+// 🏃 ПАРКУР
+// =====================================================
+let parkourActive = false;
+let parkourStartTime = 0;
+let parkourTimerInterval = null;
+let parkourCheckpoints = [];
+let parkourCurrentCP = 0;
+let parkourBestTime = Storage.get('parkourBest', null);
+let parkourPlatforms = [];
+
+function startParkour() {
+    parkourActive = true;
+    parkourStartTime = 0;
+    parkourCurrentCP = 0;
+    document.getElementById('parkourHUD').classList.add('active');
+    document.getElementById('parkourBest').textContent = parkourBestTime ? formatParkourTime(parkourBestTime) : '--:--';
+    document.getElementById('parkourTimer').textContent = '00:00.00';
+    document.getElementById('parkourCheckpoint').textContent = '';
+    parkourPlatforms.forEach(p => scene.remove(p));
+    parkourPlatforms = [];
+    parkourCheckpoints = [];
+    createParkourCourse();
+    camera.position.set(0, 2, 5);
+    camera.lookAt(0, 2, 0);
+    addChatMessage('🏃 Система', 'Паркур! Прыгай по платформам, достигни финиша!', 0xff88dd);
+}
+
+function createParkourCourse() {
+    const platMat = new THREE.MeshStandardMaterial({ color: 0x66ccff, emissive: 0x2266aa, emissiveIntensity: 0.2, roughness: 0.5 });
+    const startMat = new THREE.MeshStandardMaterial({ color: 0x44ff88, emissive: 0x22aa44, emissiveIntensity: 0.3 });
+    const finishMat = new THREE.MeshStandardMaterial({ color: 0xffdd44, emissive: 0xaa8822, emissiveIntensity: 0.3 });
+    const cpMat = new THREE.MeshStandardMaterial({ color: 0xff44aa, emissive: 0xaa2266, emissiveIntensity: 0.3 });
+    const start = new THREE.Mesh(new THREE.BoxGeometry(3, 0.5, 3), startMat);
+    start.position.set(0, 0.25, 0);
+    scene.add(start); parkourPlatforms.push(start);
+    let x = 0, y = 0, z = 0;
+    for (let i = 0; i < 20; i++) {
+        const dx = (Math.random() - 0.5) * 6;
+        const dz = -2 - Math.random() * 3;
+        const dy = Math.random() > 0.5 ? 0.5 + Math.random() * 1.5 : -0.3;
+        x += dx; y += dy; z += dz;
+        if (y < 0.5) y = 0.5;
+        const plat = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.4, 1.8), platMat);
+        plat.position.set(x, y, z);
+        plat.castShadow = true; plat.receiveShadow = true;
+        scene.add(plat); parkourPlatforms.push(plat);
+        if (i > 0 && i % 5 === 0) {
+            const cp = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.6, 1.8), cpMat);
+            cp.position.set(x, y + 0.1, z);
+            scene.add(cp); parkourPlatforms.push(cp);
+            parkourCheckpoints.push({ x, y: y + 1, z, index: parkourCheckpoints.length });
+        }
+    }
+    x += 3; y += 1; z -= 4;
+    const finish = new THREE.Mesh(new THREE.BoxGeometry(4, 0.5, 4), finishMat);
+    finish.position.set(x, y, z);
+    finish.castShadow = true; scene.add(finish); parkourPlatforms.push(finish);
+    parkourCheckpoints.push({ x, y: y + 1, z, index: 'finish' });
+}
+
+function startParkourTimer() {
+    if (parkourStartTime > 0) return;
+    parkourStartTime = Date.now();
+    if (parkourTimerInterval) clearInterval(parkourTimerInterval);
+    parkourTimerInterval = setInterval(() => {
+        if (!parkourActive) return;
+        const elapsed = Date.now() - parkourStartTime;
+        document.getElementById('parkourTimer').textContent = formatParkourTime(elapsed);
+    }, 50);
+}
+
+function formatParkourTime(ms) {
+    const total = ms / 1000;
+    const min = Math.floor(total / 60);
+    const sec = (total % 60).toFixed(2);
+    return `${min.toString().padStart(2, '0')}:${sec.padStart(5, '0')}`;
+}
+
+function updateParkour() {
+    if (!parkourActive) return;
+    if (parkourStartTime === 0 && (Math.abs(camera.position.x) > 0.5 || Math.abs(camera.position.z) > 0.5 || camera.position.y > 2.5)) {
+        startParkourTimer();
+    }
+    parkourCheckpoints.forEach(cp => {
+        const dx = camera.position.x - cp.x;
+        const dz = camera.position.z - cp.z;
+        if (Math.sqrt(dx * dx + dz * dz) < 1.5) {
+            if (cp.index === 'finish') {
+                finishParkour();
+            } else if (cp.index >= parkourCurrentCP) {
+                parkourCurrentCP = cp.index + 1;
+                document.getElementById('parkourCheckpoint').textContent = `✅ Чекпоинт ${parkourCurrentCP}/${parkourCheckpoints.length - 1}`;
+            }
+        }
+    });
+}
+
+function finishParkour() {
+    if (!parkourActive) return;
+    parkourActive = false;
+    const finalTime = parkourStartTime > 0 ? Date.now() - parkourStartTime : 0;
+    if (parkourTimerInterval) { clearInterval(parkourTimerInterval); parkourTimerInterval = null; }
+    document.getElementById('parkourFinalTime').textContent = formatParkourTime(finalTime);
+    let isRecord = false;
+    if (!parkourBestTime || finalTime < parkourBestTime) {
+        parkourBestTime = finalTime;
+        Storage.set('parkourBest', parkourBestTime);
+        isRecord = true;
+        document.getElementById('parkourRecordMsg').textContent = t('parkourRecord');
+    } else {
+        document.getElementById('parkourRecordMsg').textContent = `Рекорд: ${formatParkourTime(parkourBestTime)}`;
+    }
+    document.getElementById('parkourFinishMsg').classList.add('active');
+    addChatMessage('🏁 Система', `Финиш! ${formatParkourTime(finalTime)} ${isRecord ? '— ' + t('parkourRecord') : ''}`, 0xffdd44);
+    if (currentRoomId && isAuthenticated && currentUser) {
+        database.ref(`rooms/${currentRoomId}/parkourRecords/${currentUser.uid}`).set({
+            nick: myNick, time: finalTime, timestamp: Date.now()
+        }).catch(() => {});
+    }
+    setTimeout(() => { document.getElementById('parkourFinishMsg').classList.remove('active'); }, 5000);
+}
+
+function restartParkour() {
+    if (parkourTimerInterval) { clearInterval(parkourTimerInterval); parkourTimerInterval = null; }
+    parkourActive = false;
+    setTimeout(() => startParkour(), 100);
+}
+
+// =====================================================
+// ВЫХОД В МЕНЮ
+// =====================================================
+menuToggle.addEventListener('click', async () => {
+    if (document.exitPointerLock) document.exitPointerLock();
+    Object.keys(playerObjects).forEach(id => removeMultiplayerPlayer(id));
+    await leaveRoom();
+    mainMenu.classList.remove('hidden');
+    gameUI.classList.remove('active');
+    menuToggle.style.display = 'none';
+    nickDisplay.classList.remove('active');
+    jumpBtn.classList.remove('active');
+    document.getElementById('inventoryDisplay').classList.remove('active');
+    closeChat();
+    sandboxTools.classList.remove('active');
+    healthBar.classList.remove('active');
+    scoreDisplay.classList.remove('active');
+    pcHint.classList.remove('active');
+    onlineIndicator.classList.remove('active');
+    if (footballActive) endFootball();
+    if (parkourActive) {
+        parkourActive = false;
+        if (parkourTimerInterval) { clearInterval(parkourTimerInterval); parkourTimerInterval = null; }
+    }
+    document.getElementById('footballScore').classList.remove('active');
+    document.getElementById('footballTimer').classList.remove('active');
+    document.getElementById('teamIndicator').classList.remove('active');
+    document.getElementById('parkourHUD').classList.remove('active');
+    document.getElementById('parkourFinishMsg').classList.remove('active');
+});
+
+// =====================================================
+// 🎨 РЕДАКТОР СКИНОВ (.kss)
+// =====================================================
+const SKIN_GRID = 16;
+const skinEditorCanvas = document.getElementById('skinEditorCanvas');
+const skinEctx = skinEditorCanvas.getContext('2d');
+const skinPreviewCanvas = document.getElementById('skinPreviewCanvas');
+const skinPctx = skinPreviewCanvas.getContext('2d');
+let SKIN_CELL = skinEditorCanvas.width / SKIN_GRID;
+let skinPixels = [];
+let skinSelectedColor = '#ff0000';
+let skinTool = 'brush';
+let isSkinDrawing = false;
+let lastSkinPixel = null;
+
+const SKIN_PALETTE = [
+    '#000000','#ffffff','#ff0000','#00ff00','#0000ff','#ffff00','#ff00ff','#00ffff',
+    '#ff8800','#8800ff','#00ff88','#ff0088','#88ff00','#0088ff','#884400','#ffccaa',
+    '#4a8aff','#ff6b4a','#aa66ff','#44ff88','#ff4444','#44aaff','#ffaa44','#cccccc',
+    '#333333','#666666','#999999','#cc4444','#44cc44','#4444cc','#884488','#446688',
+    '#ffddaa','#ffcc66','#cc8844','#885522','#223344','#334455','#556677','#778899',
+    '#ffaacc','#ffccdd','#ddaaff','#ccddff','#aaffcc','#ccffaa','#ffffcc','#ffeedd'
+];
+
+function initSkinEditor() {
+    const paletteEl = document.getElementById('skinPalette');
+    paletteEl.innerHTML = '';
+    SKIN_PALETTE.forEach(color => {
+        const sw = document.createElement('div');
+        sw.className = 'color-swatch' + (color === skinSelectedColor ? ' active' : '');
+        sw.style.background = color;
+        sw.dataset.color = color;
+        sw.addEventListener('click', () => {
+            skinSelectedColor = color;
+            skinTool = 'brush';
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === color));
+            document.getElementById('skinToolLabel').textContent = 'Кисть';
+            document.getElementById('skinColorLabel').textContent = color;
+        });
+        paletteEl.appendChild(sw);
+    });
+    skinPixels = [];
+    for (let y = 0; y < SKIN_GRID; y++) {
+        skinPixels[y] = [];
+        for (let x = 0; x < SKIN_GRID; x++) skinPixels[y][x] = null;
+    }
+    renderSkinEditor();
+    renderSkinPreview();
+}
+
+function renderSkinEditor() {
+    SKIN_CELL = skinEditorCanvas.width / SKIN_GRID;
+    skinEctx.clearRect(0, 0, skinEditorCanvas.width, skinEditorCanvas.height);
+    for (let y = 0; y < SKIN_GRID; y++) {
+        for (let x = 0; x < SKIN_GRID; x++) {
+            const isDark = (x + y) % 2 === 0;
+            skinEctx.fillStyle = isDark ? '#2a1a2a' : '#1a0a1a';
+            skinEctx.fillRect(x * SKIN_CELL, y * SKIN_CELL, SKIN_CELL, SKIN_CELL);
+            const col = skinPixels[y][x];
+            if (col) {
+                skinEctx.fillStyle = col;
+                skinEctx.fillRect(x * SKIN_CELL, y * SKIN_CELL, SKIN_CELL, SKIN_CELL);
+            }
+            skinEctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            skinEctx.strokeRect(x * SKIN_CELL, y * SKIN_CELL, SKIN_CELL, SKIN_CELL);
+        }
+    }
+}
+
+function renderSkinPreview() {
+    skinPctx.clearRect(0, 0, skinPreviewCanvas.width, skinPreviewCanvas.height);
+    const cell = skinPreviewCanvas.width / SKIN_GRID;
+    for (let y = 0; y < SKIN_GRID; y++) {
+        for (let x = 0; x < SKIN_GRID; x++) {
+            const col = skinPixels[y][x];
+            if (col) {
+                skinPctx.fillStyle = col;
+                skinPctx.fillRect(x * cell, y * cell, cell, cell);
+            }
+        }
+    }
+}
+
+function getSkinGridPos(clientX, clientY) {
+    const rect = skinEditorCanvas.getBoundingClientRect();
+    const scaleX = skinEditorCanvas.width / rect.width;
+    const scaleY = skinEditorCanvas.height / rect.height;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    const gx = Math.floor(x / SKIN_CELL);
+    const gy = Math.floor(y / SKIN_CELL);
+    if (gx >= 0 && gx < SKIN_GRID && gy >= 0 && gy < SKIN_GRID) return { x: gx, y: gy };
+    return null;
+}
+
+function paintSkinPixel(gx, gy) {
+    if (skinTool === 'eraser') skinPixels[gy][gx] = null;
+    else if (skinTool === 'fill') floodFillSkin(gx, gy, skinSelectedColor);
+    else skinPixels[gy][gx] = skinSelectedColor;
+    renderSkinEditor();
+    renderSkinPreview();
+}
+
+function floodFillSkin(sx, sy, color) {
+    const target = skinPixels[sy][sx];
+    if (target === color) return;
+    const stack = [[sx, sy]];
+    const visited = new Set();
+    while (stack.length) {
+        const [x, y] = stack.pop();
+        const key = x + ',' + y;
+        if (visited.has(key)) continue;
+        visited.add(key);
+        if (x < 0 || x >= SKIN_GRID || y < 0 || y >= SKIN_GRID) continue;
+        if (skinPixels[y][x] !== target) continue;
+        skinPixels[y][x] = color;
+        stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+}
+
+skinEditorCanvas.addEventListener('mousedown', e => {
+    e.preventDefault();
+    const p = getSkinGridPos(e.clientX, e.clientY);
+    if (p) { isSkinDrawing = true; lastSkinPixel = p; paintSkinPixel(p.x, p.y); }
+});
+window.addEventListener('mousemove', e => {
+    if (!isSkinDrawing) return;
+    const p = getSkinGridPos(e.clientX, e.clientY);
+    if (p && (!lastSkinPixel || p.x !== lastSkinPixel.x || p.y !== lastSkinPixel.y)) {
+        paintSkinPixel(p.x, p.y);
+        lastSkinPixel = p;
+    }
+});
+window.addEventListener('mouseup', () => { isSkinDrawing = false; lastSkinPixel = null; });
+skinEditorCanvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = getSkinGridPos(t.clientX, t.clientY);
+    if (p) { isSkinDrawing = true; lastSkinPixel = p; paintSkinPixel(p.x, p.y); }
+}, { passive: false });
+skinEditorCanvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isSkinDrawing) return;
+    const t = e.touches[0];
+    const p = getSkinGridPos(t.clientX, t.clientY);
+    if (p && (!lastSkinPixel || p.x !== lastSkinPixel.x || p.y !== lastSkinPixel.y)) {
+        paintSkinPixel(p.x, p.y);
+        lastSkinPixel = p;
+    }
+}, { passive: false });
+skinEditorCanvas.addEventListener('touchend', e => { e.preventDefault(); isSkinDrawing = false; lastSkinPixel = null; }, { passive: false });
+
+function exportSkinKSS() {
+    const name = document.getElementById('skinNameInput').value.trim() || 'Мой скин';
+    const data = { format: 'kss', version: '1.0', name, size: SKIN_GRID, pixels: skinPixels, createdAt: Date.now(), author: myNick };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name.replace(/[^a-zA-Z0-9а-яА-Я_\-]/g, '_') + '.kss';
+    a.click();
+    URL.revokeObjectURL(url);
+    addChatMessage('💾 Система', t('skinSaved'), 0xaa66ff);
+}
+
+function importSkinKSS(file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (data.format === 'kss' && data.pixels && data.size === SKIN_GRID) {
+                skinPixels = data.pixels;
+                document.getElementById('skinNameInput').value = data.name || 'Импорт';
+                renderSkinEditor();
+                renderSkinPreview();
+                addChatMessage('📂 Система', t('skinLoaded'), 0x44ff88);
+            } else {
+                alert('Неверный формат .kss');
+            }
+        } catch (err) { alert('Ошибка чтения файла'); }
+    };
+    reader.readAsText(file);
+}
+
+function skinPixelsToDataURL(pixels, size = 32) {
+    const canvas = document.createElement('canvas');
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    const cell = size / SKIN_GRID;
+    ctx.fillStyle = '#222';
+    ctx.fillRect(0, 0, size, size);
+    for (let y = 0; y < SKIN_GRID; y++) {
+        for (let x = 0; x < SKIN_GRID; x++) {
+            const col = pixels[y][x];
+            if (col) {
+                ctx.fillStyle = col;
+                ctx.fillRect(Math.floor(x * cell), Math.floor(y * cell), Math.ceil(cell), Math.ceil(cell));
+            }
+        }
+    }
+    return canvas.toDataURL('image/png');
+}
+
+function applyCustomSkin() {
+    const dataURL = skinPixelsToDataURL(skinPixels, 64);
+    customSkinDataURL = dataURL;
+    currentSkinIndex = 'custom';
+    Storage.set('customSkin', customSkinDataURL);
+    Storage.set('currentSkin', 'custom');
+    updatePlayerAvatar();
+    addChatMessage('🎨 Система', 'Кастомный скин применён!', 0xff44aa);
+}
+
+document.getElementById('btnSkinEditor').addEventListener('click', () => {
+    document.getElementById('skinEditorPanel').classList.add('active');
+    initSkinEditor();
+});
+document.getElementById('skinEditorClose').addEventListener('click', () => document.getElementById('skinEditorPanel').classList.remove('active'));
+document.getElementById('skinSaveBtn').addEventListener('click', exportSkinKSS);
+document.getElementById('skinLoadBtn').addEventListener('click', () => document.getElementById('skinFileInput').click());
+document.getElementById('skinFileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) importSkinKSS(file);
+    e.target.value = '';
+});
+document.getElementById('skinClearBtn').addEventListener('click', () => {
+    if (confirm('Очистить скин?')) {
+        for (let y = 0; y < SKIN_GRID; y++) for (let x = 0; x < SKIN_GRID; x++) skinPixels[y][x] = null;
+        renderSkinEditor(); renderSkinPreview();
+    }
+});
+document.getElementById('skinApplyBtn').addEventListener('click', applyCustomSkin);
+document.getElementById('skinPublishBtn').addEventListener('click', async () => {
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
+    try {
+        const name = document.getElementById('skinNameInput').value.trim() || 'Скин';
+        await database.ref('skins').push({
+            authorId: currentUser.uid, authorNick: myNick, name,
+            data: JSON.stringify({ format: 'kss', version: '1.0', size: SKIN_GRID, pixels: skinPixels }),
+            createdAt: Date.now(), public: true
+        });
+        addChatMessage('🌍 Система', t('skinPublished'), 0x44ff88);
+    } catch (e) { addChatMessage('❌ Система', 'Ошибка публикации', 0xff4444); }
+});
+
+// =====================================================
+// НАСТРОЙКИ
+// =====================================================
+document.getElementById('btnSettings').addEventListener('click', () => document.getElementById('settingsPanel').classList.add('active'));
+document.getElementById('settingsClose').addEventListener('click', () => document.getElementById('settingsPanel').classList.remove('active'));
+document.getElementById('sensSlider').addEventListener('input', function() {
+    mouseSensitivity = parseFloat(this.value);
+    document.getElementById('sensValue').textContent = mouseSensitivity.toFixed(1);
+    Storage.set('mouseSens', mouseSensitivity);
+});
+document.getElementById('sensSlider').value = mouseSensitivity;
+document.getElementById('sensValue').textContent = mouseSensitivity.toFixed(1);
+document.getElementById('invertY').addEventListener('click', function() {
+    this.classList.toggle('active');
+    invertY = this.classList.contains('active');
+    this.querySelector('.dot').style.left = invertY ? '25px' : '3px';
+    this.querySelector('.dot').style.background = invertY ? '#88ccff' : '#6688aa';
+});
+document.getElementById('soundToggle').addEventListener('click', function() {
+    this.classList.toggle('active');
+    this.querySelector('.dot').style.left = this.classList.contains('active') ? '25px' : '3px';
+    this.querySelector('.dot').style.background = this.classList.contains('active') ? '#88ccff' : '#6688aa';
+});
+document.getElementById('botToggle').addEventListener('click', function() {
+    this.classList.toggle('active');
+    botChatEnabled = this.classList.contains('active');
+    this.querySelector('.dot').style.left = botChatEnabled ? '25px' : '3px';
+    this.querySelector('.dot').style.background = botChatEnabled ? '#88ccff' : '#6688aa';
+});
+document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+    btn.addEventListener('click', () => {
+        setLang(btn.dataset.lang);
+        addChatMessage('🌍 Система', 'Язык: ' + (currentLang === 'ru' ? 'Русский' : 'English'), 0x88ccff);
+    });
+});
+
+// =====================================================
+// БЛОКИ ДЛЯ ПЕСОЧНИЦЫ
+// =====================================================
+document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(btn => {
+    btn.addEventListener('click', () => {
+        isDeleteMode = false;
+        document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
+        document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        selectedBlock = btn.dataset.block;
+    });
+});
+document.getElementById('deleteBlockBtn').addEventListener('click', function() {
+    isDeleteMode = !isDeleteMode;
+    this.classList.toggle('delete-mode-active', isDeleteMode);
+    document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
+});
+
+// =====================================================
+// РЕДАКТОР КАРТ
+// =====================================================
+const editorPanel = document.getElementById('editorPanel');
+const editorCanvas = document.getElementById('editorCanvas');
+const ectx = editorCanvas.getContext('2d');
+const GRID_SIZE = 20;
+let CELL_SIZE = editorCanvas.width / GRID_SIZE;
+let gridData = [];
+let selectedTool = 'grass';
+let isDrawing = false;
+const toolColors = { grass: '#4CAF50', stone: '#888888', wood: '#8B6A4A', diamond: '#4FC3F7', gold: '#FFD700', water: '#2196F3', erase: '#1a2a3a' };
+
+function initGrid() {
+    gridData = [];
+    for (let y = 0; y < GRID_SIZE; y++) {
+        gridData[y] = [];
+        for (let x = 0; x < GRID_SIZE; x++) gridData[y][x] = 'grass';
+    }
+    renderGrid();
+}
+function renderGrid() {
+    CELL_SIZE = editorCanvas.width / GRID_SIZE;
+    ectx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
+    for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+            ectx.fillStyle = toolColors[gridData[y][x]] || toolColors.grass;
+            ectx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            ectx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ectx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+    }
+}
+function getGridPosFromClient(clientX, clientY) {
+    const rect = editorCanvas.getBoundingClientRect();
+    const scaleX = editorCanvas.width / rect.width;
+    const scaleY = editorCanvas.height / rect.height;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    const gx = Math.floor(x / CELL_SIZE);
+    const gy = Math.floor(y / CELL_SIZE);
+    if (gx >= 0 && gx < GRID_SIZE && gy >= 0 && gy < GRID_SIZE) return { x: gx, y: gy };
+    return null;
+}
+function paintCell(gx, gy) { gridData[gy][gx] = selectedTool === 'erase' ? 'grass' : selectedTool; renderGrid(); }
+
+editorCanvas.addEventListener('mousedown', e => {
+    e.preventDefault();
+    const p = getGridPosFromClient(e.clientX, e.clientY);
+    if (p) { isDrawing = true; paintCell(p.x, p.y); }
+});
+window.addEventListener('mousemove', e => {
+    if (!isDrawing) return;
+    const p = getGridPosFromClient(e.clientX, e.clientY);
+    if (p) paintCell(p.x, p.y);
+});
+window.addEventListener('mouseup', () => { isDrawing = false; });
+editorCanvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    const p = getGridPosFromClient(t.clientX, t.clientY);
+    if (p) { isDrawing = true; paintCell(p.x, p.y); }
+}, { passive: false });
+editorCanvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const t = e.touches[0];
+    const p = getGridPosFromClient(t.clientX, t.clientY);
+    if (p) paintCell(p.x, p.y);
+}, { passive: false });
+editorCanvas.addEventListener('touchend', e => { e.preventDefault(); isDrawing = false; }, { passive: false });
+editorCanvas.addEventListener('touchcancel', () => { isDrawing = false; });
+
+document.querySelectorAll('.editor-tool').forEach(tool => {
+    tool.addEventListener('click', () => {
+        document.querySelectorAll('.editor-tool').forEach(t => t.classList.remove('active'));
+        tool.classList.add('active');
+        selectedTool = tool.dataset.tool;
+    });
+});
+document.getElementById('saveMap').addEventListener('click', () => {
+    const data = { version: '1.0', name: 'Kotnot_Map', gridSize: GRID_SIZE, grid: gridData };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'map.kmap'; a.click();
+    URL.revokeObjectURL(url);
+    addChatMessage('💾 Система', t('mapSaved'), 0x88ccff);
+});
+document.getElementById('loadMap').addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (data.grid && data.gridSize === GRID_SIZE) {
+                gridData = data.grid;
+                loadedMapData = data;
+                renderGrid();
+                addChatMessage('📂 Система', t('mapLoaded'), 0x88ccff);
+                if (gameUI.classList.contains('active') && currentMode !== 'pvp') loadMapData(data);
+            } else {
+                addChatMessage('❌ Система', 'Неверный размер карты', 0xff4444);
+            }
+        } catch (err) { addChatMessage('❌ Система', 'Ошибка загрузки', 0xff4444); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+});
+document.getElementById('clearMap').addEventListener('click', () => {
+    if (confirm('Очистить карту?')) { initGrid(); addChatMessage('🗑️ Система', t('mapCleared'), 0xffaa44); }
+});
+document.getElementById('closeEditor').addEventListener('click', () => editorPanel.classList.remove('active'));
+document.getElementById('btnEditor').addEventListener('click', () => { editorPanel.classList.add('active'); initGrid(); });
+
+// =====================================================
+// ПОСТЫ
+// =====================================================
+const POSTS_PER_PAGE = 5;
+let currentPage = 0;
+let allPostsCache = [];
+let currentPostId = null;
+let postsListener = null;
+let repliesListener = null;
+const postsPanel = document.getElementById('postsPanel');
+const postsListView = document.getElementById('postsListView');
+const postDetailView = document.getElementById('postDetailView');
+const postCreateView = document.getElementById('postCreateView');
+
+document.getElementById('btnPosts').addEventListener('click', () => {
+    postsPanel.classList.add('active');
+    showPostsList();
+    loadPosts();
+});
+document.getElementById('postsBackBtn').addEventListener('click', () => {
+    postsPanel.classList.remove('active');
+    if (postsListener) { postsListener.off(); postsListener = null; }
+    if (repliesListener) { repliesListener.off(); repliesListener = null; }
+});
+function showPostsList() { postsListView.style.display = 'block'; postDetailView.style.display = 'none'; postCreateView.style.display = 'none'; }
+function showPostDetail() { postsListView.style.display = 'none'; postDetailView.style.display = 'block'; postCreateView.style.display = 'none'; }
+function showPostCreate() { postsListView.style.display = 'none'; postDetailView.style.display = 'none'; postCreateView.style.display = 'block'; }
+
+function loadPosts() {
+    const list = document.getElementById('postsList');
+    list.innerHTML = `<div class="room-empty">${t('postsLoading')}</div>`;
+    if (postsListener) postsListener.off();
+    postsListener = database.ref('posts').orderByChild('createdAt');
+    postsListener.on('value', snapshot => {
+        const data = snapshot.val();
+        allPostsCache = [];
+        if (data) {
+            Object.entries(data).forEach(([id, post]) => allPostsCache.push({ id, ...post }));
+            allPostsCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        }
+        currentPage = 0;
+        renderPostsPage();
+    }, err => { list.innerHTML = '<div class="room-empty" style="color:#ff8888;">❌ ' + err.message + '</div>'; });
+}
+function renderPostsPage() {
+    const list = document.getElementById('postsList');
+    list.innerHTML = '';
+    if (allPostsCache.length === 0) {
+        list.innerHTML = `<div class="room-empty">${t('postsEmpty')}</div>`;
+        document.getElementById('postsPageInfo').textContent = 'Стр. 0 / 0';
+        document.getElementById('postsPrevBtn').disabled = true;
+        document.getElementById('postsNextBtn').disabled = true;
+        return;
+    }
+    const totalPages = Math.ceil(allPostsCache.length / POSTS_PER_PAGE);
+    const start = currentPage * POSTS_PER_PAGE;
+    const pagePosts = allPostsCache.slice(start, start + POSTS_PER_PAGE);
+    pagePosts.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'post-card';
+        const skinUrl = getSkinDataURL(post.authorSkin || 0);
+        const preview = (post.text || '').length > 150 ? post.text.substring(0, 150) + '…' : post.text;
+        card.innerHTML = `
+            <div class="post-header">
+                <div class="post-avatar"><img src="${skinUrl}"></div>
+                <div>
+                    <div class="post-author">${escapeHtml(post.authorNick || 'Аноним')}</div>
+                    <div class="post-time">${formatTime(post.createdAt)}</div>
+                </div>
+            </div>
+            <div class="post-title">${escapeHtml(post.title || '')}</div>
+            <div class="post-text">${escapeHtml(preview || '')}</div>
+            <div class="post-footer">
+                <span class="stat">💬 ${post.replyCount || 0}</span>
+                <span class="stat">❤️ ${post.likes || 0}</span>
+            </div>
+        `;
+        card.addEventListener('click', () => openPost(post.id));
+        list.appendChild(card);
+    });
+    document.getElementById('postsPageInfo').textContent = `Стр. ${currentPage + 1} / ${totalPages}`;
+    document.getElementById('postsPrevBtn').disabled = currentPage === 0;
+    document.getElementById('postsNextBtn').disabled = currentPage >= totalPages - 1;
+}
+document.getElementById('postsPrevBtn').addEventListener('click', () => { if (currentPage > 0) { currentPage--; renderPostsPage(); } });
+document.getElementById('postsNextBtn').addEventListener('click', () => {
+    const totalPages = Math.ceil(allPostsCache.length / POSTS_PER_PAGE);
+    if (currentPage < totalPages - 1) { currentPage++; renderPostsPage(); }
+});
+
+function openPost(postId) {
+    currentPostId = postId;
+    showPostDetail();
+    if (repliesListener) repliesListener.off();
+    const postRef = database.ref('posts/' + postId);
+    postRef.on('value', snapshot => {
+        const post = snapshot.val();
+        if (!post) {
+            document.getElementById('postFull').innerHTML = '<div style="color:#ff8888;text-align:center;">Пост удалён</div>';
+            return;
+        }
+        const skinUrl = getSkinDataURL(post.authorSkin || 0);
+        document.getElementById('postFull').innerHTML = `
+            <div class="post-header">
+                <div class="post-avatar"><img src="${skinUrl}"></div>
+                <div>
+                    <div class="post-author">${escapeHtml(post.authorNick || 'Аноним')}</div>
+                    <div class="post-time">${formatTime(post.createdAt)}</div>
+                </div>
+            </div>
+            <div class="post-title">${escapeHtml(post.title || '')}</div>
+            <div class="post-text">${escapeHtml(post.text || '')}</div>
+            <div class="post-footer"><span class="stat">❤️ ${post.likes || 0}</span></div>
+        `;
+    });
+    repliesListener = postRef.child('replies').orderByChild('createdAt');
+    repliesListener.on('value', snapshot => {
+        const data = snapshot.val();
+        const repliesList = document.getElementById('repliesList');
+        repliesList.innerHTML = '';
+        if (!data) {
+            document.getElementById('replyCountLabel').textContent = '0';
+            repliesList.innerHTML = `<div style="color:rgba(200,220,255,0.3);font-size:13px;padding:12px;text-align:center;">${t('postNoReplies')}</div>`;
+            return;
+        }
+        const replies = Object.entries(data).map(([id, r]) => ({ id, ...r }));
+        replies.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        document.getElementById('replyCountLabel').textContent = replies.length;
+        replies.forEach(reply => {
+            const div = document.createElement('div');
+            div.className = 'reply-item';
+            const rSkinUrl = getSkinDataURL(reply.authorSkin || 0);
+            div.innerHTML = `
+                <div class="post-avatar"><img src="${rSkinUrl}"></div>
+                <div class="reply-body">
+                    <div class="post-author">${escapeHtml(reply.authorNick || 'Аноним')} <span class="post-time" style="font-weight:400;color:rgba(200,220,255,0.35);margin-left:6px;">${formatTime(reply.createdAt)}</span></div>
+                    <div class="post-text">${escapeHtml(reply.text || '')}</div>
+                </div>
+            `;
+            repliesList.appendChild(div);
+        });
+    });
+}
+document.getElementById('postDetailBackBtn').addEventListener('click', () => {
+    if (repliesListener) { repliesListener.off(); repliesListener = null; }
+    showPostsList();
+});
+document.getElementById('replySendBtn').addEventListener('click', async () => {
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
+    const text = document.getElementById('replyInput').value.trim();
+    if (!text || !currentPostId) return;
+    try {
+        await database.ref('posts/' + currentPostId + '/replies').push({
+            authorId: currentUser.uid, authorNick: myNick, authorSkin: currentSkinIndex,
+            text, createdAt: Date.now()
+        });
+        const snap = await database.ref('posts/' + currentPostId + '/replies').once('value');
+        await database.ref('posts/' + currentPostId).update({ replyCount: snap.numChildren() });
+        document.getElementById('replyInput').value = '';
+    } catch (e) { console.error(e); }
+});
+document.getElementById('postNewBtn').addEventListener('click', () => {
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
+    document.getElementById('postTitleInput').value = '';
+    document.getElementById('postTextInput').value = '';
+    showPostCreate();
+});
+document.getElementById('postCreateBackBtn').addEventListener('click', () => showPostsList());
+document.getElementById('postSubmitBtn').addEventListener('click', async () => {
+    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', t('loginRequired'), 0xff4444); return; }
+    const title = document.getElementById('postTitleInput').value.trim();
+    const text = document.getElementById('postTextInput').value.trim();
+    if (!title) { addChatMessage('❌ Система', t('enterTitle'), 0xff4444); return; }
+    if (!text) { addChatMessage('❌ Система', t('enterText'), 0xff4444); return; }
+    try {
+        await database.ref('posts').push({
+            authorId: currentUser.uid, authorNick: myNick, authorSkin: currentSkinIndex,
+            title, text, createdAt: Date.now(), likes: 0, replyCount: 0
+        });
+        addChatMessage('📝 Система', t('postPublished'), 0x44ff88);
+        showPostsList();
+    } catch (e) { console.error(e); }
+});
+function escapeHtml(str) {
+    if (str === undefined || str === null) return '';
+    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+function formatTime(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    const diff = Date.now() - ts;
+    if (diff < 60000) return 'только что';
+    if (diff < 3600000) return Math.floor(diff / 60000) + ' мин назад';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + ' ч назад';
+    if (diff < 604800000) return Math.floor(diff / 86400000) + ' дн назад';
+    return d.toLocaleDateString('ru-RU');
 }
 
 // =====================================================
@@ -1748,33 +3061,34 @@ firebase.auth().onAuthStateChanged(user => {
         hideUserInfo();
     }
 });
-
 async function loadUserData(uid) {
     try {
         const snapshot = await database.ref('users/' + uid + '/data').once('value');
         const data = snapshot.val();
         if (data) {
             if (data.nick) { myNick = data.nick; Storage.set('nick', myNick); document.getElementById('nickNameText').textContent = myNick; }
-            if (data.skin !== undefined) { currentSkinIndex = data.skin; Storage.set('currentSkin', currentSkinIndex); updatePlayerAvatar(); }
+            if (data.skin !== undefined) { currentSkinIndex = data.skin; Storage.set('currentSkin', currentSkinIndex); }
+            if (data.customSkin) { customSkinDataURL = data.customSkin; Storage.set('customSkin', customSkinDataURL); }
             if (data.coins !== undefined) { coins = data.coins; Storage.set('coins', coins); updateScore(); }
             if (data.score !== undefined) { score = data.score; updateScore(); }
             if (data.inventory) { inventory = data.inventory; updateInventory(); }
-            addChatMessage('💾 Система', 'Прогресс загружен!', 0x88ccff);
+            if (data.lang) { setLang(data.lang); }
+            updatePlayerAvatar();
+            addChatMessage('💾 Система', t('progressLoaded'), 0x88ccff);
         }
     } catch (e) { console.error(e); }
 }
-
 async function autoSave() {
     if (!isAuthenticated || !currentUser) return;
     try {
         await database.ref('users/' + currentUser.uid + '/data').set({
-            nick: myNick, skin: currentSkinIndex, coins, score, inventory, lastUpdate: Date.now()
+            nick: myNick, skin: currentSkinIndex, customSkin: customSkinDataURL,
+            coins, score, inventory, lang: currentLang, lastUpdate: Date.now()
         });
     } catch (e) { console.error(e); }
 }
 setInterval(autoSave, 30000);
 window.addEventListener('beforeunload', () => {
-    // При закрытии страницы — пытаемся выйти
     if (currentRoomId && currentUser) {
         database.ref(`rooms/${currentRoomId}/players_list/${currentUser.uid}`).remove();
     }
@@ -1790,16 +3104,10 @@ document.getElementById('authLoginBtn').addEventListener('click', async () => {
         document.getElementById('authModal').classList.add('hidden');
         document.getElementById('authError').textContent = '';
     } catch (error) {
-        const messages = {
-            'auth/user-not-found': 'Пользователь не найден',
-            'auth/wrong-password': 'Неверный пароль',
-            'auth/invalid-email': 'Неверный формат email',
-            'auth/too-many-requests': 'Слишком много попыток'
-        };
+        const messages = { 'auth/user-not-found': 'Пользователь не найден', 'auth/wrong-password': 'Неверный пароль', 'auth/invalid-email': 'Неверный формат email', 'auth/too-many-requests': 'Слишком много попыток' };
         document.getElementById('authError').textContent = messages[error.code] || error.message;
     }
 });
-
 document.getElementById('authRegisterBtn').addEventListener('click', async () => {
     const nick = document.getElementById('authRegNick').value.trim();
     const email = document.getElementById('authRegEmail').value.trim();
@@ -1817,17 +3125,12 @@ document.getElementById('authRegisterBtn').addEventListener('click', async () =>
             createdAt: Date.now()
         });
         document.getElementById('authModal').classList.add('hidden');
-        addChatMessage('🎉 Система', `Аккаунт создан! Добро пожаловать, ${nick}!`, 0x44ff88);
+        addChatMessage('🎉 Система', t('accountCreated') + ' ' + nick + '!', 0x44ff88);
     } catch (error) {
-        const messages = {
-            'auth/email-already-in-use': 'Email уже используется',
-            'auth/invalid-email': 'Неверный формат email',
-            'auth/weak-password': 'Слишком слабый пароль'
-        };
+        const messages = { 'auth/email-already-in-use': 'Email уже используется', 'auth/invalid-email': 'Неверный формат email', 'auth/weak-password': 'Слишком слабый пароль' };
         document.getElementById('authError').textContent = messages[error.code] || error.message;
     }
 });
-
 document.getElementById('authGoogleBtn').addEventListener('click', async () => {
     try {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -1841,644 +3144,51 @@ document.getElementById('authGoogleBtn').addEventListener('click', async () => {
                 createdAt: Date.now()
             });
         }
-    } catch (error) {
-        document.getElementById('authError').textContent = 'Ошибка: ' + error.message;
-    }
+    } catch (error) { document.getElementById('authError').textContent = 'Ошибка: ' + error.message; }
 });
-
 document.getElementById('authLogoutBtn').addEventListener('click', async () => {
     await leaveRoom();
     await firebase.auth().signOut();
-    addChatMessage('👤 Система', 'Вы вышли из аккаунта', 0xff8888);
+    addChatMessage('👤 Система', t('loggedOut'), 0xff8888);
 });
-
 document.getElementById('authSwitchLink').addEventListener('click', function() {
     const isLogin = document.getElementById('authLoginForm').style.display !== 'none';
     if (isLogin) {
         document.getElementById('authLoginForm').style.display = 'none';
         document.getElementById('authRegisterForm').style.display = 'block';
-        document.getElementById('authTitle').textContent = '📝 Регистрация';
-        document.getElementById('authSub').textContent = 'Создайте новый аккаунт';
-        this.textContent = 'Войти';
-        document.getElementById('authSwitchText').textContent = 'Уже есть аккаунт? ';
+        document.getElementById('authTitle').textContent = t('authRegister');
+        document.getElementById('authSub').textContent = t('authRegisterSub');
+        this.textContent = t('authLoginLink');
+        document.getElementById('authSwitchText').textContent = t('authHaveAccount');
     } else {
         document.getElementById('authLoginForm').style.display = 'block';
         document.getElementById('authRegisterForm').style.display = 'none';
-        document.getElementById('authTitle').textContent = '🔐 Вход';
-        document.getElementById('authSub').textContent = 'Войдите в свой аккаунт';
-        this.textContent = 'Зарегистрироваться';
-        document.getElementById('authSwitchText').textContent = 'Нет аккаунта? ';
+        document.getElementById('authTitle').textContent = t('authLogin');
+        document.getElementById('authSub').textContent = t('authLoginSub');
+        this.textContent = t('authRegisterLink');
+        document.getElementById('authSwitchText').textContent = t('authNoAccount');
     }
     document.getElementById('authError').textContent = '';
 });
-
 document.getElementById('authResetLink').addEventListener('click', () => {
     const email = prompt('Введите email:');
     if (email) firebase.auth().sendPasswordResetEmail(email)
         .then(() => addChatMessage('📧 Система', 'Инструкции отправлены', 0x44ff88))
         .catch(e => document.getElementById('authError').textContent = 'Ошибка: ' + e.message);
 });
-
 document.getElementById('authCloseBtn').addEventListener('click', () => {
     document.getElementById('authModal').classList.add('hidden');
     document.getElementById('authError').textContent = '';
 });
-
 document.getElementById('btnAccount').addEventListener('click', () => {
     if (isAuthenticated && currentUser) {
-        if (confirm(`Аккаунт: ${myNick}\nМонет: ${coins}\nОчков: ${score}\nСкин: ${SKIN_NAMES[currentSkinIndex]}\n\nВыйти?`)) {
+        if (confirm(`Аккаунт: ${myNick}\nМонет: ${coins}\nОчков: ${score}\n\nВыйти?`)) {
             firebase.auth().signOut();
         }
     } else {
         document.getElementById('authModal').classList.remove('hidden');
     }
 });
-
-// =====================================================
-// МУЛЬТИПЛЕЕР + HEARTBEAT + HOST CLEANUP
-// =====================================================
-function startMultiplayer(roomId) {
-    if (!roomId || !isAuthenticated || !currentUser) return;
-
-    const playersRef = database.ref('rooms/' + roomId + '/players_list');
-    const myPlayerRef = playersRef.child(currentUser.uid);
-
-    // Регистрируемся
-    myPlayerRef.set({
-        uid: currentUser.uid, nick: myNick, skin: currentSkinIndex,
-        isHost, joinedAt: Date.now(), connected: true,
-        x: camera.position.x, y: camera.position.y, z: camera.position.z, rotY: camera.rotation.y,
-        heartbeat: Date.now(), lastUpdate: Date.now()
-    });
-    myPlayerRef.onDisconnect().remove();
-
-    // Слушаем других игроков
-    playersRef.on('child_added', snap => {
-        const data = snap.val();
-        if (snap.key === currentUser.uid) return;
-        if (data.connected !== false) createMultiplayerPlayer(snap.key, data);
-    });
-    playersRef.on('child_changed', snap => {
-        const data = snap.val();
-        if (snap.key === currentUser.uid) return;
-        if (data.connected !== false) updateMultiplayerPlayer(snap.key, data);
-        else removeMultiplayerPlayer(snap.key);
-    });
-    playersRef.on('child_removed', snap => {
-        removeMultiplayerPlayer(snap.key);
-    });
-
-    // Позиция + heartbeat каждые 5 сек
-    if (positionUpdateInterval) clearInterval(positionUpdateInterval);
-    positionUpdateInterval = setInterval(() => {
-        if (gameUI.classList.contains('active') && currentRoomId) {
-            myPlayerRef.update({
-                x: camera.position.x, y: camera.position.y, z: camera.position.z,
-                rotY: camera.rotation.y, lastUpdate: Date.now()
-            });
-        }
-    }, 50);
-
-    if (heartbeatInterval) clearInterval(heartbeatInterval);
-    heartbeatInterval = setInterval(() => {
-        if (currentRoomId && currentUser) {
-            myPlayerRef.update({ heartbeat: Date.now() });
-        }
-    }, HEARTBEAT_INTERVAL_MS);
-
-    // Если мы хост — периодически проверяем, есть ли ещё игроки онлайн
-    if (isHost) {
-        if (hostCleanupInterval) clearInterval(hostCleanupInterval);
-        hostCleanupInterval = setInterval(() => checkRoomAlive(), HOST_CLEANUP_INTERVAL_MS);
-    }
-
-    listenRoomBlocks(roomId);
-    updateOnlineIndicator();
-}
-
-// Хост проверяет, есть ли живые игроки. Если нет — удаляет комнату.
-async function checkRoomAlive() {
-    if (!currentRoomId || !isHost) return;
-    try {
-        const snap = await database.ref('rooms/' + currentRoomId + '/players_list').once('value');
-        const players = snap.val() || {};
-        const now = Date.now();
-        let onlineCount = 0;
-        for (const pid in players) {
-            const p = players[pid];
-            if (p.connected === false) continue;
-            const hb = p.heartbeat || p.lastUpdate || p.joinedAt || 0;
-            if (now - hb < PLAYER_TIMEOUT_MS) onlineCount++;
-        }
-
-        if (onlineCount === 0) {
-            console.log('🧹 Хост: онлайн 0 — удаляю лобби');
-            await database.ref('rooms/' + currentRoomId).remove();
-            currentRoomId = null;
-            isHost = false;
-            addChatMessage('🏠 Система', 'Лобби закрыто (нет игроков)', 0xff8888);
-            // Возврат в меню
-            if (gameUI.classList.contains('active')) {
-                menuToggle.click();
-            }
-        }
-    } catch (e) { console.error('checkRoomAlive error:', e); }
-}
-
-// Также периодически чистим "мёртвых" игроков из списка (у которых heartbeat протух)
-setInterval(() => {
-    if (!currentRoomId) return;
-    const now = Date.now();
-    for (const id in playerObjects) {
-        const p = playerObjects[id];
-        if (now - p.lastUpdate > PLAYER_TIMEOUT_MS * 2) {
-            removeMultiplayerPlayer(id);
-        }
-    }
-}, 5000);
-
-// =====================================================
-// СТАРТ ИГРЫ
-// =====================================================
-function startGame(mode) {
-    currentMode = mode;
-    modeSelect.classList.remove('active');
-    mainMenu.classList.add('hidden');
-    gameUI.classList.add('active');
-    menuToggle.style.display = 'block';
-    nickDisplay.classList.add('active');
-    jumpBtn.classList.add('active');
-    document.getElementById('inventoryDisplay').classList.add('active');
-
-    const modeNames = { pvp: '⚔️ ПВП', sandbox: '🧱 Песочница', explore: '🚶 Исследование' };
-    modeIndicator.textContent = `РЕЖИМ: ${modeNames[mode]}`;
-    sandboxTools.classList.toggle('active', mode === 'sandbox');
-    healthBar.classList.toggle('active', mode === 'pvp');
-    scoreDisplay.classList.toggle('active', mode === 'pvp');
-    isDeleteMode = false;
-    document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
-
-    if (mode === 'pvp') {
-        health = 100; updateHealth();
-        score = 0; updateScore();
-        bullets.forEach(b => scene.remove(b.mesh)); bullets = [];
-        createBots();
-        addChatMessage('⚔️ Система', 'Режим ПВП! F или клик — стрелять', 0xff4444);
-    } else if (mode === 'sandbox') {
-        bullets.forEach(b => scene.remove(b.mesh)); bullets = [];
-        if (loadedMapData) loadMapData(loadedMapData); else createBots();
-        updateInventory();
-        addChatMessage('🧱 Система', 'Режим Песочница! Клик — поставить блок, E — удалять', 0x44ff88);
-    } else {
-        bullets.forEach(b => scene.remove(b.mesh)); bullets = [];
-        if (loadedMapData) loadMapData(loadedMapData); else createBots();
-        addChatMessage('🚶 Система', 'Режим Исследование', 0x88ccff);
-    }
-    camera.position.set(0, 1.8, 10);
-    camera.lookAt(0, 1.8, 0);
-
-    if (currentServer === 'public' && isAuthenticated && currentRoomId) startMultiplayer(currentRoomId);
-    if (!isMobile()) pcHint.classList.add('active');
-    else pcHint.classList.remove('active');
-    updateOnlineIndicator();
-}
-
-// =====================================================
-// ВЫХОД В МЕНЮ
-// =====================================================
-menuToggle.addEventListener('click', async () => {
-    if (document.exitPointerLock) document.exitPointerLock();
-    Object.keys(playerObjects).forEach(id => removeMultiplayerPlayer(id));
-    await leaveRoom();
-    mainMenu.classList.remove('hidden');
-    gameUI.classList.remove('active');
-    menuToggle.style.display = 'none';
-    nickDisplay.classList.remove('active');
-    jumpBtn.classList.remove('active');
-    document.getElementById('inventoryDisplay').classList.remove('active');
-    closeChat();
-    sandboxTools.classList.remove('active');
-    healthBar.classList.remove('active');
-    scoreDisplay.classList.remove('active');
-    pcHint.classList.remove('active');
-    onlineIndicator.classList.remove('active');
-});
-
-// =====================================================
-// РЕДАКТОР КАРТ
-// =====================================================
-const editorPanel = document.getElementById('editorPanel');
-const editorCanvas = document.getElementById('editorCanvas');
-const ectx = editorCanvas.getContext('2d');
-const GRID_SIZE = 20;
-let CELL_SIZE = editorCanvas.width / GRID_SIZE;
-let gridData = [];
-let selectedTool = 'grass';
-let isDrawing = false;
-const toolColors = {
-    grass: '#4CAF50', stone: '#888888', wood: '#8B6A4A',
-    diamond: '#4FC3F7', gold: '#FFD700', water: '#2196F3',
-    erase: '#1a2a3a'
-};
-
-function initGrid() {
-    gridData = [];
-    for (let y = 0; y < GRID_SIZE; y++) {
-        gridData[y] = [];
-        for (let x = 0; x < GRID_SIZE; x++) gridData[y][x] = 'grass';
-    }
-    renderGrid();
-}
-
-function renderGrid() {
-    CELL_SIZE = editorCanvas.width / GRID_SIZE;
-    ectx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
-    for (let y = 0; y < GRID_SIZE; y++) {
-        for (let x = 0; x < GRID_SIZE; x++) {
-            ectx.fillStyle = toolColors[gridData[y][x]] || toolColors.grass;
-            ectx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-            ectx.strokeStyle = 'rgba(255,255,255,0.06)';
-            ectx.strokeRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-        }
-    }
-}
-
-function getGridPosFromClient(clientX, clientY) {
-    const rect = editorCanvas.getBoundingClientRect();
-    const scaleX = editorCanvas.width / rect.width;
-    const scaleY = editorCanvas.height / rect.height;
-    const x = (clientX - rect.left) * scaleX;
-    const y = (clientY - rect.top) * scaleY;
-    const gx = Math.floor(x / CELL_SIZE);
-    const gy = Math.floor(y / CELL_SIZE);
-    if (gx >= 0 && gx < GRID_SIZE && gy >= 0 && gy < GRID_SIZE) return { x: gx, y: gy };
-    return null;
-}
-
-function paintCell(gx, gy) {
-    gridData[gy][gx] = selectedTool === 'erase' ? 'grass' : selectedTool;
-    renderGrid();
-}
-
-editorCanvas.addEventListener('mousedown', e => {
-    e.preventDefault();
-    const p = getGridPosFromClient(e.clientX, e.clientY);
-    if (p) { isDrawing = true; paintCell(p.x, p.y); }
-});
-window.addEventListener('mousemove', e => {
-    if (!isDrawing) return;
-    const p = getGridPosFromClient(e.clientX, e.clientY);
-    if (p) paintCell(p.x, p.y);
-});
-window.addEventListener('mouseup', () => { isDrawing = false; });
-
-editorCanvas.addEventListener('touchstart', e => {
-    e.preventDefault();
-    const t = e.touches[0];
-    const p = getGridPosFromClient(t.clientX, t.clientY);
-    if (p) { isDrawing = true; paintCell(p.x, p.y); }
-}, { passive: false });
-editorCanvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (!isDrawing) return;
-    const t = e.touches[0];
-    const p = getGridPosFromClient(t.clientX, t.clientY);
-    if (p) paintCell(p.x, p.y);
-}, { passive: false });
-editorCanvas.addEventListener('touchend', e => { e.preventDefault(); isDrawing = false; }, { passive: false });
-editorCanvas.addEventListener('touchcancel', () => { isDrawing = false; });
-
-document.querySelectorAll('.editor-tool').forEach(tool => {
-    tool.addEventListener('click', () => {
-        document.querySelectorAll('.editor-tool').forEach(t => t.classList.remove('active'));
-        tool.classList.add('active');
-        selectedTool = tool.dataset.tool;
-    });
-});
-
-document.getElementById('saveMap').addEventListener('click', () => {
-    const data = { version: '1.0', name: 'Kotnot_Map', gridSize: GRID_SIZE, grid: gridData };
-    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'map.kmap'; a.click();
-    URL.revokeObjectURL(url);
-    addChatMessage('💾 Система', 'Карта сохранена!', 0x88ccff);
-});
-
-document.getElementById('loadMap').addEventListener('click', () => document.getElementById('fileInput').click());
-document.getElementById('fileInput').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = ev => {
-        try {
-            const data = JSON.parse(ev.target.result);
-            if (data.grid && data.gridSize === GRID_SIZE) {
-                gridData = data.grid;
-                loadedMapData = data;
-                renderGrid();
-                addChatMessage('📂 Система', 'Карта загружена!', 0x88ccff);
-                if (gameUI.classList.contains('active') && currentMode !== 'pvp') loadMapData(data);
-            } else {
-                addChatMessage('❌ Система', `Неверный размер карты`, 0xff4444);
-            }
-        } catch (err) { addChatMessage('❌ Система', 'Ошибка загрузки', 0xff4444); }
-    };
-    reader.readAsText(file);
-    e.target.value = '';
-});
-
-document.getElementById('clearMap').addEventListener('click', () => {
-    if (confirm('Очистить карту?')) { initGrid(); addChatMessage('🗑️ Система', 'Карта очищена', 0xffaa44); }
-});
-document.getElementById('closeEditor').addEventListener('click', () => editorPanel.classList.remove('active'));
-document.getElementById('btnEditor').addEventListener('click', () => { editorPanel.classList.add('active'); initGrid(); });
-
-// =====================================================
-// НАСТРОЙКИ
-// =====================================================
-document.getElementById('btnSettings').addEventListener('click', () => document.getElementById('settingsPanel').classList.add('active'));
-document.getElementById('settingsClose').addEventListener('click', () => document.getElementById('settingsPanel').classList.remove('active'));
-
-document.getElementById('sensSlider').addEventListener('input', function() {
-    mouseSensitivity = parseFloat(this.value);
-    document.getElementById('sensValue').textContent = mouseSensitivity.toFixed(1);
-    Storage.set('mouseSens', mouseSensitivity);
-});
-document.getElementById('sensSlider').value = mouseSensitivity;
-document.getElementById('sensValue').textContent = mouseSensitivity.toFixed(1);
-
-const invertToggle = document.getElementById('invertY');
-invertToggle.addEventListener('click', function() {
-    this.classList.toggle('active');
-    invertY = this.classList.contains('active');
-    this.querySelector('.dot').style.left = invertY ? '25px' : '3px';
-    this.querySelector('.dot').style.background = invertY ? '#88ccff' : '#6688aa';
-});
-
-const soundToggle = document.getElementById('soundToggle');
-soundToggle.addEventListener('click', function() {
-    this.classList.toggle('active');
-    this.querySelector('.dot').style.left = this.classList.contains('active') ? '25px' : '3px';
-    this.querySelector('.dot').style.background = this.classList.contains('active') ? '#88ccff' : '#6688aa';
-});
-
-const botToggle = document.getElementById('botToggle');
-botToggle.addEventListener('click', function() {
-    this.classList.toggle('active');
-    botChatEnabled = this.classList.contains('active');
-    this.querySelector('.dot').style.left = botChatEnabled ? '25px' : '3px';
-    this.querySelector('.dot').style.background = botChatEnabled ? '#88ccff' : '#6688aa';
-});
-
-// =====================================================
-// БЛОКИ ДЛЯ ПЕСОЧНИЦЫ
-// =====================================================
-document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(btn => {
-    btn.addEventListener('click', () => {
-        isDeleteMode = false;
-        document.getElementById('deleteBlockBtn').classList.remove('delete-mode-active');
-        document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedBlock = btn.dataset.block;
-    });
-});
-document.getElementById('deleteBlockBtn').addEventListener('click', function() {
-    isDeleteMode = !isDeleteMode;
-    this.classList.toggle('delete-mode-active', isDeleteMode);
-    document.querySelectorAll('.block-btn:not(#deleteBlockBtn)').forEach(b => b.classList.remove('active'));
-});
-
-// =====================================================
-// ПОСТЫ
-// =====================================================
-const POSTS_PER_PAGE = 5;
-let currentPage = 0;
-let allPostsCache = [];
-let currentPostId = null;
-let postsListener = null;
-let repliesListener = null;
-
-const postsPanel = document.getElementById('postsPanel');
-const postsListView = document.getElementById('postsListView');
-const postDetailView = document.getElementById('postDetailView');
-const postCreateView = document.getElementById('postCreateView');
-
-document.getElementById('btnPosts').addEventListener('click', () => {
-    postsPanel.classList.add('active');
-    showPostsList();
-    loadPosts();
-});
-document.getElementById('postsBackBtn').addEventListener('click', () => {
-    postsPanel.classList.remove('active');
-    if (postsListener) { postsListener.off(); postsListener = null; }
-    if (repliesListener) { repliesListener.off(); repliesListener = null; }
-});
-
-function showPostsList() {
-    postsListView.style.display = 'block';
-    postDetailView.style.display = 'none';
-    postCreateView.style.display = 'none';
-}
-function showPostDetail() {
-    postsListView.style.display = 'none';
-    postDetailView.style.display = 'block';
-    postCreateView.style.display = 'none';
-}
-function showPostCreate() {
-    postsListView.style.display = 'none';
-    postDetailView.style.display = 'none';
-    postCreateView.style.display = 'block';
-}
-
-function loadPosts() {
-    const list = document.getElementById('postsList');
-    list.innerHTML = '<div class="room-empty">⏳ Загрузка постов...</div>';
-    if (postsListener) postsListener.off();
-    postsListener = database.ref('posts').orderByChild('createdAt');
-    postsListener.on('value', snapshot => {
-        const data = snapshot.val();
-        allPostsCache = [];
-        if (data) {
-            Object.entries(data).forEach(([id, post]) => allPostsCache.push({ id, ...post }));
-            allPostsCache.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-        }
-        currentPage = 0;
-        renderPostsPage();
-    }, err => {
-        list.innerHTML = '<div class="room-empty" style="color:#ff8888;">❌ ' + err.message + '</div>';
-    });
-}
-
-function renderPostsPage() {
-    const list = document.getElementById('postsList');
-    list.innerHTML = '';
-    if (allPostsCache.length === 0) {
-        list.innerHTML = '<div class="room-empty">📝 Пока нет постов. Создайте первый!</div>';
-        document.getElementById('postsPageInfo').textContent = 'Стр. 0 / 0';
-        document.getElementById('postsPrevBtn').disabled = true;
-        document.getElementById('postsNextBtn').disabled = true;
-        return;
-    }
-    const totalPages = Math.ceil(allPostsCache.length / POSTS_PER_PAGE);
-    const start = currentPage * POSTS_PER_PAGE;
-    const pagePosts = allPostsCache.slice(start, start + POSTS_PER_PAGE);
-
-    pagePosts.forEach(post => {
-        const card = document.createElement('div');
-        card.className = 'post-card';
-        const skinUrl = getSkinDataURL(post.authorSkin || 0);
-        const preview = (post.text || '').length > 150 ? post.text.substring(0, 150) + '…' : post.text;
-        card.innerHTML = `
-            <div class="post-header">
-                <div class="post-avatar"><img src="${skinUrl}"></div>
-                <div>
-                    <div class="post-author">${escapeHtml(post.authorNick || 'Аноним')}</div>
-                    <div class="post-time">${formatTime(post.createdAt)}</div>
-                </div>
-            </div>
-            <div class="post-title">${escapeHtml(post.title || '')}</div>
-            <div class="post-text">${escapeHtml(preview || '')}</div>
-            <div class="post-footer">
-                <span class="stat">💬 ${post.replyCount || 0}</span>
-                <span class="stat">❤️ ${post.likes || 0}</span>
-            </div>
-        `;
-        card.addEventListener('click', () => openPost(post.id));
-        list.appendChild(card);
-    });
-
-    document.getElementById('postsPageInfo').textContent = `Стр. ${currentPage + 1} / ${totalPages}`;
-    document.getElementById('postsPrevBtn').disabled = currentPage === 0;
-    document.getElementById('postsNextBtn').disabled = currentPage >= totalPages - 1;
-}
-
-document.getElementById('postsPrevBtn').addEventListener('click', () => {
-    if (currentPage > 0) { currentPage--; renderPostsPage(); }
-});
-document.getElementById('postsNextBtn').addEventListener('click', () => {
-    const totalPages = Math.ceil(allPostsCache.length / POSTS_PER_PAGE);
-    if (currentPage < totalPages - 1) { currentPage++; renderPostsPage(); }
-});
-
-function openPost(postId) {
-    currentPostId = postId;
-    showPostDetail();
-    if (repliesListener) repliesListener.off();
-    const postRef = database.ref('posts/' + postId);
-
-    postRef.on('value', snapshot => {
-        const post = snapshot.val();
-        if (!post) {
-            document.getElementById('postFull').innerHTML = '<div style="color:#ff8888;text-align:center;">Пост удалён</div>';
-            return;
-        }
-        const skinUrl = getSkinDataURL(post.authorSkin || 0);
-        document.getElementById('postFull').innerHTML = `
-            <div class="post-header">
-                <div class="post-avatar"><img src="${skinUrl}"></div>
-                <div>
-                    <div class="post-author">${escapeHtml(post.authorNick || 'Аноним')}</div>
-                    <div class="post-time">${formatTime(post.createdAt)}</div>
-                </div>
-            </div>
-            <div class="post-title">${escapeHtml(post.title || '')}</div>
-            <div class="post-text">${escapeHtml(post.text || '')}</div>
-            <div class="post-footer"><span class="stat">❤️ ${post.likes || 0}</span></div>
-        `;
-    });
-
-    repliesListener = postRef.child('replies').orderByChild('createdAt');
-    repliesListener.on('value', snapshot => {
-        const data = snapshot.val();
-        const repliesList = document.getElementById('repliesList');
-        repliesList.innerHTML = '';
-        if (!data) {
-            document.getElementById('replyCountLabel').textContent = '0';
-            repliesList.innerHTML = '<div style="color:rgba(200,220,255,0.3);font-size:13px;padding:12px;text-align:center;">Пока нет ответов. Будьте первым!</div>';
-            return;
-        }
-        const replies = Object.entries(data).map(([id, r]) => ({ id, ...r }));
-        replies.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        document.getElementById('replyCountLabel').textContent = replies.length;
-        replies.forEach(reply => {
-            const div = document.createElement('div');
-            div.className = 'reply-item';
-            const rSkinUrl = getSkinDataURL(reply.authorSkin || 0);
-            div.innerHTML = `
-                <div class="post-avatar"><img src="${rSkinUrl}"></div>
-                <div class="reply-body">
-                    <div class="post-author">${escapeHtml(reply.authorNick || 'Аноним')} <span class="post-time" style="font-weight:400;color:rgba(200,220,255,0.35);margin-left:6px;">${formatTime(reply.createdAt)}</span></div>
-                    <div class="post-text">${escapeHtml(reply.text || '')}</div>
-                </div>
-            `;
-            repliesList.appendChild(div);
-        });
-    });
-}
-
-document.getElementById('postDetailBackBtn').addEventListener('click', () => {
-    if (repliesListener) { repliesListener.off(); repliesListener = null; }
-    showPostsList();
-});
-
-document.getElementById('replySendBtn').addEventListener('click', async () => {
-    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', 'Войдите в аккаунт', 0xff4444); return; }
-    const text = document.getElementById('replyInput').value.trim();
-    if (!text || !currentPostId) return;
-    try {
-        await database.ref('posts/' + currentPostId + '/replies').push({
-            authorId: currentUser.uid, authorNick: myNick, authorSkin: currentSkinIndex,
-            text, createdAt: Date.now()
-        });
-        const snap = await database.ref('posts/' + currentPostId + '/replies').once('value');
-        await database.ref('posts/' + currentPostId).update({ replyCount: snap.numChildren() });
-        document.getElementById('replyInput').value = '';
-    } catch (e) { console.error(e); }
-});
-
-document.getElementById('postNewBtn').addEventListener('click', () => {
-    if (!isAuthenticated || !currentUser) {
-        addChatMessage('❌ Система', 'Войдите в аккаунт, чтобы создавать посты', 0xff4444);
-        return;
-    }
-    document.getElementById('postTitleInput').value = '';
-    document.getElementById('postTextInput').value = '';
-    showPostCreate();
-});
-document.getElementById('postCreateBackBtn').addEventListener('click', () => showPostsList());
-
-document.getElementById('postSubmitBtn').addEventListener('click', async () => {
-    if (!isAuthenticated || !currentUser) { addChatMessage('❌ Система', 'Войдите в аккаунт', 0xff4444); return; }
-    const title = document.getElementById('postTitleInput').value.trim();
-    const text = document.getElementById('postTextInput').value.trim();
-    if (!title) { addChatMessage('❌ Система', 'Введите заголовок', 0xff4444); return; }
-    if (!text) { addChatMessage('❌ Система', 'Введите текст', 0xff4444); return; }
-    try {
-        await database.ref('posts').push({
-            authorId: currentUser.uid, authorNick: myNick, authorSkin: currentSkinIndex,
-            title, text, createdAt: Date.now(), likes: 0, replyCount: 0
-        });
-        addChatMessage('📝 Система', 'Пост опубликован!', 0x44ff88);
-        showPostsList();
-    } catch (e) { console.error(e); }
-});
-
-function escapeHtml(str) {
-    if (str === undefined || str === null) return '';
-    return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-}
-function formatTime(ts) {
-    if (!ts) return '';
-    const d = new Date(ts);
-    const diff = Date.now() - ts;
-    if (diff < 60000) return 'только что';
-    if (diff < 3600000) return Math.floor(diff / 60000) + ' мин назад';
-    if (diff < 86400000) return Math.floor(diff / 3600000) + ' ч назад';
-    if (diff < 604800000) return Math.floor(diff / 86400000) + ' дн назад';
-    return d.toLocaleDateString('ru-RU');
-}
 
 // =====================================================
 // КЛИК ДЛЯ МОБИЛЬНЫХ
@@ -2492,7 +3202,6 @@ document.addEventListener('click', e => {
         handlePrimaryAction();
     }
 });
-
 window.addEventListener('resize', () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
@@ -2507,6 +3216,8 @@ function animate() {
     updateTimeOfDay();
     updateBots();
     updateBullets();
+    if (typeof footballActive !== 'undefined' && footballActive) updateFootball();
+    if (typeof parkourActive !== 'undefined' && parkourActive) updateParkour();
 
     if (isJumping) {
         camera.position.y += jumpVelocity;
@@ -2517,7 +3228,6 @@ function animate() {
             jumpVelocity = 0;
         }
     }
-
     if (gameUI.classList.contains('active')) {
         let totalMoveX = moveX, totalMoveZ = moveZ;
         if (keys.w) totalMoveZ = -1;
@@ -2528,30 +3238,25 @@ function animate() {
         if (keys.w && keys.d) { totalMoveX = 1; totalMoveZ = -1; }
         if (keys.s && keys.a) { totalMoveX = -1; totalMoveZ = 1; }
         if (keys.s && keys.d) { totalMoveX = 1; totalMoveZ = 1; }
-
         if (Math.abs(totalMoveX) > 0.05 || Math.abs(totalMoveZ) > 0.05 || Math.abs(rotateX) > 0.05) {
             const baseSpeed = keys.shift ? 0.22 : 0.12;
             const speed = baseSpeed * speedMultiplier;
             const rotSpeed = 0.03;
-
             if (Math.abs(rotateX) > 0.05) {
                 const euler = new THREE.Euler(0, 0, 0, 'YXZ');
                 euler.copy(camera.rotation);
                 euler.y -= rotateX * rotSpeed;
                 camera.rotation.copy(euler);
             }
-
             const forward = new THREE.Vector3(0, 0, -1);
             forward.applyQuaternion(camera.quaternion);
             forward.y = 0; forward.normalize();
             const right = new THREE.Vector3(1, 0, 0);
             right.applyQuaternion(camera.quaternion);
             right.y = 0; right.normalize();
-
             const moveVec = new THREE.Vector3();
             moveVec.addScaledVector(forward, -totalMoveZ * speed);
             moveVec.addScaledVector(right, totalMoveX * speed);
-
             const newPos = camera.position.clone().add(moveVec);
             const limit = 22;
             if (Math.abs(newPos.x) < limit && Math.abs(newPos.z) < limit) {
@@ -2569,7 +3274,7 @@ function animate() {
 }
 
 // =====================================================
-// ИНИЦИАЛИЗАЦИЯ
+// ПОЛИФИЛЛ roundRect
 // =====================================================
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
@@ -2588,19 +3293,24 @@ if (!CanvasRenderingContext2D.prototype.roundRect) {
     };
 }
 
+// =====================================================
+// ИНИЦИАЛИЗАЦИЯ
+// =====================================================
 await loadSkins();
 updatePlayerAvatar();
 createBots();
 updateHealth();
 updateScore();
 updateInventory();
+applyTranslations();
 animate();
 
-console.log('🐱 Kotnot_Sandbox v0.4 BETA загружена!');
-console.log('🧹 Автоочистка пустых лобби включена');
-console.log('❤️ Heartbeat: каждые 5 сек');
-console.log('⏱️ Таймаут игрока: 15 сек');
-console.log('🔥 Хост-чистильщик: каждые 10 сек');
+console.log('🐱 Kotnot_Sandbox v0.5 загружена!');
+console.log('🌍 Языки: RU / EN');
+console.log('⚽ Футбол: F/клик — удар');
+console.log('🏃 Паркур: R — рестарт');
+console.log('🎨 Скин-редактор: .kss формат');
+console.log('✅ Баг с null body/hat исправлен');
 </script>
 </body>
 </html>
